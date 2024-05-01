@@ -16,8 +16,17 @@ const DEV_PORT=5445 ;
 
 const PORT = DEV_PORT ;
 
+
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, './views'));
+
+app.use(express.static(template_folder));
+app.use(express.json());
+
 app.use( async(request, response, next) => { 
-    testStripeProductCreation().then(product => {
+    	/*
+	testStripeProductCreation().then(product => {
 		stripe.prices.create({
 		  unit_amount: 1200,
 		  currency: 'usd',
@@ -30,10 +39,12 @@ app.use( async(request, response, next) => {
 		  console.log('Success! Here is your starter subscription price id: ' + price.id);
 		});
 	});
+	*/
+    
     return next();
 });
 
-//app.use('/',routes());
+app.use('/',routes());
 
 //exporting app for testing
 module.exports = app.listen(PORT, () => {
