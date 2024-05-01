@@ -43,7 +43,7 @@ async function handleSubmit(e) {
     elements,
     confirmParams: {
       // Make sure to change this to your payment completion page
-      return_url: "http://165.227.77.146:5445/checkout",
+      return_url: "http://localhost:5445/successpayment",
     },
   });
 
