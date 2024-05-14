@@ -27,6 +27,7 @@ CREATE TABLE Customers (
     street_address VARCHAR(256) NOT NULL,
     city VARCHAR(128) NOT NULL,
     state_province VARCHAR(128) NOT NULL,
+    country VARCHAR(128) NOT NULL,
     postal_zipcode VARCHAR(32) NOT NULL,
     phone VARCHAR(32) NOT NULL
 );
