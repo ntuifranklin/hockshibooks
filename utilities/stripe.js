@@ -1,5 +1,5 @@
 require('dotenv').config();
-//const stripe_private_key = process.env.STRIPE_NJAMANJAMA_SECRET_KEY ;
+//const stripe_private_key = process.env.STRIPE_SECRET_KEY ;
 const stripe_test_private_key = "sk_test_51Or8CFA8wUPGzCHgOqhMp29nbE5Q8MtHOEjCPTJgAlPw7UFWx4jj9WmnC2lFLAjXW3cXGjF2wZEzRtORdO3ibzqG00hvTJiwis";
 const stripe = require('stripe')(`${stripe_test_private_key}`);
 exports.stripe = stripe ;
