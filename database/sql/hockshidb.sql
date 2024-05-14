@@ -57,7 +57,7 @@ CREATE TABLE Order_Items (
 
 -- Payment Table
 CREATE TABLE Payment (
-    payment_id VARCHAR(64) AUTO_INCREMENT PRIMARY KEY,
+    payment_id VARCHAR(64) PRIMARY KEY,
     order_id VARCHAR(64) NOT NULL,
     payment_date DATE NOT NULL,
     payment_method VARCHAR(128) NOT NULL,
@@ -68,14 +68,14 @@ CREATE TABLE Payment (
 
 -- Shipping_Carriers Table
 CREATE TABLE Shipping_Carriers (
-    carrier_id INT AUTO_INCREMENT PRIMARY KEY,
+    carrier_id VARCHAR(64) PRIMARY KEY,
     carrier_name VARCHAR(128) NOT NULL,
     tracking_url VARCHAR(512) NOT NULL
 );
 
 -- Book_Reviews Table
 CREATE TABLE Book_Reviews (
-    review_id VARCHAR(64) AUTO_INCREMENT PRIMARY KEY,
+    review_id VARCHAR(64) PRIMARY KEY,
     book_id VARCHAR(64) NOT NULL,
     customer_id VARCHAR(64) NOT NULL,
     rating VARCHAR(64) NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE Book_Reviews (
 
 -- Promotions Table
 CREATE TABLE Promotions (
-    promo_id VARCHAR(64) AUTO_INCREMENT PRIMARY KEY,
+    promo_id VARCHAR(64) PRIMARY KEY,
     promo_code VARCHAR(64) NOT NULL,
     discount_percentage DECIMAL(5, 2) NOT NULL,
     start_date DATE NOT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE Countries (
 
 -- Provinces_States Table
 CREATE TABLE Provinces_States (
-    province_state_id INT AUTO_INCREMENT PRIMARY KEY,
+    province_state_id VARCHAR(64) PRIMARY KEY,
     country_code VARCHAR(4) NOT NULL,
     province_state_name VARCHAR(128) NOT NULL,
     FOREIGN KEY (country_code) REFERENCES Countries(country_code)
