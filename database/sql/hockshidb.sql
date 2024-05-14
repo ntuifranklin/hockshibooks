@@ -231,12 +231,14 @@ FROM Orders;
 
 CREATE VIEW SecureInventory AS
 SELECT 
-    book_id,
-    title,
-    author,
-    description,
-    price,
-    quantity_available
-FROM Inventory;
+    i.book_id as book_id,
+    b.title as title,
+    b.author as author,
+    d.description as description,
+    b.price as price,
+    i.quantity_available as quantity_available
+FROM Inventory as i
+LEFT JOIN Books as b
+ON i.book_id = b.book_id;
 
 
