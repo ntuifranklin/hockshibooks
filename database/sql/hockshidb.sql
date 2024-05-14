@@ -218,7 +218,7 @@ SELECT
     city,
     state_province,
     country,
-    postal_code
+    postal_zipcode
 FROM Customers;
 
 CREATE VIEW SecureCustomerOrders AS
