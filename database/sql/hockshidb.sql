@@ -234,7 +234,7 @@ SELECT
     i.book_id as book_id,
     b.title as title,
     b.author as author,
-    d.description as description,
+    b.description as description,
     b.price as price,
     i.quantity_available as quantity_available
 FROM Inventory as i
