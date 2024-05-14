@@ -1,5 +1,9 @@
--- Drop Tables with IF EXISTS, Dropping Slave Tables First
+-- Dropping all the views first
+DROP VIEW IF EXISTS SecureCustomerOrders;
+DROP VIEW IF EXISTS SecureCustomers;
+DROP VIEW IF EXISTS SecureInventory;
 
+-- Drop Tables with IF EXISTS, Dropping Slave Tables First
 DROP TABLE IF EXISTS Book_Reviews;
 DROP TABLE IF EXISTS Order_Items;
 DROP TABLE IF EXISTS Payment;
@@ -201,3 +205,37 @@ INSERT INTO Provinces_States (province_state_id, country_code, province_state_na
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Northwest Territories'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Nunavut'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Yukon');
+
+
+-- Some views :
+CREATE VIEW SecureCustomers AS
+SELECT 
+    customer_id,
+    first_name,
+    last_name,
+    street_address,
+    city,
+    state_province,
+    country,
+    postal_code
+FROM Customers;
+
+CREATE VIEW SecureCustomerOrders AS
+SELECT 
+    order_id,
+    order_date,
+    total_amount,
+    delivery_status
+FROM Orders;
+
+CREATE VIEW SecureInventory AS
+SELECT 
+    book_id,
+    title,
+    author,
+    description,
+    price,
+    quantity_available
+FROM Inventory;
+
+
