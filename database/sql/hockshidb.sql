@@ -1,3 +1,17 @@
+-- Drop Tables with IF EXISTS, Dropping Slave Tables First
+
+DROP TABLE IF EXISTS Book_Reviews;
+DROP TABLE IF EXISTS Order_Items;
+DROP TABLE IF EXISTS Payment;
+DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Inventory;
+DROP TABLE IF EXISTS Promotions;
+DROP TABLE IF EXISTS Shipping_Carriers;
+DROP TABLE IF EXISTS Books;
+DROP TABLE IF EXISTS Customers;
+DROP TABLE IF EXISTS Provinces_States;
+DROP TABLE IF EXISTS Countries;
+
 -- Customers Table
 CREATE TABLE Customers (
     customer_id VARCHAR(64) PRIMARY KEY,
