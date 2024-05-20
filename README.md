@@ -1,2 +1,2 @@
-# hockshibooks
-hockshibooks sell used books
+# hockshi
+hockshi sell items online
