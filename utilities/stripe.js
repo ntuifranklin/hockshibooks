@@ -6,10 +6,10 @@ exports.stripe = stripe ;
 /*
 stripe.products.create({
   name: 'Starter Subscription',
-  description: '$12/Month subscription',
+  description: '$1/Year subscription',
 }).then(product => {
   stripe.prices.create({
-    unit_amount: 1200,
+    unit_amount: 1,
     currency: 'usd',
     recurring: {
       interval: 'month',
@@ -24,8 +24,8 @@ stripe.products.create({
 
 async function testStripeProductCreation() {
   return stripe.products.create({
-    name: 'HockShi Startet Subscription',
-    description: '$11/Month subscription',
+    name: 'HockShi Starter Subscription',
+    description: '$1/year subscription',
   }) ;
 } ;
 exports.testStripeProductCreation = testStripeProductCreation ;
