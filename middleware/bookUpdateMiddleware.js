@@ -26,15 +26,8 @@ const validateBookForm = [
   // ISBN should be a valid string and required
   body('ISBN')
   .matches(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/)
-  .withMessage('Invalid ISBN format')
-  .custom(async(ISBN)=>{
-    const existingISBN= await bookModel.findOne({where:{ISBN:ISBN}})
-
-    if(existingISBN){
-      throw new Error('ISBN already exists')
-    }
-  }),
-
+  .withMessage('Invalid ISBN format'),
+  
   // Price should be a decimal number and required
   body('price')
     .isDecimal()

@@ -40,7 +40,7 @@ Here's what it does:
         host:process.env.HOST,
         genre:genre,
         msg:false,
-        formdata:false
+        formdata:false,
 
     })
 }
@@ -54,33 +54,38 @@ const CreateBook=async (req,res)=>{
     //The function first checks for any validation errors using validationResult(req).
 
         const errors=validationResult(req)
-
+        const error={}
         // If there are validation errors, it retrieves all genres from the database and adds an error message if no file (cover image) is uploaded.
+        if(!req.file){
 
+            error.push({
+                                
+                type: 'field',
+                value: '',
+                msg: 'Cover Image Is Required',
+                path: 'cover_image_url',
+                location: 'body'
+              
+        })
                 if(!errors.isEmpty()){
                         const genre= await genreModel.findAll()
 
-                        const error=errors.array()
-                        if(!req.file){
-                            error.push({
-                                
-                                    type: 'field',
-                                    value: '',
-                                    msg: 'Cover Image Is Required',
-                                    path: 'cover_image_url',
-                                    location: 'body'
-                                  
-                            })
+                        error={...errors.array()}
+                       
+                        
                         }
-
+                        
+                      
                     res.render("pages/bookInsert",{
                         host:process.env.HOST,
                         genre:genre,
                         msg:error,
-                        formdata:req.body
+                        formdata:req.body,
                     })
 
-                }else{
+                }
+                
+                else{
                     // If there are no validation errors, it creates a new book using the bookModel, and creates a new inventory using the inventoryModel.
                     let book= await bookModel.create({
                         title:req.body.title,
@@ -100,7 +105,7 @@ const CreateBook=async (req,res)=>{
                         location:req.body.location
                     })
             
-                    return res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+added`);
+                    return res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+added&type=success`);
                 }
                 // File information is available in req.file
 }
@@ -121,8 +126,6 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
     }else{
         error=false
     }
-    console.log(req.errors)
-    console.log("errors",error)
     let book= await bookModel.findByPk(updateBookId, {include:[
         {model:genreModel},
         {model:inventoryModel}
@@ -155,7 +158,6 @@ const saveUpdate=async(req,res)=>{
 
                         const error=errors.array()
                         req.errors=error
-                        console.log(req.errors)
                         return await updateBook(req,res)
                     
                 }else{
@@ -169,7 +171,7 @@ const saveUpdate=async(req,res)=>{
         const inventory=await inventoryModel.findByPk(req.body.bookId)
 
         if(!book || !inventory){
-           return res.status(404).send("record not found")
+           return res.status(404).redirect(`${process.env.HOST}/admin/dashboard?msg=item+not+found&type=danger`);
         }
         else{
             //The function updates the fields of the book and inventory records with the data from the request body.
@@ -177,7 +179,6 @@ const saveUpdate=async(req,res)=>{
             book.set({
         title :req.body.title,
         author : req.body.author,
-        ISBN :req.body.ISBN,
         language : req.body.language,
         price :req.body.price,
         description :req.body.description,
@@ -198,15 +199,16 @@ const saveUpdate=async(req,res)=>{
                 // Delete the cover image file
                 fs.unlink(coverImagePath, async (err) => {
                     if (err) {
-                        return res.status(500).json({ error: 'Error deleting file' });
+                        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
                     }
                 })
         
-                book.set({cover_image_url:req.file.path})
-                
-            
-        
+                book.set({cover_image_url:req.file.path})            
            }
+           if(req.body.ISBN != book.ISBN){
+            book.set({ISBN:req.body.ISBN})
+           }
+
            //The function saves the updated book and inventory records to the database.
 
            await book.save()
@@ -215,7 +217,7 @@ const saveUpdate=async(req,res)=>{
    
                 //After successful update, the user is redirected to the dashboard with a success message.
 
-       res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+updated`);
+       res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+updated&type=success`);
        
         
         }
@@ -223,8 +225,7 @@ const saveUpdate=async(req,res)=>{
 }
     
     catch(e){
-        console.log("error",e)
-        res.status(500).send('Server error');
+        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=server+error&type=danger`);;
 
 
     }
@@ -253,17 +254,17 @@ const deleteBook=async (req,res)=>{
         // Delete the cover image file
         fs.unlink(coverImagePath, async (err) => {
             if (err) {
-                return res.status(500).json({ error: 'Error deleting file' });
+                return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
+
             } 
         })
         
         await book.destroy()
-    res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+deleted`);
+    res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+deleted&type=success`);
         
     }
     catch(e){
-        console.log(e)
-    res.redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+record`);
+    res.redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+record&type=danger`);
 
     }
 }

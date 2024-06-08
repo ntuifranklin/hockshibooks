@@ -25,6 +25,12 @@
                     
                   </div>
                   
+         <% if (msg) { %>
+          <div class="alert alert-<%=type %>" role="alert">
+                <p><%= msg %>!</p>
+          </div>
+        <% } %>  
+                  
               <div class="row justify-content-center">
                 
                 <div class="col-12">
@@ -52,7 +58,7 @@
                               <th scope="row"><%= books[i].title %></th>
                               <td><%= books[i].author %></td>
                               <td><%= books[i].ISBN %></td>
-                              <td><%= books[i].price %> $</td>
+                              <td>$<%= books[i].price %></td>
                               <td><%= books[i].Genre.name %></td>
                               <td><%= books[i].Inventory.quantity_available %></td>
 

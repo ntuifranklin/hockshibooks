@@ -7,7 +7,7 @@
  */
 const verifyLogin=(req,res,next)=>{
     if (req.session.user==undefined){
-        res.render('pages/notAllowedPage')
+        res.status(403).render('pages/notAllowedPage')
     }
 
     next()

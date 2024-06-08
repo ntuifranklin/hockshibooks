@@ -55,7 +55,7 @@ const validateOTP=require("./middleware/OTPmiddleware")
 
 
 app.set('view engine', 'ejs');
-app.use(express.static(template_folder));
+app.use(express.static(path.join(__dirname, './views')));
 app.set('views', path.join(__dirname, './views'));
 app.use(express.json());
 

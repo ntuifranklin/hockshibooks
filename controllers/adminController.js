@@ -53,7 +53,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                             });                                                   
                         if(!user){
                                 
-                                res.render("pages/admin_login",{
+                                res.status(401).render("pages/admin_login",{
                                         csrfToken: req.csrfToken(),
                                         msg:"please check your email and password again",
                                            host:process.env.HOST
@@ -73,7 +73,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                 })
                         }
                                 else{
-                                        res.render("pages/admin_login",{
+                                        res.status(401).render("pages/admin_login",{
                                                 csrfToken: req.csrfToken(),
                                                 msg:"please check your email and password again",
                                                 host:process.env.HOST
@@ -131,7 +131,7 @@ If there are errors, render the otpVerification page with an error message.
                 if(!otpRecord){
                         authUser="";
                         
-                        res.render(`pages/otpVerification`,{
+                        res.status(401).render(`pages/otpVerification`,{
                                 userId:userId,
                                 email:user_email,
                                 msg:"invalid OTP record",
@@ -144,7 +144,7 @@ If there are errors, render the otpVerification page with an error message.
                 else if(otpRecord.expiration_time < new Date()){
                         authUser="";
 
-                        res.render(`pages/otpVerification`,{
+                        res.status(401).render(`pages/otpVerification`,{
                                 userId:userId,
                                 email:user_email,
 
@@ -179,7 +179,8 @@ Then, it uses the await keyword to asynchronously fetch all books from the bookM
 
 Finally, it renders a view template named "pages/dashboard" and passes the fetched books, msg, and the value of process.env.HOST as data to the template.
         */
-        const msg=req.query.msg?false:req.query.msg;
+        const msg=req.query.msg?req.query.msg:false;
+        const type=req.query.type?req.query.type:false;
 
         const books= await bookModel.findAll({
                 include:[
@@ -190,10 +191,10 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
                 
         })
         // res.send(user)
-        console.log(res.locals.user)
-        console.log(req.session.user)
+       
         res.render("pages/dashboard",{
                 books:books,
+                type:type,
                 msg:msg,
                 host:process.env.HOST
 
