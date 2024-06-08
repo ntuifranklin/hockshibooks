@@ -4,17 +4,33 @@ DROP VIEW IF EXISTS SecureCustomers;
 DROP VIEW IF EXISTS SecureInventory;
 
 -- Drop Tables with IF EXISTS, Dropping Slave Tables First
+DROP TABLE IF EXISTS SequelizeMeta;
+
 DROP TABLE IF EXISTS Book_Reviews;
+
+
+DROP TABLE IF EXISTS otpTable;
+
+
+DROP TABLE IF EXISTS powerUsers;
+
+
 DROP TABLE IF EXISTS Order_Items;
 DROP TABLE IF EXISTS Payment;
 DROP TABLE IF EXISTS Orders;
 DROP TABLE IF EXISTS Inventory;
 DROP TABLE IF EXISTS Promotions;
 DROP TABLE IF EXISTS Shipping_Carriers;
-DROP TABLE IF EXISTS Books;
 DROP TABLE IF EXISTS Customers;
 DROP TABLE IF EXISTS Provinces_States;
 DROP TABLE IF EXISTS Countries;
+DROP TABLE IF EXISTS Books;
+DROP TABLE IF EXISTS Genres;
+
+
+
+
+
 
 -- Customers Table
 CREATE TABLE Customers (
@@ -32,18 +48,28 @@ CREATE TABLE Customers (
     phone VARCHAR(32) NOT NULL
 );
 
+CREATE TABLE Genres (
+    genre_id VARCHAR(64) PRIMARY KEY,
+    name VARCHAR(128) NOT NULL
+);
+
+
 -- Books Table
 CREATE TABLE Books (
     book_id VARCHAR(64) PRIMARY KEY,
     title VARCHAR(512) NOT NULL,
     author VARCHAR(256) NOT NULL,
-    ISBN VARCHAR(32) NOT NULL,
+    ISBN VARCHAR(32) NOT NULL UNIQUE,
     description TEXT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    genre VARCHAR(128),
+    genre VARCHAR(64),
     publication_date DATE,
     language VARCHAR(64),
-    cover_image_url VARCHAR(1024)
+    cover_image_url VARCHAR(1024),
+    FOREIGN KEY (genre) REFERENCES Genres(genre_id) 
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE
+
 );
 
 -- Orders Table
@@ -119,7 +145,28 @@ CREATE TABLE Inventory (
     quantity_available INT NOT NULL,
     location VARCHAR(256) NOT NULL,
     FOREIGN KEY (book_id) REFERENCES Books(book_id)
+    ON delete CASCADE
+    ON update CASCADE
 );
+
+CREATE TABLE powerUsers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('basic_admin', 'super_admin') NOT NULL DEFAULT 'basic_admin'
+);
+
+
+CREATE TABLE otpTable (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    otp VARCHAR(255),
+    expiration_time DATETIME,
+    powerUserId INT,
+    FOREIGN KEY (powerUserId) REFERENCES powerUsers(id) 
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE
+);
+
 
 -- Countries Table
 CREATE TABLE Countries (
@@ -241,4 +288,8 @@ FROM Inventory as i
 LEFT JOIN Books as b
 ON i.book_id = b.book_id;
 
+INSERT INTO Genres (genre_id, name) VALUES ('1', 'Science'),('2', 'Fiction'),('3', 'Non-Fiction');
 
+INSERT INTO powerUsers (id, email,password,role) VALUES (1, 'juniorhoza56@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
+
+--password = plaintextpassword

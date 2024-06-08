@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Update Book</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f5f0;
+        }
+        .container {
+            max-width: 900px;
+            margin-top: 50px;
+        }
+        .form-container {
+            display: flex;
+            border: 1px solid #e0e0e0;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .form-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .form-content {
+            padding: 40px;
+            flex-grow: 1;
+        }
+        .form-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-header h2 {
+            font-size: 24px;
+            letter-spacing: 2px;
+            color: #1e0b52;
+            font-weight: bold;
+        }
+        .form-header .dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .form-header .dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #e0d3ba;
+            margin: 0 5px;
+        }
+        .form-header .dots .active {
+            background-color: #8fb476;
+        }
+        .form-content h5 {
+            color: #8fb476;
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            color: #737373;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .form-control {
+            border: none;
+            border-bottom: 1px solid #e0e0e0;
+            border-radius: 0;
+            padding-left: 0;
+        }
+        .form-check-label {
+            color: #737373;
+        }
+        .btn-primary {
+            background-color: #e0d3ba;
+            border: none;
+            color: #737373;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .checkbox-label {
+            font-size: 12px;
+            color: #737373;
+        }
+        .errors{
+            width:80vw;
+            display: grid;
+            grid-template-rows:  auto  ;
+            column-gap: 40px;
+            grid-template-columns: auto 400px auto;
+        }
+    </style>
+</head>
+<body>
+    <%- include('navBar',{email:user.email,role:user.role,host:host}) %>
+    
+<div class="container">
+    <div class="form-container row no-gutters">
+        <div class="col-md-5">
+            <img src="img_files/hockshi-align-bottom.png" alt="image" width="100px" height="40px">
+        </div>
+        <div class="col-md-7">
+            <div class="form-content">
+                <div class="form-header">
+                    <h2>UPDATE BOOK</h2>
+                  
+                </div>
+                <h5>Please fill with your details</h5>
+
+                <div class="errors">
+                    <% if (msg.length!=0) { %>
+                        <% for(let i=0; i < msg.length; i++) { %>
+                                                
+                            
+                            <div class="alert alert-danger" role="alert">
+                                <p><%= msg[i].msg %>!</p>
+                            </div>
+                            <% } %>
+                    <% } %>
+
+                </div>
+                <form class="form-card" id="formdata"  enctype="multipart/form-data" action="/admin/books/update?_csrf=<%= csrfToken%>"  method="post">
+                    <div class="form-row">
+                            <input type="hidden"   value="<%= book.book_id %>"  name="bookId">
+                        </div>
+                        <div class="form-row">
+
+                            <div class="form-group col-md-6">
+                                <label for="Book_Title">Title</label>
+                                <input type="text" class="form-control" id="Book_Title" placeholder="Book Title" value="<%= book.title %>" name="title">  
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="autho">Author</label>
+                                <input type="text" class="form-control" id="autho" placeholder="Book Author" value="<%= book.author %>" name="author">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="ISBN">ISBN</label>
+                            <input type="text" class="form-control" id="ISBN" placeholder="ISBN" name="ISBN" value="<%= book.ISBN %>" name="ISBN">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="phone">language</label>
+                            <input type="text" class="form-control" id="phone" placeholder="language" name="language" value="<%= book.language %>">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="price">price</label>
+                            <input type="number" class="form-control" idprice" placeholder="Price" name="price" value="<%= book.price %>">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Quantity available</label>
+                            <input type="number" class="form-control" placeholder="Quantity" name="quantity" value="<%= book.Inventory.quantity_available %>">
+                        </div>
+                    </div>
+                    <div class="form-row">
+
+                        <div class="form-group col-md-6">
+                            <label for="location">Location</label>
+                            <input type="text" class="form-control" id="location" placeholder="Genre" name="location" value="<%= book.Inventory.location %>">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Genre</label>
+                            <select class="form-control"  name="genre"   >
+                                <option value="<%= book.genre %>" disabled><%= book.Genre.name %></option>
+                                <% for(let i=0; i < genre.length; i++) { %>
+                                        
+                                    <option value="<%= genre[i].genre_id %>"><%= genre[i].name %></option> 
+                                    <% } %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="date">Genre</label>
+                            <input type="date" class="form-control" id="date" name="date" value="<%= book.publication_date %>">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="customFile">image</label>
+                            <input type="file" class="form-control" id="customFile"  name="coverImage"/>
+                            
+                        </div>
+
+
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="description">Describtion</label>
+                            <textarea type="date" class="form-control" id="description" name="description" value="<%= book.description %>" rows="3" cols="100" resize="none" width="200px"><%= book.description %></textarea>
+                        </div>
+
+
+                    </div>
+                    <button type="submit" class="btn btn-primary">Forward</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html> 

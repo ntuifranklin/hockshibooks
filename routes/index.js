@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 require('dotenv').config();
+const csrf = require('csurf');
+let csrfProtection = csrf({ cookie: true });
 
 const {stripe} = require('../utilities/stripe') ;
 
@@ -19,13 +21,14 @@ exports.calculateOrderAmount = calculateOrderAmount ;
 
 module.exports = () => { 
         
-    router.get(['/','/checkout'], async (request, response, next) => { 
+    router.get( ['/','/checkout'],csrfProtection, async (request, response, next) => { 
         
         //console.log(`User cart : ${JSON.stringify(userCart)}`);
 	const stripe_public_key = process.env.STRIPE_PUBLIC_KEY;
         response.render('layout', 
 	{
-		template:'checkout',
+    template:'checkout',
+    csrfToken:request.csrfToken(),
 		stripe_public_key:stripe_public_key,
 	});
         return ;

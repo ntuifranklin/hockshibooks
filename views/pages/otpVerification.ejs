@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP verification </title>
+
+    <!-- bootstrap 5 stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- fontawesome 6 stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+
+/* Firefox */
+            input[type=number] {
+            -moz-appearance: textfield;
+            }
+    </style>
+</head>
+<body>
+    <section class="m-auto d-flex justify-content-center align-items-center vw-100 vh-100" style="background-color: hsl(0, 0%, 96%)">
+        <div class="px-4 py-5 px-md-5 text-center text-lg-start" >
+          <div class="container">
+            <div class="row gx-lg-5 align-items-center">
+              <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="my-5 display-3 fw-bold ls-tight">
+                  OTP sent to <br />
+                  <span class="text-primary fs-2"><%= email %> </span>
+                </h1>
+                <p style="color: hsl(217, 10%, 50.8%)">
+                 
+                </p>
+              </div>
+      
+              <div class="col-lg-6 mb-5 mb-lg-0">
+                <% if (msg) { %>
+                  <div class="alert alert-danger" role="alert">
+                        <p><%= msg %>!</p>
+                  </div>
+                <% } %>
+                
+                <div class="card">
+                  <div class="card-body py-5 px-md-5">
+                    <form action="<%= `${host}/admin/verifyOtp` %>" method="post">
+                      <!-- 2 column grid layout with text inputs for the first and last names -->
+                      
+      
+                      <!-- Email input -->
+                      <div data-mdb-input-init class="form-outline mb-4">
+                        <label class="form-label" for="form3Example3">OTP</label>
+    
+                        <input type="number" id="form3Example3" class="form-control"  name="OTP" placeholder="Enter your OTP"/>
+                      </div>
+      
+                    
+                      <input type="hidden" name="userId"
+                      value="<%= userId %>">
+                      <input type="hidden" name="_csrf"
+                   value="<%= csrfToken %>">
+                      <!-- Submit button -->
+                      <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">
+                        verify code
+                      </button>
+      
+                   
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+</body>
+</html>
