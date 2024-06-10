@@ -21,7 +21,8 @@ otpTable.init({
     otp:DataTypes.STRING,
     expiration_time:DataTypes.DATE,
     powerUserId:{
-        type:DataTypes.INTEGER,
+          
+        type:DataTypes.UUIDV4,
         references:{
             model:adminModel,
             key:'id'

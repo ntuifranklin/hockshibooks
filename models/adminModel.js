@@ -12,7 +12,7 @@ class powerUser extends Model{}
 
 powerUser.init({
     id:{
-      type: DataTypes.STRING(64),
+      type: DataTypes.UUIDV4,
       primaryKey: true
     },
     email:{
