@@ -3,12 +3,8 @@ const { faker } = require('@faker-js/faker');
 const path = require('path');
 const createError = require('http-errors');
 const {isTestEnvironment,connect,checkUploadDir}=require("./utilities/functions");
-
-
 const booksRouter=require("./routes/booksRoute")
-
 const adminRoute=require("./routes/adminRoutes")
-
 const bodyParser = require('body-parser');
 const {decode} = require('html-entities');
 const template_folder = './statictemplate';
@@ -171,9 +167,10 @@ app.use ("/admin",adminRoute)
 app.use("/admin/books",booksRouter)
 
 //exporting app for testing
-module.exports = app.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Express server listening on port ${PORT}`);
    
-});
+})
+module.exports={app};
 
 

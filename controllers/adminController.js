@@ -23,7 +23,10 @@ let userId
 
 
 const login=(req,res,next)=>{
+
+        console.log(res)
         //the login function renders the login page that will request the email and password of the users who wishes to login
+        res.status(200)
         res.render("pages/admin_login",{
                 msg:false,
                 host:process.env.HOST
@@ -65,7 +68,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                         userId=user.id
                                         authUser=user.dataValues
                                         generateAndSendOTP(user.id,user_email)
-                                res.render(`pages/otpVerification`,{
+                                res.status(200).render(`pages/otpVerification`,{
                                         userId:userId,
                                         email:user_email,
                                         msg:false,

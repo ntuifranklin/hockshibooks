@@ -150,7 +150,7 @@ CREATE TABLE Inventory (
 );
 
 CREATE TABLE powerUsers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('basic_admin', 'super_admin') NOT NULL DEFAULT 'basic_admin'

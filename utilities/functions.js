@@ -63,12 +63,16 @@ const generateAndSendOTP=async (userId,mail)=>{
  */
   const otpCode = crypto.randomInt(100000, 999999).toString();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // OTP valid for 15 minutes
+  let Transporter;
   console.log(otpCode)
   // Save OTP to the database
   connect();
   await otpModel.create({ powerUserId:userId, otp:otpCode, expiration_time:expiresAt });
+  
+if (process.env.NODE_ENV === 'test') {
+  Transporter = nodemailer.createTransport(require('nodemailer-mock').getMockFor(nodemailer));
 
-    const Transporter=nodemailer.createTransport({
+  } else{ Transporter=nodemailer.createTransport({
       service:'gmail',
 
       auth:{
@@ -77,7 +81,7 @@ const generateAndSendOTP=async (userId,mail)=>{
 
       }
     });
-
+  }
     const mailOptions = {
       from: process.env.EMAIL,
       to: mail,

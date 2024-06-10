@@ -12,8 +12,10 @@
     
 </head>
 <body>
+
+  <%- if (user) { %>
   <%- include('navBar',{email:user.email,role:user.role,host:host}) %>
-  
+  <%- } %>
   
     <section class="intro">
         <div class="bg-image h-100" >

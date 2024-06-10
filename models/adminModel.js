@@ -1,5 +1,6 @@
 const {Sequelize,DataTypes,Model}= require('sequelize')
 const bcrypt = require('bcrypt');
+const {Md5Rand}=require("../utilities/functions")
 
 const sequelize = require('../config/database');
 
@@ -11,8 +12,7 @@ class powerUser extends Model{}
 
 powerUser.init({
     id:{
-        type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.STRING(64),
       primaryKey: true
     },
     email:{
@@ -43,11 +43,11 @@ powerUser.init({
     hooks: {
       beforeCreate: async (user) => {
         // Hash the password before creating a new powerUser.
-
         if (user.password) {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);
-        }
+          }
+        user.id=await crypto.createHash('md5').update(Math.random().toString()).digest('hex')
       },
       beforeUpdate: async (user) => {
         // Hash the password before updating an existing powerUser.
