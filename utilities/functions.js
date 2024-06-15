@@ -1,11 +1,11 @@
-require('dotenv').config();
 const { Sequelize } = require('sequelize');
 const fs = require('fs');
 const path= require("path")
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const otpModel=require("../models/otpModel")
-
+const nodemailerMock=require("nodemailer-mock")
+require("dotenv").config()
 
 function isTestEnvironment(root_dir=new String(__dirname)) {
    
@@ -64,15 +64,20 @@ const generateAndSendOTP=async (userId,mail)=>{
   const otpCode = crypto.randomInt(100000, 999999).toString();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // OTP valid for 15 minutes
   let Transporter;
-  console.log(otpCode)
+  // console.log(otpCode)
   // Save OTP to the database
   connect();
   await otpModel.create({ powerUserId:userId, otp:otpCode, expiration_time:expiresAt });
   
-if (process.env.NODE_ENV === 'test') {
-  Transporter = nodemailer.createTransport(require('nodemailer-mock').getMockFor(nodemailer));
+// if (process.env.NODE_ENV === 'test') {
+//   Transporter = nodemailerMock.createTransport();
 
-  } else{ Transporter=nodemailer.createTransport({
+
+
+//   } 
+  // else{ 
+    
+    Transporter=nodemailer.createTransport({
       service:'gmail',
 
       auth:{
@@ -81,22 +86,25 @@ if (process.env.NODE_ENV === 'test') {
 
       }
     });
-  }
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: mail,
-      subject: 'Your OTP Code',
-      text: `Your OTP code is ${otpCode}. It will expire in 15 minutes.`,
-    };
-    try{
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: mail,
+    subject: 'Your OTP Code',
+    text: `Your OTP code is ${otpCode}. It will expire in 15 minutes.`,
+  };
+  try{
 
-        await Transporter.sendMail(mailOptions,()=>{
-          console.log("Email sent successfully.");        });
-    }
-    catch(e){
-      console.log("email error" , e)
-    }
+      await Transporter.sendMail(mailOptions,()=>{
+        console.log("Email sent successfully.");        });
+  }
+  catch(e){
+    console.log("email error" , e)
+  }
+
+ return otpCode
 }
+
+  // }
 
 const Md5Rand=()=>{
   /**

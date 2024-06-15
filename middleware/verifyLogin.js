@@ -8,9 +8,11 @@
 const verifyLogin=(req,res,next)=>{
     if (req.session.user==undefined){
         res.status(403).render('pages/notAllowedPage')
+    }else{
+        res.status(200)
+        next()
     }
 
-    next()
 }
 
 module.exports=verifyLogin

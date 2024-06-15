@@ -6,7 +6,7 @@ const {generateAndSendOTP}=require("../utilities/functions");
 const { validationResult } = require('express-validator');
 
 const { json } = require('body-parser');
-require("dotenv").config()
+require("dotenv").config()      
 
 //models
 const powerUSer= require("../models/adminModel")
@@ -24,7 +24,7 @@ let userId
 
 const login=(req,res,next)=>{
 
-        console.log(res)
+        
         //the login function renders the login page that will request the email and password of the users who wishes to login
         res.status(200)
         res.render("pages/admin_login",{
@@ -67,6 +67,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                         user_email=email
                                         userId=user.id
                                         authUser=user.dataValues
+                                        // console.log(authUser)
                                         generateAndSendOTP(user.id,user_email)
                                 res.status(200).render(`pages/otpVerification`,{
                                         userId:userId,
@@ -171,7 +172,8 @@ If there are errors, render the otpVerification page with an error message.
                                         powerUserId:userId
                                 }
                         })
-                        res.redirect(`${process.env.HOST}/admin/dashboard`) 
+                        
+                        res.status(200).redirect(`${process.env.HOST}/admin/dashboard`) 
                 }
 }) 
 const dashboard=async(req,res)=>{
@@ -184,7 +186,7 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
         */
         const msg=req.query.msg?req.query.msg:false;
         const type=req.query.type?req.query.type:false;
-
+ 
         const books= await bookModel.findAll({
                 include:[
                         {model:genreModel},
@@ -194,8 +196,9 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
                 
         })
         // res.send(user)
-       
-        res.render("pages/dashboard",{
+        res.locals.user=req.session.user
+
+        res.status(200).render("pages/dashboard",{
                 books:books,
                 type:type,
                 msg:msg,
