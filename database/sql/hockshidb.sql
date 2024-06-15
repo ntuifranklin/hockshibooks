@@ -161,7 +161,7 @@ CREATE TABLE otpTable (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     otp VARCHAR(255),
     expiration_time DATETIME,
-    powerUserId INT,
+    powerUserId CHAR(36),
     FOREIGN KEY (powerUserId) REFERENCES powerUsers(id) 
     ON DELETE CASCADE 
     ON UPDATE CASCADE
