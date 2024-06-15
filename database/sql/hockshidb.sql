@@ -1,3 +1,5 @@
+use hockshi;
+
 -- Dropping all the views first
 DROP VIEW IF EXISTS SecureCustomerOrders;
 DROP VIEW IF EXISTS SecureCustomers;
@@ -26,6 +28,9 @@ DROP TABLE IF EXISTS Provinces_States;
 DROP TABLE IF EXISTS Countries;
 DROP TABLE IF EXISTS Books;
 DROP TABLE IF EXISTS Genres;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS products;
+
 
 
 
@@ -167,6 +172,21 @@ CREATE TABLE otpTable (
     ON UPDATE CASCADE
 );
 
+-- category table
+CREATE TABLE `categories` (
+    `category_id` VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    `name` VARCHAR(128) NOT NULL
+);
+-- products table
+CREATE TABLE `Products` (
+    `product_id` VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    `name` VARCHAR(512) NOT NULL,
+    `description` TEXT NOT NULL,
+    `price` DECIMAL(10, 2) NOT NULL,
+    `product_image_url` VARCHAR(1024),
+    `category` VARCHAR(64),
+    FOREIGN KEY (`category`) REFERENCES `categories`(`category_id`)
+);
 
 -- Countries Table
 CREATE TABLE Countries (
@@ -292,4 +312,4 @@ INSERT INTO Genres (genre_id, name) VALUES ('1', 'Science'),('2', 'Fiction'),('3
 
 INSERT INTO powerUsers (id, email,password,role) VALUES (1, 'juniorhoza56@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
 
---password = plaintextpassword
+-- password = plaintextpassword
