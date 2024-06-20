@@ -1,3 +1,4 @@
+
 const express = require('express');
 const { faker } = require('@faker-js/faker');
 const path = require('path');
@@ -14,6 +15,7 @@ const csrf = require('csurf');
 const cookieSession = require('express-session');
 const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
+require("dotenv").config()
 
 let parseForm = bodyParser.urlencoded({ extended: false });
 
@@ -21,9 +23,11 @@ const app = express();
 
 const { stripe,testStripeProductCreation } = require('./utilities/stripe'); 
 
-const DEV_PORT=5445 ;
+// const DEV_PORT=5445 ;
 
-let PORT = process.env.NODE_ENV=="test"?4000:3000 ;
+// let PORT = process.env.NODE_ENV=="test"?4000:3000 ;
+const env = process.env.NODE_ENV||"dev";
+const port = env == "test" ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
 
 
 const sequelize = require('./config/database');
@@ -91,16 +95,16 @@ app.use(form_rate_limiter);
 /* If in a production environment, then use un secure cookies */
 
 
-var isTestingEnv =isTestEnvironment(root_dir=new String(__dirname));
+// var isTestingEnv =isTestEnvironment(root_dir=new String(__dirname));
 
-if ( !isTestingEnv) {
-    PORT = process.env.PRODUCTION_SITE_PORT;
-} else if (isTestingEnv) {
-    PORT = process.env.TEST_SITE_PORT;
-} else {
-    throw Error("We could neither detect testing or production environment");
-}
-if (PORT == process.env.PRODUCTION_SITE_PORT) {
+// if ( !isTestingEnv) {
+//     PORT = process.env.PRODUCTION_SITE_PORT;
+// } else if (isTestingEnv) {
+//     PORT = process.env.TEST_SITE_PORT;
+// } else {
+//     throw Error("We could neither detect testing or production environment");
+// }
+if (port == process.env.PRODUCTION_SITE_PORT) {
         
     app.set('trust proxy', 1) // trust first proxy
     dynamicCookie.secure = true; // serve secure cookies
@@ -167,17 +171,9 @@ app.use('/',routes());
 app.use ("/admin",adminRoute)
 app.use("/admin/books",booksRouter)
 
-//exporting app for testing
-if(process.env.NODE_ENV=="test"){
-	app.set("port",process.env.TEST_PORT)
-}
-else{
-	app.set("port",process.env.PRODUCTION_SITE_PORT)
 
-}
-
-app.listen( () => {
-    console.log(`Express server listening on port ${PORT}`);
+app.listen(port, () => {
+    console.log(`Express server listening on port ${port}`);
    
 })
 module.exports={app};
