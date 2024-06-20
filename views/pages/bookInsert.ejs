@@ -93,7 +93,10 @@
     </style>
 </head>
 <body>
+   
+  <%  if (user) { %>
     <%- include('navBar',{email:user.email,role:user.role,host:host}) %>
+    <% } %>
 
    
 

@@ -96,6 +96,7 @@ const generateAndSendOTP=async (userId,mail)=>{
 
       await Transporter.sendMail(mailOptions,()=>{
         console.log("Email sent successfully.");        });
+        // console.log(otpCode)
   }
   catch(e){
     console.log("email error" , e)

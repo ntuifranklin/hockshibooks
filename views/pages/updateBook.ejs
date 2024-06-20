@@ -95,8 +95,10 @@
     </style>
 </head>
 <body>
+   
+  <%  if (user) { %>
     <%- include('navBar',{email:user.email,role:user.role,host:host}) %>
-    
+    <% } %> 
 <div class="container">
     <div class="form-container row no-gutters">
         <div class="col-md-5">

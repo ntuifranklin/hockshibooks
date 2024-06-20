@@ -158,10 +158,11 @@ app.use(parseForm, csrfProtection, async(request, response, next) => {
 	app.use((req, res, next) => {
 		res.locals.csrfToken = req.csrfToken();
 		res.locals.host=process.env.HOST
-
-		if(req.session.user==true){
+		if(req.session.user!=false){
 			res.locals.user=req.session.user
+
 		}
+
 			
 		next();
 	});

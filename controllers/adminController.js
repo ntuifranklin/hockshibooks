@@ -198,6 +198,7 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
         // res.send(user)
         res.locals.user=req.session.user
 
+
         res.status(200).render("pages/dashboard",{
                 books:books,
                 type:type,
