@@ -16,7 +16,7 @@ const { check,validationResult } = require('express-validator');
 const validateOTP = [
       // Check that 'userId' is an integer
 
-    check('userId').isInt().withMessage('User ID must be an integer'),
+    check('userId').isUUID().withMessage('User ID must be an integer'),
         // Check that 'OTP' is exactly 6 digits long
 
     check('OTP').isLength({ min: 6, max: 6 }).withMessage('OTP code must be 6 digits long'),

@@ -14,6 +14,6 @@ services:
 
 
 #terminal cmd
-#docker run -p 3306:3306 -d --name mariadb -e MYSQL_DATABASE=hockshi -e MARIADB_ROOT_PASSWORD=Password123! mariadb
+#docker run -p 3306:3306 -d --name mariadb -e MYSQL _DATABASE=hockshi -e MARIADB_ROOT_PASSWORD=Password123! mariadb
 
      

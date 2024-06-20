@@ -9,7 +9,7 @@ const fs=require("fs")
 const path=require("path")
 const multer=require("multer")
 
-require("dotenv").config()
+    require("dotenv").config()
 
 
 //models

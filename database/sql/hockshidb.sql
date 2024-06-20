@@ -28,8 +28,8 @@ DROP TABLE IF EXISTS Provinces_States;
 DROP TABLE IF EXISTS Countries;
 DROP TABLE IF EXISTS Books;
 DROP TABLE IF EXISTS Genres;
+DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS products;
 
 
 
@@ -311,5 +311,6 @@ ON i.book_id = b.book_id;
 INSERT INTO Genres (genre_id, name) VALUES ('1', 'Science'),('2', 'Fiction'),('3', 'Non-Fiction');
 
 INSERT INTO powerUsers (id, email,password,role) VALUES (1, 'juniorhoza56@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
+INSERT INTO powerUsers ( email,password,role) VALUES ( 'franklinwebdev704@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
 
 -- password = plaintextpassword

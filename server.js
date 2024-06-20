@@ -23,7 +23,7 @@ const { stripe,testStripeProductCreation } = require('./utilities/stripe');
 
 const DEV_PORT=5445 ;
 
-let PORT = DEV_PORT ;
+let PORT = process.env.NODE_ENV=="test"?4000:3000 ;
 
 
 const sequelize = require('./config/database');
@@ -168,7 +168,15 @@ app.use ("/admin",adminRoute)
 app.use("/admin/books",booksRouter)
 
 //exporting app for testing
-app.listen(PORT, () => {
+if(process.env.NODE_ENV=="test"){
+	app.set("port",process.env.TEST_PORT)
+}
+else{
+	app.set("port",process.env.PRODUCTION_SITE_PORT)
+
+}
+
+app.listen( () => {
     console.log(`Express server listening on port ${PORT}`);
    
 })

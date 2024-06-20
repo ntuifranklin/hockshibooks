@@ -1,3 +1,4 @@
+
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import { describe, it, before } from 'mocha';
@@ -17,6 +18,7 @@ chai.use(chaiHttp);
 let server=app;
 let csrfToken;
 
+process.env.NODE_ENV = 'test';
 
 let agent = supertest.agent(server);
 
@@ -24,7 +26,6 @@ describe('User Authentication and Page Access with OTP', function() {
   this.timeout(60000); 
 
   before(async function() {
-    process.env.NODE_ENV = 'test';
     nodemailerMock.mock.reset();
 
     
@@ -32,7 +33,7 @@ describe('User Authentication and Page Access with OTP', function() {
    
 
   const validUser = {
-    userId:"3",
+    userId:"e574b34f-2ef7-11ef-8f1f-0242ac110002",
     email: 'juniorhoza56@gmail.com',
     password: 'plaintextpassword' 
   };
