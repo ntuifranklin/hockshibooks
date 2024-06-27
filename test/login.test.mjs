@@ -32,8 +32,9 @@ describe('User Authentication and Page Access with OTP', function() {
   });
 
   const validUser = {
-    userId: "e574b34f-2ef7-11ef-8f1f-0242ac110002",
-    email: 'juniorhoza56@gmail.com',
+
+    userId:"184c0854-2e0d-11ef-9924-0242ac110002",
+  email: 'franklinwebdev704@gmail.com',
     password: 'plaintextpassword'
   };
 
