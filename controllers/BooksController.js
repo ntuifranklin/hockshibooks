@@ -86,7 +86,6 @@ const CreateBook=async (req,res)=>{
                 }
                 
                 else{
-                    console.log(req.file)
                     // If there are no validation errors, it creates a new book using the bookModel, and creates a new inventory using the inventoryModel.
                     let book= await bookModel.create({
                         title:req.body.title,
@@ -275,14 +274,12 @@ const getaddBookWithISBNForm=(req,res)=>{
 const addBookWithISBN= async(req,res)=>{
     const isbn=req.body.isbn
     const price=req.body.price ||25
-    console.log(isbn)
     const qty=10;
     const errors=validationResult(req)
 
     
     if(!errors.isEmpty()){
         const err=errors.array()[0]
-        console.log(err)
         res.render("pages/addBookWithISBNForm",{
             msg:err,
         })
@@ -295,12 +292,18 @@ const addBookWithISBN= async(req,res)=>{
             const response= await axios.get(url)
 
             const data= response.data[`ISBN:${isbn}`] 
-            console.log(data)
 
             if(data){
                let desc= await getBookDescription(data.identifiers.openlibrary[0])
                 try {
-                    let createdBook=await bookModel.create({
+                    const tmp=await bookModel.findOne({
+                        where:{
+                            title:data.title
+                        }
+                    })
+
+                    if(!tmp){
+                        let createdBook=await bookModel.create({
                         title:data.title,
                         author:data.authors[0].name,
                         ISBN:data.identifiers.isbn_13[0],
@@ -309,7 +312,6 @@ const addBookWithISBN= async(req,res)=>{
                         cover_image_url:data.cover.medium,
                         price:price
                     })
-                    console.log(createdBook)
     
                     let inventory = await inventoryModel.create({
                         book_id:createdBook.book_id ,
@@ -317,9 +319,15 @@ const addBookWithISBN= async(req,res)=>{
                         location:"warehouse"
                     })
                     return res.status(200).redirect(`${process.env.HOST}/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
-
+                }
+                else{
+                    res.status(500).render("pages/addBookWithISBNForm",{
+                        msg:{
+                            msg:"a book with this title already exists"
+                        },
+                    })
+                }
                 } catch (error) {
-                    console.log(error)
         return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+creating+book&type=danger`);
                 }
                 
@@ -329,7 +337,6 @@ const addBookWithISBN= async(req,res)=>{
             }
         }
         catch(e){
-            console.log(e)
         return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
 
         }

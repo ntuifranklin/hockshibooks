@@ -67,17 +67,14 @@ const generateAndSendOTP=async (userId,mail,otpmodel)=>{
   const otpCode = crypto.randomInt(100000, 999999).toString();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // OTP valid for 15 minutes
   let Transporter;
-  console.log(userId)
-  console.log(mail)
+  
   // Save OTP to the database
   connect();
   if(otpmodel.toString()==otpModel.toString()){
   let code =await otpmodel.create({  otp:otpCode,powerUserId:userId, expiration_time:expiresAt });
-    console.log(code)
 }
   else if(otpmodel.toString()==cusomerOtpModel.toString()){
    let code=await otpmodel.create({  otp:otpCode,customerId:userId, expiration_time:expiresAt });
-   console.log(code)
 
   }
   
@@ -210,7 +207,6 @@ const checkFileExtension=(file, cb)=>{
   // If both extension and MIME type are valid for images, return true
 
   if(mimetype && extname){
-    console.log("file saved")
       return cb(null, true);
 
   } else {

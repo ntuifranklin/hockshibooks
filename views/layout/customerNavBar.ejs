@@ -153,7 +153,6 @@ align-items: center;
             const cartCountElement = document.querySelector('#cart-count');
             const cartCount = localStorage.getItem('cartItems') || 0;
             const items=JSON.parse(cartCount)
-            // console.log(cartCount)
             cartCountElement.textContent = items.length;
         });
     </script>

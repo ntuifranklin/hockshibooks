@@ -71,7 +71,6 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                         user_email=email
                                         userId=user.id
                                         authUser=user.dataValues
-                                        // console.log(authUser)
                                         generateAndSendOTP(user.id,user_email,otpModel)
                                 res.status(200).render(`pages/otpVerification`,{
                                         userId:userId,
@@ -228,7 +227,7 @@ const logout=(req,res)=>{
         
         */ 
         if(!req.session.user){
-                res.status(404).redirect(`${process.env.HOST}/admin/`) 
+                res.status(404).res.redirect(`${process.env.HOST}/admin/`) 
                 
         }
         else{

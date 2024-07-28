@@ -67,7 +67,6 @@ Order.init({
      * Hook to generate a order_id before creating a new order.
      *
      */
-    console.log("before create")
       if (!order.order_id) {
            order.order_id =  await crypto.createHash('md5').update(Math.random().toString()).digest('hex');
       }

@@ -324,13 +324,11 @@ const searchBook=async (req,res)=>{
             ]
           });
 
-          console.log(books)
 
           return res.status(200).render("pages/homePage",{
             "books":books
         })
     }catch(e){
-        console.log(e)
         res.redirect(`${process.env.HOST}/`)
     }
 
@@ -373,7 +371,6 @@ const checkout = async(req,res)=>{
             cancel_url: `${process.env.HOST}/`,
         })      
 
-        console.log(session)
         res.json({ id: session.id });
     } catch (error) {
         console.error(error);
@@ -383,7 +380,6 @@ const checkout = async(req,res)=>{
 const successPayment = async(req,res)=>{
     try{
 
-    console.log(req.session.customer)
     const { customer_id}= await customerModel.findOne({
         where:{
             email:req.session.customer.email
@@ -401,7 +397,6 @@ const successPayment = async(req,res)=>{
         shipping_postal_code: shippingInfo.postalCode,
         delivery_status: 'Processing'
       });
-      console.log(order)
       for (const item of items) {
         let productDetails=  await bookModel.findOne({
             where:{
@@ -420,7 +415,6 @@ const successPayment = async(req,res)=>{
         });
 
         productDetails.Inventory.quantity_available-=item.qty
-        console.log(productDetails.Inventory)
 
         await productDetails.Inventory.save()
 
@@ -436,7 +430,6 @@ const successPayment = async(req,res)=>{
       return res.status(200).render("pages/successPage")
     }
     catch(err){
-        console.log(err)
         return res.status(500)
     }
 
