@@ -17,6 +17,8 @@ router.get("/",login)
 router.post("/",formSubmit)
 router.post("/verifyOtp",validateOTP,verifyOTP)
 router.get("/dashboard",verifyLogin,dashboard)
+// router.get("/dashboard",dashboard)
+
 router.get("/logout",logout)
 
 //routes end    

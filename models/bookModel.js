@@ -4,7 +4,9 @@ const {Md5Rand}=require("../utilities/functions")
 const crypto = require('crypto');
 
 
-const Genre = require('./genreModel'); // Import Genre model
+const Genre = require('./genreModel'); 
+const OrderItems= require("./orderItemsModel");
+const { books } = require('googleapis/build/src/apis/books');
 
 class Books extends Model {}
 
@@ -37,19 +39,19 @@ Books.init({
     publication_date: {
         type: DataTypes.DATE
     },
-    language: {
-        type: DataTypes.STRING(64)
-    },
+    // language: {
+    //     type: DataTypes.STRING(64)
+    // },
     cover_image_url: {
         type: DataTypes.STRING(1024)
     },
-    genre: {
-        type: DataTypes.STRING(64),
-        references: {
-            model: Genre,
-            key: 'genre_id'
-        }
-    }
+    // genre: {
+    //     type: DataTypes.STRING(64),
+    //     references: {
+    //         model: Genre,
+    //         key: 'genre_id'
+    //     }
+    // }
 }, {
     sequelize,
     modelName: 'Books',
@@ -66,7 +68,7 @@ Books.init({
         },beforeUpdate: async (book) => {
              /**
          * Hook to generate a book_id before updating an existing book.
-         *
+         * 
          */
             if (!book.book_id) {
               
@@ -80,9 +82,9 @@ Books.init({
 );
 
 // Establish the association~
-Books.belongsTo(Genre, { foreignKey: 'genre' });
-Genre.hasMany(Books, { foreignKey: 'genre' });
+// Books.belongsTo(Genre, { foreignKey: 'genre' });
+// Genre.hasMany(Books, { foreignKey: 'genre' });
 
-
- 
+Books.hasMany(OrderItems, { foreignKey: 'book_id' });
+OrderItems.belongsTo(Books, { foreignKey: 'book_id' });
 module.exports = Books;

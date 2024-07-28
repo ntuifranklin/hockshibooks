@@ -4,8 +4,7 @@ const { faker } = require('@faker-js/faker');
 const path = require('path');
 const createError = require('http-errors');
 const {isTestEnvironment,connect,checkUploadDir}=require("./utilities/functions");
-const booksRouter=require("./routes/booksRoute")
-const adminRoute=require("./routes/adminRoutes")
+
 const bodyParser = require('body-parser');
 const {decode} = require('html-entities');
 const template_folder = './statictemplate';
@@ -15,6 +14,14 @@ const csrf = require('csurf');
 const cookieSession = require('express-session');
 const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
+
+//controllers
+const booksRouter=require("./routes/booksRoute")
+const adminRoute=require("./routes/adminRoutes")
+const apiRouter=require("./routes/api")
+const index=require("./routes/index")
+const OrdersRouter=require("./routes/OrdersRoute")
+
 require("dotenv").config()
 
 let parseForm = bodyParser.urlencoded({ extended: false });
@@ -162,15 +169,20 @@ app.use(parseForm, csrfProtection, async(request, response, next) => {
 			res.locals.user=req.session.user
 
 		}
+		if(req.session.customer!=false){
+			res.locals.customer=req.session.customer
+
+		}
 
 			
 		next();
 	});
 
 
-app.use('/',routes());
+app.use('/',index);
 app.use ("/admin",adminRoute)
 app.use("/admin/books",booksRouter)
+app.use("/admin/order",OrdersRouter)
 
 
 app.listen(port, () => {

@@ -1,0 +1,88 @@
+// models/customer.js
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+const bcrypt = require('bcrypt');
+const {Md5Rand}=require("../utilities/functions")
+const crypto = require('crypto');
+
+const Order= require("./ordersModel")
+
+const Customer = sequelize.define('Customer', {
+    customer_id: {
+        type: DataTypes.UUIDV4,
+        primaryKey: true,
+    },
+    first_name: {
+        type: DataTypes.STRING(64),
+        allowNull: false,
+    },
+    last_name: {
+        type: DataTypes.STRING(64),
+        allowNull: false,
+    },
+    email: {
+        type: DataTypes.STRING(64),
+        allowNull: false,
+        unique: true,
+    },
+    password: {
+        type: DataTypes.STRING(256),
+        allowNull: false,
+    },
+    street_address: {
+        type: DataTypes.STRING(256),
+        allowNull: false,
+    },
+    city: {
+        type: DataTypes.STRING(128),
+        allowNull: false,
+    },
+    state_province: {
+        type: DataTypes.STRING(128),
+        allowNull: false,
+    },
+    country: {
+        type: DataTypes.STRING(128),
+        allowNull: false,
+    },
+    postal_zipcode: {
+        type: DataTypes.STRING(32),
+        allowNull: false,
+    },
+    phone: {
+        type: DataTypes.STRING(32),
+        allowNull: false,
+    }
+    
+}, {
+    timestamps: false,
+    tableName: 'Customers',
+    hooks: {
+        beforeCreate: async (user) => {
+          // Hash the password before creating a new powerUser.
+          if (user.password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(user.password, salt);
+            }
+          user.customer_id=crypto.createHash('md5').update(Math.random().toString()).digest('hex')
+        },
+        beforeUpdate: async (user) => {
+          // Hash the password before updating an existing powerUser.
+  
+          if (user.password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(user.password, salt);
+          }
+        },
+        
+      }
+  
+      
+});
+
+
+Customer.hasMany(Order, { foreignKey: 'customer_id' });
+Order.belongsTo(Customer, { foreignKey: 'customer_id' });
+
+
+module.exports = Customer;

@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>home page</title>
+
+   
+
+    <style>
+       @import url('https://fonts.googleapis.com/css?family=Roboto:300,400');
+
+body {
+  background-color: #fff;
+  width: 100vw;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+
+.timeline-wrapper{
+    margin-top: 90px;
+}
+
+
+.timeline-item {
+  background: #fff;
+  padding: 4px;
+  width: 190px;
+  display: inline-block;
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -450px 0;
+  }
+  100% {
+    background-position: 450px 0;
+  }
+}
+
+.animated-background {
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: #f6f7f8;
+  background: linear-gradient(to right, #f5f4f3 8%, #ebebeb 18%, #f5f4f3 33%);
+  background-size: 1200px 104px;
+  height: 264px;
+  position: relative;
+}
+
+.background-masker {
+  background: #fff;
+  position: absolute;
+}
+
+.background-masker.content-top,
+.background-masker.content-second-line,
+.background-masker.content-third-line,
+.background-masker.content-second-end,
+.background-masker.content-third-end,
+.background-masker.content-first-end {
+  top: 204px;
+  left: 0;
+  right: 0;
+  height: 12px;
+}
+
+.background-masker.content-top{
+    width: 255px;
+    height: 255px;
+}
+
+.background-masker.content-top {
+  top: 190px;
+  height: 14px;
+}
+
+.background-masker.content-first-end,
+.background-masker.content-second-end,
+.background-masker.content-third-end {
+  width: auto;
+  left: 152px;
+  right: 0;
+  top: 204px;
+  height: 12px;
+}
+
+.background-masker.content-second-line {
+  top: 216px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+.background-masker.content-second-end {
+  left: 171px;
+  top: 226px;
+}
+
+.background-masker.content-third-line {
+  top: 238px;
+  height: 14px;
+}
+
+.background-masker.content-third-end {
+  left: 76px;
+  top: 252px;
+}
+
+        a{
+            text-decoration: none;
+        }
+        .product-list{
+            margin-top: 90px;
+        }
+     .product-img {
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            background-color: #e5e7eb;
+        }
+        .product-img img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s;
+        }
+        .product-img:hover img {
+            opacity: 0.75;
+        }
+        .product-title {
+            margin-top: 1rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .product-price {
+            margin-top: 0.25rem;
+            font-size:  0.875rem;
+            font-weight: 500;
+            
+            color: #4b5563;
+        }
+
+        .flexi{
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .add-to-cart{
+            border:1px solid black;
+            padding: 10px;
+            background-color: transparent;
+        }
+        .hidden{
+            visibility: hidden;
+            display: none;
+        }
+        .move{
+            animation: remove .1s forwards;
+
+        }
+
+        @keyframes remove {
+            100%{
+                opacity: 0;
+                visibility: hidden;
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+  <%- include('../layout/customerNavBar') %>
+
+  <div class="timeline-wrapper">
+    <div class="timeline-item">
+    </div>
+    <div class="timeline-item">
+        <div class="animated-background">
+            <div class="background-masker content-top"></div>
+            <div class="background-masker content-first-end"></div>
+            <div class="background-masker content-second-line"></div>
+            <div class="background-masker content-second-end"></div>
+            <div class="background-masker content-third-line"></div>
+            <div class="background-masker content-third-end"></div>
+        </div>
+    </div>
+    <div class="timeline-item">
+        <div class="animated-background">
+            <div class="background-masker content-top"></div>
+            <div class="background-masker content-first-end"></div>
+            <div class="background-masker content-second-line"></div>
+            <div class="background-masker content-second-end"></div>
+            <div class="background-masker content-third-line"></div>
+            <div class="background-masker content-third-end"></div>
+        </div>
+    </div>
+    <div class="timeline-item">
+        <div class="animated-background">
+            <div class="background-masker content-top"></div>
+            <div class="background-masker content-first-end"></div>
+            <div class="background-masker content-second-line"></div>
+            <div class="background-masker content-second-end"></div>
+            <div class="background-masker content-third-line"></div>
+            <div class="background-masker content-third-end"></div>
+        </div>
+    </div>
+    <div class="timeline-item">
+        <div class="animated-background">
+            <div class="background-masker content-top"></div>
+            <div class="background-masker content-first-end"></div>
+            <div class="background-masker content-second-line"></div>
+            <div class="background-masker content-second-end"></div>
+            <div class="background-masker content-third-line"></div>
+            <div class="background-masker content-third-end"></div>
+        </div>
+    </div>
+</div>
+    <div class="bg-white product-list hidden" >
+        <div class="container mx-auto py-16 px-4 sm:px-6 sm:py-24 lg:px-8">
+          <h2 class="sr-only">Products</h2>
+      
+          <div class="row">
+            <% if(books.length>0) { %>
+                <% for(let i=0; i < books.length; i++) { %>
+
+            <div class="col-sm-6 col-lg-3 mb-4">
+              <a href="/productDetails/<%=`${books[i].book_id} `%>" class="d-block">
+                <div class="product-img">
+                    <% if(books[i].cover_image_url.split(":")[0]=="https") { %>
+                  <img  src="<%=`${books[i].cover_image_url}`%>" class="img-fluid">
+                  <% } else { %>
+                    <img  src="/uploads/<%=`${books[i].cover_image_url}`%>" class="img-fluid">
+
+                    <% } %>
+                </div>
+                
+                <div class="ml-auto flexi">
+                    <h3 class="product-title"><%=books[i].title %></h3>
+                    <p class="product-price">price:$<%=books[i].price %></p>
+                    <p class="product-price"> quantity available:<%= books[i].Inventory.quantity_available%></p>
+                    
+                </div>
+            </a>
+            <% if (books[i].Inventory.quantity_available>0) { %>
+            <button class="add-to-cart" data-product-id="<%= books[i].book_id %>">Add to Cart</button>
+            <% } else { %>
+                <p>sold out</p>
+
+            <% } %>
+            </div>
+            <% } %>
+
+            <% } %>
+            
+      
+            <!-- More products... -->
+          </div>
+        </div>
+      </div>
+
+      
+<script>
+        function addToCart(productId) {
+            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            let cartCount = parseInt(localStorage.getItem('cartCount')) || 0;
+
+
+            let product = cartItems.find(item => item.id == productId);
+
+                 if (product) {
+                    alert("product already exists in your shopping cart")
+
+                } else {
+                    cartItems.push({ id: productId, qty: 1 });
+                    cartCount++;
+                }
+
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            localStorage.setItem('cartCount', cartCount);
+
+        }
+
+        // Event listener for the add to cart button
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productId = event.target.getAttribute('data-product-id');
+                console.log(productId)
+                // updateCartCount();
+                addToCart(productId);
+            });
+        });
+
+        window.addEventListener("load",()=>{
+
+            const animation= document.querySelector(".timeline-wrapper")
+            const products=document.querySelector(".product-list")
+
+            animation.classList.add("move")
+            products.classList.remove("hidden")
+
+        })
+
+        // Initialize cart count on page load
+        
+</script>
+
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

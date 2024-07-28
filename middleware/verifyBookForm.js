@@ -51,11 +51,6 @@ const validateBookForm = [
     .isLength({ min: 1 })
     .withMessage('Language is required'),
 
-    body('genre')
-    .trim()
-    .isInt()
-    .withMessage('please select a genre'),
-
     body('location')
     .trim()
     .isLength({ min: 1 })

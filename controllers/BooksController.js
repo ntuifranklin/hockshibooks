@@ -4,7 +4,8 @@ let csrfProtection = csrf({ cookie: true });
 const sequelize = require('../config/database');
 const { validationResult } = require('express-validator');
 const { json } = require('body-parser');
-const {checkFileExtension}=require("../utilities/functions");
+const {checkFileExtension,getBookDescription}=require("../utilities/functions");
+const axios = require('axios');
 const fs=require("fs")
 const path=require("path")
 const multer=require("multer")
@@ -78,7 +79,6 @@ const CreateBook=async (req,res)=>{
                       
                     res.render("pages/bookInsert",{
                         host:process.env.HOST,
-                        genre:genre,
                         msg:error,
                         formdata:req.body,
                     })
@@ -86,14 +86,14 @@ const CreateBook=async (req,res)=>{
                 }
                 
                 else{
+                    console.log(req.file)
                     // If there are no validation errors, it creates a new book using the bookModel, and creates a new inventory using the inventoryModel.
                     let book= await bookModel.create({
                         title:req.body.title,
                         ISBN:req.body.ISBN,
-                        genre:req.body.genre,
                         author:req.body.author,
                         description:req.body.description,
-                        cover_image_url:req.file.path,
+                        cover_image_url:req.file.path.split("/")[2],
                         language:req.body.language,
                         price:req.body.price,
                         publication_date:req.body.date
@@ -127,7 +127,6 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
         error=false
     }
     let book= await bookModel.findByPk(updateBookId, {include:[
-        {model:genreModel},
         {model:inventoryModel}
 
 ]},)
@@ -137,7 +136,6 @@ const genre= await genreModel.findAll()
         book:book,
         root_path:process.env.ROOT_PATH,
         image:book.cover_image_url,
-        genre:genre,
         msg:error
 
     })
@@ -183,7 +181,6 @@ const saveUpdate=async(req,res)=>{
         price :req.body.price,
         description :req.body.description,
         publication_date:req.body.date,
-        genre:req.body.genre,
             })
 
             inventory.set({
@@ -203,7 +200,7 @@ const saveUpdate=async(req,res)=>{
                     }
                 })
         
-                book.set({cover_image_url:req.file.path})            
+                book.set({cover_image_url:req.file.path.split("/")[2]})            
            }
            if(req.body.ISBN != book.ISBN){
             book.set({ISBN:req.body.ISBN})
@@ -225,7 +222,7 @@ const saveUpdate=async(req,res)=>{
 }
     
     catch(e){
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=server+error&type=danger`);;
+        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=server+error&type=danger`);
 
 
     }
@@ -269,6 +266,77 @@ const deleteBook=async (req,res)=>{
     }
 }
 
+const getaddBookWithISBNForm=(req,res)=>{
+    res.render("pages/addBookWithISBNForm",{
+        msg:false,
+    })
+}
+
+const addBookWithISBN= async(req,res)=>{
+    const isbn=req.body.isbn
+    const price=req.body.price ||25
+    console.log(isbn)
+    const qty=10;
+    const errors=validationResult(req)
+
+    
+    if(!errors.isEmpty()){
+        const err=errors.array()[0]
+        console.log(err)
+        res.render("pages/addBookWithISBNForm",{
+            msg:err,
+        })
+
+    }
+    else{
+        
+        const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`;
+        try{
+            const response= await axios.get(url)
+
+            const data= response.data[`ISBN:${isbn}`] 
+            console.log(data)
+
+            if(data){
+               let desc= await getBookDescription(data.identifiers.openlibrary[0])
+                try {
+                    let createdBook=await bookModel.create({
+                        title:data.title,
+                        author:data.authors[0].name,
+                        ISBN:data.identifiers.isbn_13[0],
+                        description: desc,
+                        publication_date:data.publication_date,
+                        cover_image_url:data.cover.medium,
+                        price:price
+                    })
+                    console.log(createdBook)
+    
+                    let inventory = await inventoryModel.create({
+                        book_id:createdBook.book_id ,
+                        quantity_available:qty,
+                        location:"warehouse"
+                    })
+                    return res.status(200).redirect(`${process.env.HOST}/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
+
+                } catch (error) {
+                    console.log(error)
+        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+creating+book&type=danger`);
+                }
+                
+            }
+            else{
+        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
+            }
+        }
+        catch(e){
+            console.log(e)
+        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
+
+        }
+    }
+
+}
+
 module.exports={
-    deleteBook,GetinsertBook,CreateBook,updateBook,saveUpdate
+    deleteBook,GetinsertBook,CreateBook,updateBook,saveUpdate,addBookWithISBN,getaddBookWithISBNForm
 }   
