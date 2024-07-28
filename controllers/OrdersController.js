@@ -25,10 +25,7 @@ const viewOrder=async(req,res)=>{
                 {model:BooksModel}
             ]
         })
-        // for(const orderi of orderItems){
-
-        //     console.log(orderi.Book)
-        // }
+       
         return res.status(200).render("pages/orders/viewOrders",{
             order:order,
             orderI:orderItems
@@ -68,10 +65,7 @@ const changeToProcessing= async(req,res)=>{
 
         }
         
-        // for(const orderi of orderItems){
-
-        //     console.log(orderi.Book)
-        // }
+       
 
 
 

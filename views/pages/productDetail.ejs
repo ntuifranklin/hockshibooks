@@ -21,22 +21,28 @@
             height: 100%;
             object-fit: cover;
         }
+        .add-to-cart {
+            width: 150px;
+            height: 40px;
+            border-radius: 5px;
+            color: white;
+            border: none;
+            font-size: 18px;
+            font-family: "poppins";
+        }
         .submit {
             background-color: #2874f0; /* Equivalent to dark:hover:bg-gray-700 */
             border-radius: 20px; /* Full rounded corners */
             transition:  0.3s ease-in-out;
         }
-        .submit>button{
-            color: white;
-            font-weight: bold;
-
-            border: none;
-        }
+        
         .submit:hover {
 
             background-color: transparent;
-            border: 1px solid #2874f0; /* Equivalent to hover:bg-gray-800 */
+            border: 1px solid #2874f0;
+            color:black; /* Equivalent to hover:bg-gray-800 */
         }
+        
         .color-selector {
             width: 24px;
             height: 24px;
@@ -107,12 +113,7 @@
             height: 50px;
         }
 
-        .add-to-cart {
-            width: 150px;
-            height: 40px;
-            background-color: #e5e5e5;
-            border-radius: 20px;
-        }
+        
 
         @keyframes placeHolderShimmer {
             0% {
@@ -217,9 +218,7 @@
                     </div>
                 </div>
                 <div class="row mb-4">
-                    <div class="col-6 submit">
-                        <button class="add-to-cart btn  btn-custom btn-block " data-product-id="<%= book.book_id %>">Add to Cart</button>
-                    </div>
+                        <button class="submit add-to-cart  " data-product-id="<%= book.book_id %>">Add to Cart</button>
                    
                 </div>
             </div>
@@ -268,7 +267,7 @@
 </div>
 <script>
 
-function addToCart(productId) {
+async function addToCart (productId) {
             let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
 
@@ -279,22 +278,27 @@ function addToCart(productId) {
                 alert("product already exists in your shopping cart")
 
                 } else {
-                cartItems.push({ id: productId, qty: 1 });
-                cartCount++;
-                window.location.reload()
+                     await cartItems.push({ id: productId, qty: 1 });
+                    changeCartValue()
+                
+
                 }
-                location.reload()
 
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
-            localStorage.setItem('cartCount', cartCount);
 
         }
+const changeCartValue=()=>{
+    const cartCountElement = document.querySelector('#cart-count');
 
+                    const cartCount = localStorage.getItem('cartItems') || [];
+                    const items=JSON.parse(cartCount)
+                     cartCountElement.textContent = items.length;
+
+}
         // Event listener for the add to cart button
         document.querySelectorAll('.add-to-cart').forEach(button => {
             button.addEventListener('click', (event) => {
                 const productId = event.target.getAttribute('data-product-id');
-                console.log(productId)
                 // updateCartCount();
                 addToCart(productId);
             });

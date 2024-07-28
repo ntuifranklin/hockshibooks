@@ -1,5 +1,4 @@
 const verifyLogin=(req,res,next)=>{
-    console.log(req.session.customer)
     if (req.session.customer) { // or any other authentication check
         return next();
     } else {

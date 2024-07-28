@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />    <style>
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400');
 
 body {
@@ -138,8 +137,8 @@ body {
             margin-bottom: 1rem;
         }
         .cart-item img {
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             object-fit: cover;
         }
         .order-summary {
@@ -254,6 +253,12 @@ body {
     .body_style{
         height: 100vh;
         overflow: hidden;
+    }
+    .space{
+        margin-right: 100px;
+    }
+    .bod{
+        border:none;
     }
     </style>
 </head>
@@ -389,7 +394,6 @@ body {
             })
             .then(response => response.json())
             .then(detailedCartItems => {
-                console.log(detailedCartItems)
                 detailedCartItems=detailedCartItems
                 cartLength=detailedCartItems.length
                 displayCartItems(detailedCartItems);
@@ -400,9 +404,7 @@ body {
         }
 
         function removeFromCart(productId) {
-            console.log(productId)
             let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-            console.log(cartItems)
             cartItems = cartItems.filter(item => item.id != productId);
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
             fetchCartItems(); // Refresh the cart display after removal
@@ -421,9 +423,9 @@ body {
                 
 
                 itemElement.innerHTML = `
-                    <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center cart-item">
-                        <img src="${item.cover_image}" >
+                    <div class="card-body bod">
+                    <div class="d-flex justify-content-between align-items-center cart-item bod">
+                        <img src="${item.cover_image}" class="mr-3  space">
                         <div class="ml-3 flex-grow-1">
                             <h5 class="mb-1 productName" >${item.title}</h5>
                             <p class="mb-1 text-muted">by ${item.author}</p>
@@ -432,6 +434,7 @@ body {
                             
                             <p class="text-success">In stock</p>
                         </div>
+
                         <div class="ml-3">
                             <select class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${product.qty}>
                                 <option value="1">1</option>
@@ -442,10 +445,10 @@ body {
 
 
                             </select>
+                        <button class="btn btn-link text-danger ml-3 " ><i class="fa fa-times" id="delete-item" data-product-id="${item.book_id}"></i></button>
                         </div>
-                        <button class="btn btn-link text-danger ml-3 " id="delete-item" data-product-id="${item.book_id}"><i class="fas fa-times"></i></button>
-                    </div>
                 </div>
+               </div> 
                 `;
                 
                 cartItemsContainer.appendChild(itemElement);
@@ -464,7 +467,6 @@ body {
             
                 let saved=items.find(item=>item.id==id)
 
-                console.log(saved)
                 if(saved){
                     select.selectedIndex=saved.qty-1
                     
@@ -579,7 +581,6 @@ body {
                 document.querySelector(".animation").classList.add("hidden")
                 document.getElementById("body").classList.remove("body_style")
                 data.errors.forEach(error => {
-                    console.log(error)
           document.getElementById(`${error.path.split(".")[1]}Error`).innerText = error.msg;
         });
 
@@ -605,7 +606,6 @@ body {
         })
         
         const reveal= document.getElementById("reveal")
-        console.log(reveal)
 
         reveal.addEventListener("click",()=>{
            
@@ -628,18 +628,14 @@ body {
                      const productId = e.target.getAttribute('data-product-id');
                     const quantity_available=e.target.getAttribute("data-qty-available")
                     let product = cartItems.find(item => item.id == productId);
-                    console.log(e.target.getAttribute("data-product-id"))
-                    console.log(product)
 
                  if (product) {
-                    console.log(quantity_available)
                     if(parseInt(e.target.value)>quantity_available){
                         e.preventDefault()
                         alert("The quantity selected is more than the quantity available")
                     }
                     else{
                    product.qty=parseInt(e.target.value)
-                   console.log(cartItems)
                     }
                 } 
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
