@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>orders</title>
+
+    <style>
+        body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f7fa;
+  
+    height: 200vh;
+    margin: 0;
+}
+a{
+    text-decoration: none;
+    color: black;
+}
+
+.container {
+    color: black;
+
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    width: 90%;
+    max-width: 900px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+h2 {
+    text-align: left;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-image img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.profile-fields {
+    display: flex;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.input-group label {
+    width: 150px;
+    font-weight: bold;
+}
+
+.input-group ,
+.input-group  {
+    width: calc(100% - 160px);
+    margin-left: 10px;
+    box-sizing: border-box;
+}
+
+.input-group textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+.verified {
+    color: green;
+    margin-left: 10px;
+}
+
+.edit-button, .save-button {
+    background-color: transparent;
+    border: none;
+    color: #7c4dff;
+    cursor: pointer;
+    font-size: 18px;
+    margin-left: 10px;
+}
+
+.bio-group textarea {
+    width: calc(100% - 10px);
+    margin-left: 10px;
+}
+
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table thead {
+    background-color: #f1f1f1;
+}
+
+table th,
+table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+table th {
+    font-weight: bold;
+}
+
+.button{
+    width: 200px;
+    height: 200px;
+    padding:  10px;
+    border-radius: 10px;
+    color: #ffffff;
+}
+.status {
+    border-radius: 5px;
+    font-size: 18px;
+    padding: 10px;
+    color: #fff;
+    width: 100px;
+    height: 60px;
+    display: inline-block;
+}
+
+.Delivered {
+    background-color: #28a745;
+}
+
+.Processing {
+    background-color: #007bff;
+}
+
+.Shipped {
+    background-color: #ffc107;
+}
+
+.flex{
+    display: flex;
+    gap: 30px;
+    flex-direction: column;
+}
+    </style>
+</head>
+<body>
+    <%  if (user) { %>
+        <%- include('../navBar',{email:user.email,role:user.role,host:host}) %>
+        <% } %>
+    <div class="container">
+        <h1>Order information </h1>
+        <h2>order Id: <%= order.order_id %> </h2>
+
+        <div class="profile-section">
+          
+            <div class="profile-fields">
+                <div class="input-group">
+                    <label for="firstName">customer name:</label>
+                    <p type="text" id="firstName" ><%=order.Customer.first_name %> <%=order.Customer.last_name %> </p>
+                </div>
+                <div class="input-group">
+                    <label for="lastName">customer email:</label>
+                    <p type="text" id="lastName" value="Coop"><%=order.Customer.email %></p>
+                </div>
+                <div class="input-group">
+                    <label for="lastName">customer phone:</label>
+                    <p type="text" id="lastName" value="Coop"><%=order.Customer.phone %></p>
+                </div>
+            </div>
+        </div>
+            <div class="input-group">
+                <label for="email">status: </label>
+
+                <div class="flex">
+
+                    <p type="email" class="status <%=order.delivery_status%>"><%= order.delivery_status %></p>
+
+                    <div class="actions">
+                        <a href="<%= `/admin/order/changeToProcessing/${order.order_id}` %>" class="button Processing">change to processing</a>
+                        <a href="<%= `/admin/order/changeToShipped/${order.order_id}` %>" class="button Shipped">change to shipped</a>
+                        <a href="<%= `/admin/order/chnageToDelivered/${order.order_id}` %>" class="button Delivered">change to delivered</a>
+                    </div>
+                </div>
+               
+            </div>
+            <div class="input-group">
+                <label for="phoneNumber">delivery address</label>
+                <div class="container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>shipping address</th>
+                                <th>shipping city</th>
+                                <th>state/province</th>
+                                <th>country</th>
+                                <th>postal code</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><%=order.shipping_address %></td>
+                                <td><%= order.shipping_city %></td>
+                                <td ><%=order.shipping_state_province%></td>
+                                <td><%=order.shipping_country%></td>
+                                <td><%=order.shipping_postal_code%></td>
+                            </tr>                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="dob">Items Ordered</label>
+                <div class="container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>book name </th>
+                                <th>author</th>
+
+                                <th>unit price</th>
+                                <th>qauntity ordered</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <%for(let i=0;i< orderI.length;i++){  %>
+                            <tr>
+                                <td><%=orderI[i].Book.title%></td>
+                                <td><%=orderI[i].Book.author%></td>
+                                <td>$<%=orderI[i].item_price%></td>
+                                <td><%=orderI[i].quantity%></td>
+                                <td>$<%=orderI[i].subtotal%></td>
+                                
+                                <% } %>
+                            </tr>
+                            <!-- Add more rows as needed -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+           
+    </div>
+</body>
+</html>

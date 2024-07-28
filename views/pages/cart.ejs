@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400');
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 20px;
+}
+
+.cart-item {
+  display: flex;
+  padding: 20px;
+  background: #fff;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.image {
+  width: 100px;
+  height: 150px;
+  margin-right: 20px;
+  background-color: #e5e5e5;
+}
+
+.content {
+  flex: 1;
+}
+
+.title,
+.author,
+.price,
+.quantity,
+.status {
+  height: 20px;
+  margin-bottom: 10px;
+  background-color: #e5e5e5;
+}
+
+.title {
+  width: 70%;
+}
+
+.author {
+  width: 50%;
+}
+
+.price {
+  width: 30%;
+}
+
+.quantity {
+  width: 20%;
+}
+
+.status {
+  width: 15%;
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -450px 0;
+  }
+  100% {
+    background-position: 450px 0;
+  }
+}
+
+.animated-background {
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: #f6f7f8;
+  background: linear-gradient(to right, #f5f4f3 8%, #ebebeb 18%, #f5f4f3 33%);
+  background-size: 1200px 104px;
+  position: relative;
+}
+
+.loading .image,
+.loading .title,
+.loading .author,
+.loading .price,
+.loading .quantity,
+.loading .status {
+  background: linear-gradient(to right, #eeeeee 0%, #dddddd 50%, #eeeeee 100%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+
+        .container1 {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            padding: 2rem;
+        }
+        .left-section {
+            flex: 1;
+            padding-right: 2rem;
+        }
+        .right-section {
+            flex: 1;
+            padding-left: 2rem;
+            border-left: 1px solid #dee2e6;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        h2, h4 {
+            margin-bottom: 1rem;
+        }
+        .cart-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+        .order-summary {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 0.375rem;
+        }
+        .btn-checkout {
+            background-color:  rgb(64, 64, 233);
+
+            border: 2px solid rgb(64, 64, 233);
+            border-radius: 5px;
+            padding: 4px;
+            width: 350px;
+            font-weight: 600;
+            transition: .3s all ease-in-out;
+            color: #fff;
+        }
+        .btn-checkout:hover{
+            background-color: transparent;
+            color: black;
+
+
+        }
+        .hidden {
+      display: none;
+      visibility: hidden;
+    }
+    .error {
+      color: red;
+    }
+    .move{
+            animation: remove .1s forwards;
+
+        }
+
+        @keyframes remove {
+            100%{
+                opacity: 0;
+                visibility: hidden;
+                display: none;
+            }
+        }
+
+
+        .containered {
+      --uib-size: 135px;
+      --uib-color: black;
+      --uib-speed: 1s;
+      --uib-stroke: 3.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      width: var(--uib-size);
+      height: calc(var(--uib-size) * 0.9);
+    }
+  
+    .bar {
+      width: 80px;
+      height: 100%;
+      background-color: #fff;
+      transition: background-color 0.3s ease;
+    }
+  
+    .bar:nth-child(1) {
+      animation: grow var(--uib-speed) ease-in-out calc(var(--uib-speed) * -0.45)
+        infinite;
+    }
+  
+    .bar:nth-child(2) {
+      animation: grow var(--uib-speed) ease-in-out calc(var(--uib-speed) * -0.3)
+        infinite;
+    }
+  
+    .bar:nth-child(3) {
+      animation: grow var(--uib-speed) ease-in-out calc(var(--uib-speed) * -0.15)
+        infinite;
+    }
+  
+    .bar:nth-child(4) {
+      animation: grow var(--uib-speed) ease-in-out infinite;
+    }
+  
+    @keyframes grow {
+      0%,
+      100% {
+        transform: scaleY(0.3);
+      }
+  
+      50% {
+        transform: scaleY(1);
+      }
+    }
+    .animation{
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000000d0;
+        display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: white;
+      top: 150px;
+      z-index: 999;
+    }
+    .animation>p{
+        font-size: 40px;
+        font-weight: 800;
+    }
+    .body_style{
+        height: 100vh;
+        overflow: hidden;
+    }
+    </style>
+</head>
+<body class="" id="body">
+  <%- include('../layout/customerNavBar') %>
+  <div class="loading-container">
+
+      <div class="cart-item loading">
+        <div class="image animated-background"></div>
+        <div class="content">
+          <div class="title animated-background"></div>
+          <div class="author animated-background"></div>
+          <div class="price animated-background"></div>
+          <div class="quantity animated-background"></div>
+          <div class="status animated-background"></div>
+        </div>
+      </div>
+      
+      <div class="cart-item loading">
+        <div class="image animated-background"></div>
+        <div class="content">
+          <div class="title animated-background"></div>
+          <div class="author animated-background"></div>
+          <div class="price animated-background"></div>
+          <div class="quantity animated-background"></div>
+          <div class="status animated-background"></div>
+        </div>
+      </div>
+      
+  </div>
+
+  <div class="container-container hidden">
+
+      <div class="container my-5">
+          <h1 class="mb-4">Shopping Cart</h1>
+          <div class="row">
+              <div class="col-md-8">
+                 
+                  
+              </div>
+              <!-- card products end -->
+              <div class="col-md-4">
+                  <div class="order-summary">
+                      <h4 class="mb-4">Order summary</h4>
+                      <div class="cartI">
+      
+                      </div>
+                      <div class="d-flex justify-content-between mb-4 totalPrice">
+                         
+                      </div>
+                  </div>
+                  <button class=" btn-checkout  " id="reveal">enter shipping info</button>
+              </div>
+          </div>
+      </div>
+      
+      <div class="container1 hidden">
+          <div class="left-section">
+              <h2>Enter your shipping details</h2>
+              <form id="checkout">
+                  <div class="form-group">
+                      <label for="address">shipping address</label>
+                      <input type="text" class="form-control" id="address"  name="address">
+                      <p id="addressError" class="error"></p>
+      
+                  </div>
+                  <div class="form-group">
+                      <label for="city">shipping city</label>
+                      <input type="text" class="form-control" id="city"  name="city">
+                      <p id="cityError" class="error"></p>
+      
+                  </div>
+                  <div class="form-row">
+                      <div class="form-group col-md-8">
+                          <label for="cardNumber">shipping state/ province</label>
+                          <input type="text" class="form-control" id="state" name="state">
+                          <p id="stateError" class="error"></p>
+      
+                      </div>
+                      <div class="form-group col-md-2">
+                          <label for="cvv">shipping country</label>
+                          <input type="text" class="form-control" id="country"  name="country">
+                          <p id="countryError" class="error"></p>
+      
+                      </div>
+                      <div class="form-group col-md-2">
+                          <label for="expiry">shipping postal code</label>
+                          <input type="text" class="form-control" id="postalCode" name="postal code">
+                          <p id="postalCodeError" class="error"></p>
+      
+                      </div>
+                  </div>
+                  <button type="submit" class="btn btn-success btn-block" id="checkout">continue to checkout</button>
+              </form>
+          </div>
+        
+      </div>
+  </div>
+
+  <div class="animation  hidden ">
+      <div class="containered">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <p>Processing, Please Wait ...</p>
+  </div>
+
+  
+  
+  
+<script src="https://js.stripe.com/v3/"></script>
+
+
+<script>
+    
+    let deleteButton;
+    let cartLength;
+
+  
+   let detailedCartItems=[];
+    const fetchCartItems= async ()=> {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            await fetch('/cart', {
+                method: 'POST',
+                headers: {
+                    "X-CSRF-Token":"<%=csrfToken%>",
+                    'Content-Type': 'application/json',
+                    
+                },
+                body: JSON.stringify({ cartItems })
+            })
+            .then(response => response.json())
+            .then(detailedCartItems => {
+                console.log(detailedCartItems)
+                detailedCartItems=detailedCartItems
+                cartLength=detailedCartItems.length
+                displayCartItems(detailedCartItems);
+            })
+            .catch(error => {
+                console.error('Error fetching cart items:', error);
+            });
+        }
+
+        function removeFromCart(productId) {
+            console.log(productId)
+            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            console.log(cartItems)
+            cartItems = cartItems.filter(item => item.id != productId);
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            fetchCartItems(); // Refresh the cart display after removal
+        }
+        function displayCartItems(detailedCartItems) {
+            const cartItemsContainer = document.querySelector('.col-md-8');
+
+            cartItemsContainer.innerHTML = '';
+            detailedCartItems.forEach(item => {
+                 const itemElement = document.createElement('div');
+                itemElement.classList.add('card');
+                itemElement.classList.add('mb-4');
+
+                let cart=JSON.parse(localStorage.getItem("cartItems"))||[]
+                let product = cart.find(items=>items.id==item.book_id)
+                
+
+                itemElement.innerHTML = `
+                    <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center cart-item">
+                        <img src="${item.cover_image}" >
+                        <div class="ml-3 flex-grow-1">
+                            <h5 class="mb-1 productName" >${item.title}</h5>
+                            <p class="mb-1 text-muted">by ${item.author}</p>
+                            <p class="mb-1 productPrice">$${item.price}</p>
+                            <p class="mb-1 available_qty">${item.Inventory.quantity_available}</p>
+                            
+                            <p class="text-success">In stock</p>
+                        </div>
+                        <div class="ml-3">
+                            <select class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${product.qty}>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+
+
+                            </select>
+                        </div>
+                        <button class="btn btn-link text-danger ml-3 " id="delete-item" data-product-id="${item.book_id}"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                `;
+                
+                cartItemsContainer.appendChild(itemElement);
+            });
+
+            loadValue()
+           
+        }
+
+        const loadValue= ()=>{
+            let selectBoxes= document.querySelectorAll("select")
+
+            selectBoxes.forEach(select=>{
+            let id=select.getAttribute("data-product-id")
+            const items=JSON.parse(localStorage.getItem("cartItems"))
+            
+                let saved=items.find(item=>item.id==id)
+
+                console.log(saved)
+                if(saved){
+                    select.selectedIndex=saved.qty-1
+                    
+                }
+            })
+        }
+
+        const displayOrderSummary=async ()=>{
+            let detailedCartItems= await document.querySelectorAll(".card")
+
+
+        const cartItemsContainer = document.querySelector('.col-md-4');
+        const cartI = document.querySelector('.cartI');
+        let totalprice=0;
+        let productName="";
+        let productQty="";
+        let productPrice="";
+        cartI.innerHTML=""
+
+
+            detailedCartItems.forEach(item=>{
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('d-flex');
+                itemElement.classList.add('justify-content-between');
+                itemElement.classList.add('mb-4');
+
+               productName=item.querySelector(".productName").innerHTML
+               productQty=item.querySelector(".productQty").value
+               productPrice=item.querySelector(".productPrice").innerHTML
+                itemElement.innerHTML=`
+                 <p class="mb-0">${productName} ${productPrice}(${productQty}) </p>
+                        <p class="mb-0">$${productPrice.slice(1) * productQty}</p>
+
+                        <hr/>
+                
+                `
+                totalprice+=productPrice.slice(1) * productQty
+                cartI.appendChild(itemElement)
+               
+            })
+            
+            let totalPric=document.querySelector(".totalPrice")
+
+            totalPric.innerHTML=`
+                    <h5 class="mb-0">Order total</h5>
+                    <h5 class="mb-0">$${totalprice}</h5>
+            `
+       
+    }
+
+        // Initialize cart count and fetch cart items on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            // updateCartCount();
+            await fetchCartItems();
+
+            deleteButton=document.querySelectorAll("#delete-item")
+            let selectBoxs=document.querySelectorAll(".productQty")
+            
+            deleteButton.forEach(button=>{
+                button.addEventListener("click",async(e)=>{
+                const productId = e.target.getAttribute('data-product-id');
+                removeFromCart(productId)
+                location.reload()
+            //    await displayOrderSummary()
+            })
+
+        });
+            
+        
+        const checkoutBtn=document.getElementById("checkout")
+            checkoutBtn.addEventListener("submit",async (e)=>{
+                e.preventDefault()
+                const shippingInfo = {
+            address: document.getElementById('address').value,
+            city: document.getElementById('city').value,
+            state: document.getElementById('state').value,
+            country: document.getElementById('country').value,
+            postalCode: document.getElementById('postalCode').value
+      };
+
+
+      document.querySelector(".animation").classList.remove("hidden")
+                document.getElementById("body").classList.add("body_style")
+
+            const stripe = Stripe('pk_test_51PBfXMI23B1KGZBvr0u1jx8rYbAi3Tl8wz2DGvGy2lWSK1Vh2YZAaFYwn41tHjwE3WbTB6Dg9ElN73VQvqnLNxaA00XmhuFpMT');
+
+            try {
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+            const response = await fetch('/checkout', {
+                method: 'POST',
+                headers: {
+                    "X-CSRF-Token":"<%=csrfToken%>",
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    items: cartItems,
+                    shippingInfo:shippingInfo
+                })
+            }); 
+
+            
+
+            const data = await response.json();
+            if (response.status === 401) {
+                document.querySelector(".animation").classList.add("hidden")
+                document.getElementById("body").classList.remove("body_style")
+                window.location.href = data.redirectUrl;
+            } 
+            else if(data.errors){
+                document.querySelector(".animation").classList.add("hidden")
+                document.getElementById("body").classList.remove("body_style")
+                data.errors.forEach(error => {
+                    console.log(error)
+          document.getElementById(`${error.path.split(".")[1]}Error`).innerText = error.msg;
+        });
+
+            }
+            else {
+                document.querySelector(".animation").classList.remove("hidden")
+                document.getElementById("body").classList.add("body_style")
+
+                // Redirect to the Stripe Checkout page
+                const { error } = await stripe.redirectToCheckout({
+                    sessionId: data.id,
+                });
+
+                if (error) {
+                    console.error(error);
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
+
+        })
+        
+        const reveal= document.getElementById("reveal")
+        console.log(reveal)
+
+        reveal.addEventListener("click",()=>{
+           
+            if(cartLength===0){
+                alert("you shopping cart is empty, please add some books in your cart")
+            }
+            else{
+            const rev=document.querySelector(".container1")
+            rev.classList.remove("hidden")
+            window.scrollTo(0,1311)
+                }
+        })
+
+
+        await displayOrderSummary()
+
+        selectBoxs.forEach(box=>{
+                box.addEventListener("change",async(e)=>{
+                    let cartItems =await JSON.parse(localStorage.getItem('cartItems')) || [];
+                     const productId = e.target.getAttribute('data-product-id');
+                    const quantity_available=e.target.getAttribute("data-qty-available")
+                    let product = cartItems.find(item => item.id == productId);
+                    console.log(e.target.getAttribute("data-product-id"))
+                    console.log(product)
+
+                 if (product) {
+                    console.log(quantity_available)
+                    if(parseInt(e.target.value)>quantity_available){
+                        e.preventDefault()
+                        alert("The quantity selected is more than the quantity available")
+                    }
+                    else{
+                   product.qty=parseInt(e.target.value)
+                   console.log(cartItems)
+                    }
+                } 
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                    displayOrderSummary()
+                })
+            })
+        })
+
+        window.addEventListener("load",()=>{
+            const animation= document.querySelector(".loading-container")
+            const products=document.querySelector(".container-container")
+
+            animation.classList.add("move")
+            products.classList.remove("hidden")
+        })
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html>

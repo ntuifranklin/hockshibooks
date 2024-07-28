@@ -14,6 +14,10 @@ const otpModel=require("../models/otpModel")
 const bookModel=require("../models/bookModel")
 const genreModel=require("../models/genreModel")
 const inventoryModel=require("../models/inventory")
+const paymentModel=require("../models/paymentModel")
+const customerModel=require("../models/customerModel")
+const orderModel= require("../models/ordersModel")
+
 
 //middleware
 const OTPvalidation= require("../middleware/OTPmiddleware");
@@ -68,7 +72,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                         userId=user.id
                                         authUser=user.dataValues
                                         // console.log(authUser)
-                                        generateAndSendOTP(user.id,user_email)
+                                        generateAndSendOTP(user.id,user_email,otpModel)
                                 res.status(200).render(`pages/otpVerification`,{
                                         userId:userId,
                                         email:user_email,
@@ -189,18 +193,27 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
  
         const books= await bookModel.findAll({
                 include:[
-                        {model:genreModel},
                         {model:inventoryModel}
 
                 ],
                 
         })
+
+        const payments= await paymentModel.findAll({})
+        const orders=await orderModel.findAll({
+                include:[
+                        {model:customerModel}
+                ]
+        })
+     
         // res.send(user)
         res.locals.user=req.session.user
 
 
         res.status(200).render("pages/dashboard",{
                 books:books,
+                payments:payments,
+                orders:orders,
                 type:type,
                 msg:msg,
                 host:process.env.HOST
@@ -215,7 +228,7 @@ const logout=(req,res)=>{
         
         */ 
         if(!req.session.user){
-                res.status(404).send("user not signed in")
+                res.status(404).redirect(`${process.env.HOST}/admin/`) 
                 
         }
         else{

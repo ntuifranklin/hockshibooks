@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS SequelizeMeta;
 
 DROP TABLE IF EXISTS Book_Reviews;
 
+DROP TABLE IF EXISTS customerOtpTable;
 
 DROP TABLE IF EXISTS otpTable;
 
@@ -34,24 +35,8 @@ DROP TABLE IF EXISTS categories;
 
 
 
-
-
-
 -- Customers Table
-CREATE TABLE Customers (
-    customer_id VARCHAR(64) PRIMARY KEY,
-    first_name VARCHAR(64) NOT NULL,
-    last_name VARCHAR(64) NOT NULL,
-    email VARCHAR(64) NOT NULL,
-    salt VARCHAR(16) NOT NULL,
-    password VARCHAR(256) NOT NULL,
-    street_address VARCHAR(256) NOT NULL,
-    city VARCHAR(128) NOT NULL,
-    state_province VARCHAR(128) NOT NULL,
-    country VARCHAR(128) NOT NULL,
-    postal_zipcode VARCHAR(32) NOT NULL,
-    phone VARCHAR(32) NOT NULL
-);
+
 
 CREATE TABLE Genres (
     genre_id VARCHAR(64) PRIMARY KEY,
@@ -67,73 +52,13 @@ CREATE TABLE Books (
     ISBN VARCHAR(32) NOT NULL UNIQUE,
     description TEXT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    genre VARCHAR(64),
     publication_date DATE,
     language VARCHAR(64),
-    cover_image_url VARCHAR(1024),
-    FOREIGN KEY (genre) REFERENCES Genres(genre_id) 
-    ON DELETE CASCADE 
-    ON UPDATE CASCADE
+    cover_image_url VARCHAR(1024)
+
 
 );
 
--- Orders Table
-CREATE TABLE Orders (
-    order_id VARCHAR(64) PRIMARY KEY,
-    customer_id VARCHAR(64) NOT NULL,
-    order_date DATE NOT NULL,
-    total_amount DECIMAL(10, 2) NOT NULL,
-    payment_status ENUM('Pending', 'Paid', 'Cancelled') NOT NULL,
-    shipping_address VARCHAR(256) NOT NULL,
-    shipping_city VARCHAR(128) NOT NULL,
-    shipping_state_province VARCHAR(128) NOT NULL,
-    shipping_country VARCHAR(128) NOT NULL,
-    shipping_postal_code VARCHAR(32) NOT NULL,
-    delivery_status ENUM('Processing', 'Shipped', 'Delivered') NOT NULL,
-    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-);
-
--- Order_Items Table
-CREATE TABLE Order_Items (
-    order_item_id VARCHAR(64),
-    order_id VARCHAR(64) NOT NULL,
-    book_id VARCHAR(64) NOT NULL,
-    quantity INT NOT NULL,
-    item_price DECIMAL(16, 2) NOT NULL,
-    subtotal DECIMAL(16, 2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
-    FOREIGN KEY (book_id) REFERENCES Books(book_id)
-);
-
--- Payment Table
-CREATE TABLE Payment (
-    payment_id VARCHAR(64) PRIMARY KEY,
-    order_id VARCHAR(64) NOT NULL,
-    payment_date DATE NOT NULL,
-    payment_method VARCHAR(128) NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    transaction_id VARCHAR(128) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
-);
-
--- Shipping_Carriers Table
-CREATE TABLE Shipping_Carriers (
-    carrier_id VARCHAR(64) PRIMARY KEY,
-    carrier_name VARCHAR(128) NOT NULL,
-    tracking_url VARCHAR(512) NOT NULL
-);
-
--- Book_Reviews Table
-CREATE TABLE Book_Reviews (
-    review_id VARCHAR(64) PRIMARY KEY,
-    book_id VARCHAR(64) NOT NULL,
-    customer_id VARCHAR(64) NOT NULL,
-    rating VARCHAR(64) NOT NULL,
-    review_text TEXT,
-    review_date DATE NOT NULL,
-    FOREIGN KEY (book_id) REFERENCES Books(book_id),
-    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-);
 
 -- Promotions Table
 CREATE TABLE Promotions (
@@ -172,6 +97,7 @@ CREATE TABLE otpTable (
     ON UPDATE CASCADE
 );
 
+
 -- category table
 CREATE TABLE `categories` (
     `category_id` VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
@@ -186,6 +112,30 @@ CREATE TABLE `Products` (
     `product_image_url` VARCHAR(1024),
     `category` VARCHAR(64),
     FOREIGN KEY (`category`) REFERENCES `categories`(`category_id`)
+);
+
+-- Customers Table
+CREATE TABLE Customers (
+    customer_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    first_name VARCHAR(64) NOT NULL,
+    last_name VARCHAR(64) NOT NULL,
+    email VARCHAR(64) UNIQUE NOT NULL ,
+    password VARCHAR(256) NOT NULL,
+    street_address VARCHAR(256) NOT NULL,
+    city VARCHAR(128) NOT NULL,
+    state_province VARCHAR(128) NOT NULL,
+    country VARCHAR(128) NOT NULL,
+    postal_zipcode VARCHAR(32) NOT NULL,
+    phone VARCHAR(32) NOT NULL
+);
+CREATE TABLE customerOtpTable (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    otp VARCHAR(255),
+    expiration_time DATETIME,
+    customerId CHAR(36),
+    FOREIGN KEY (customerId) REFERENCES Customers(customer_id) 
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE
 );
 
 -- Countries Table
@@ -274,7 +224,62 @@ INSERT INTO Provinces_States (province_state_id, country_code, province_state_na
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Nunavut'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Yukon');
 
+-- Orders Table
+CREATE TABLE Orders (
+    order_id VARCHAR(64) PRIMARY KEY,
+    customer_id VARCHAR(64) NOT NULL,
+    order_date DATE NOT NULL,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    payment_status ENUM('Pending', 'Paid', 'Cancelled') NOT NULL,
+    shipping_address VARCHAR(256) NOT NULL,
+    shipping_city VARCHAR(128) NOT NULL,
+    shipping_state_province VARCHAR(128) NOT NULL,
+    shipping_country VARCHAR(128) NOT NULL,
+    shipping_postal_code VARCHAR(32) NOT NULL,  
+    delivery_status ENUM('Processing', 'Shipped', 'Delivered') NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+);
 
+-- Order_Items Table
+CREATE TABLE Order_Items (
+    order_item_id VARCHAR(64),
+    order_id VARCHAR(64) NOT NULL,
+    book_id VARCHAR(64) NOT NULL,
+    quantity INT NOT NULL,
+    item_price DECIMAL(16, 2) NOT NULL,
+    subtotal DECIMAL(16, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
+);
+
+-- Payment Table
+CREATE TABLE Payment (
+    payment_id VARCHAR(64) PRIMARY KEY,
+    order_id VARCHAR(64) NOT NULL,
+    payment_date DATE NOT NULL,
+    payment_method VARCHAR(128) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    transaction_id VARCHAR(128) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+);
+
+-- Shipping_Carriers Table
+CREATE TABLE Shipping_Carriers (
+    carrier_id VARCHAR(64) PRIMARY KEY,
+    carrier_name VARCHAR(128) NOT NULL,
+    tracking_url VARCHAR(512) NOT NULL
+);
+-- Book_Reviews Table
+CREATE TABLE Book_Reviews (
+    review_id VARCHAR(64) PRIMARY KEY,
+    book_id VARCHAR(64) NOT NULL,
+    customer_id VARCHAR(64) NOT NULL,
+    rating VARCHAR(64) NOT NULL,
+    review_text TEXT,
+    review_date DATE NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES Books(book_id),
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+);
 -- Some views :
 CREATE VIEW SecureCustomers AS
 SELECT 

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%=book.title%></title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{
+
+            background-color: #f3f4f6;
+        }
+
+        .card-custom {
+            height: 560px;
+            width: fit-content;
+            background-color: #d1d5db; /* Equivalent to bg-gray-300 */
+            
+        }
+        .card-img-top-custom {
+            height: 100%;
+            object-fit: cover;
+        }
+        .submit {
+            background-color: #2874f0; /* Equivalent to dark:hover:bg-gray-700 */
+            border-radius: 20px; /* Full rounded corners */
+            transition:  0.3s ease-in-out;
+        }
+        .submit>button{
+            color: white;
+            font-weight: bold;
+
+            border: none;
+        }
+        .submit:hover {
+
+            background-color: transparent;
+            border: 1px solid #2874f0; /* Equivalent to hover:bg-gray-800 */
+        }
+        .color-selector {
+            width: 24px;
+            height: 24px;
+            border-radius: 9999px;
+            margin-right: 8px;
+        }
+        .product-img{
+            height: 400px;
+            padding: 10px;
+        }
+        .product-img>img{
+            width: 300px;
+            height: 400px;
+        }
+
+   
+
+        .book-details {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .book-image {
+            width: 200px;
+            height: 300px;
+            margin-right: 20px;
+            background-color: #e5e5e5;
+            border-radius: 5px;
+        }
+
+        .book-info {
+            flex: 1;
+        }
+
+        .title,
+        .author,
+        .price,
+        .availability,
+        .isbn,
+        .description {
+            height: 20px;
+            margin-bottom: 10px;
+            background-color: #e5e5e5;
+            border-radius: 5px;
+        }
+
+        .title {
+            width: 70%;
+            height: 30px;
+        }
+
+        .author,
+        .isbn {
+            width: 50%;
+        }
+
+        .price,
+        .availability {
+            width: 30%;
+        }
+
+        .description {
+            width: 90%;
+            height: 50px;
+        }
+
+        .add-to-cart {
+            width: 150px;
+            height: 40px;
+            background-color: #e5e5e5;
+            border-radius: 20px;
+        }
+
+        @keyframes placeHolderShimmer {
+            0% {
+                background-position: -450px 0;
+            }
+            100% {
+                background-position: 450px 0;
+            }
+        }
+
+        .animated-background {
+            animation-duration: 1s;
+            animation-fill-mode: forwards;
+            animation-iteration-count: infinite;
+            animation-name: placeHolderShimmer;
+            animation-timing-function: linear;
+            background: #f6f7f8;
+            background: linear-gradient(to right, #f5f4f3 8%, #ebebeb 18%, #f5f4f3 33%);
+            background-size: 1200px 104px;
+            position: relative;
+        }
+
+        .loading .book-image,
+        .loading .title,
+        .loading .author,
+        .loading .price,
+        .loading .availability,
+        .loading .isbn,
+        .loading .description,
+        .loading .add-to-cart {
+            background: linear-gradient(to right, #eeeeee 0%, #dddddd 50%, #eeeeee 100%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .hidden {
+      display: none;
+      visibility: hidden;
+    }
+    .move{
+            animation: remove 1s forwards;
+
+            position:relative ;
+        }
+
+        @keyframes remove {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                visibility: hidden;
+            display: none;
+            }
+        }
+        
+        </style>
+</head>
+<body>
+
+  <%- include('../layout/customerNavBar') %>
+  <div class="book-details loading">
+    <div class="book-image animated-background"></div>
+    <div class="book-info">
+        <div class="title animated-background"></div>
+        <div class="author animated-background"></div>
+        <div class="price animated-background"></div>
+        <div class="availability animated-background"></div>
+        <div class="isbn animated-background"></div>
+        <div class="description animated-background"></div>
+        <div class="add-to-cart animated-background"></div>
+    </div>
+</div>
+<div class="py-5">
+    <div class="container hidden">
+        <div class="row">
+            <!-- Image and Buttons -->
+            <div class="col-md-6">
+                <div class="card mb-4 card-custom">
+                    <div class="product-img">
+                        <% if(book.cover_image_url.split(":")[0]=="https") { %>
+                      <img  src="<%=`${book.cover_image_url}`%>" class="img-fluid">
+                      <% } else { %>
+                        <img  src="/uploads/<%=`${book.cover_image_url}`%>" class="img-fluid">
+    
+                        <% } %>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-6 submit">
+                        <button class="add-to-cart btn  btn-custom btn-block " data-product-id="<%= book.book_id %>">Add to Cart</button>
+                    </div>
+                   
+                </div>
+            </div>
+            <!-- Product Details -->
+            <div class="col-md-6">
+                <h2 class="text-dark mb-2"><b><%=book.title%></b></h2>
+                <p class="text-muted mb-4">
+                    by <%=book.author %>
+                </p>
+                <div class="d-flex mb-4">
+                    <div class="mr-4">
+                        <span class="font-weight-bold text-dark">Price:</span>
+                        <span class="text-muted">$ <%=book.price%></span>
+                    </div>
+                    <div>
+                        <span class="font-weight-bold text-dark">Availability:</span>
+                        <%if(book.Inventory.quantity_available>0){ %>
+                        <span class="text-muted">In Stock</span>
+                        <% } else{ %>
+                        <span class="text-muted">Out of  Stock</span>
+
+                            <%}%>
+                    </div>
+                </div>
+                <!-- <div class="mb-4">
+                    <span class="font-weight-bold text-dark">publication date</span>
+                    <div class="d-flex mt-2">
+                       <p><%=release_date%></p>
+                    </div>
+                </div> -->
+                <div class="mb-4">
+                    <span class="font-weight-bold text-dark">ISBN:</span>
+                    <div class="d-flex mt-2">
+                        <p><%=book.ISBN %></p>
+                    </div>
+                </div>
+                <div>
+                    <span class="font-weight-bold text-dark">book Description:</span>
+                    <p class="text-muted mt-2">
+                        <%=book.description%>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+function addToCart(productId) {
+            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+
+
+            let product = cartItems.find(item => item.id == productId);
+
+                if (product) {
+                alert("product already exists in your shopping cart")
+
+                } else {
+                cartItems.push({ id: productId, qty: 1 });
+                cartCount++;
+                window.location.reload()
+                }
+                location.reload()
+
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            localStorage.setItem('cartCount', cartCount);
+
+        }
+
+        // Event listener for the add to cart button
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productId = event.target.getAttribute('data-product-id');
+                console.log(productId)
+                // updateCartCount();
+                addToCart(productId);
+            });
+        });
+
+        window.addEventListener("load",()=>{
+            const animation= document.querySelector(".loading")
+            const products=document.querySelector(".container")
+
+            animation.classList.add("move")
+            products.classList.remove("hidden")
+        })
+
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
