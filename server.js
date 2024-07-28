@@ -182,7 +182,6 @@ app.use(parseForm, csrfProtection, async(request, response, next) => {
 app.use('/',index);
 app.use ("/admin",adminRoute)
 app.use("/admin/books",booksRouter)
-app.use("/api",apiRouter)
 app.use("/admin/order",OrdersRouter)
 
 
