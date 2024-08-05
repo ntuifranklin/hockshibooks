@@ -135,6 +135,7 @@ If there are errors, render the otpVerification page with an error message.
                 /**
                  * If no OTP record is found, render the otpVerification page with an "invalid OTP record" message.
                  */
+
                 if(!otpRecord){
                         authUser="";
                         
@@ -150,6 +151,7 @@ If there are errors, render the otpVerification page with an error message.
                  */
                 else if(otpRecord.expiration_time < new Date()){
                         authUser="";
+                        
 
                         res.status(401).render(`pages/otpVerification`,{
                                 userId:userId,
@@ -187,7 +189,7 @@ Then, it uses the await keyword to asynchronously fetch all books from the bookM
 
 Finally, it renders a view template named "pages/dashboard" and passes the fetched books, msg, and the value of process.env.HOST as data to the template.
         */
-        const msg=req.query.msg?req.query.msg:false;
+        const msg=req.query.msg?req.query.msg:false; 
         const type=req.query.type?req.query.type:false;
  
         const books= await bookModel.findAll({

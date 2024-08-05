@@ -108,6 +108,7 @@ align-items: center;
                                 </a>
                             </li>
                             <% if(customer){ %>
+                                <% if(customer.guest==false){ %>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fa fa-user"></i> <%= customer.username %> 
@@ -120,6 +121,17 @@ align-items: center;
 
                                 </ul>
                             </li>
+                            <% }else {%>
+                                <li>geust account</li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/login">
+                                        <i class="fa fa-sign-in"></i> login 
+                                    </a>
+                                </li>
+
+
+                             <% } %>   
+
                             <% }else {%>
                                 <li class="nav-item">
                                     <a class="nav-link" href="/login">

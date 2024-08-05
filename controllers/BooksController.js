@@ -229,7 +229,6 @@ const saveUpdate=async(req,res)=>{
 
 }
 
-
 const deleteBook=async (req,res)=>{
     
       /**
@@ -266,14 +265,14 @@ const deleteBook=async (req,res)=>{
 }
 
 const getaddBookWithISBNForm=(req,res)=>{
-    res.render("pages/addBookWithISBNForm",{
+    res.status(200).render("pages/addBookWithISBNForm",{
         msg:false,
     })
 }
 
 const addBookWithISBN= async(req,res)=>{
     const isbn=req.body.isbn
-    const price=req.body.price ||25
+    const price=req.body.price || 25
     const qty=10;
     const errors=validationResult(req)
 
@@ -318,9 +317,11 @@ const addBookWithISBN= async(req,res)=>{
                         quantity_available:qty,
                         location:"warehouse"
                     })
-                    return res.status(200).redirect(`${process.env.HOST}/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
+
+                    return res.status(302).redirect(`${process.env.HOST}/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
                 }
                 else{
+
                     res.status(500).render("pages/addBookWithISBNForm",{
                         msg:{
                             msg:"a book with this title already exists"
@@ -328,15 +329,18 @@ const addBookWithISBN= async(req,res)=>{
                     })
                 }
                 } catch (error) {
+
         return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+creating+book&type=danger`);
                 }
                 
             }
             else{
+
         return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
             }
         }
         catch(e){
+
         return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
 
         }

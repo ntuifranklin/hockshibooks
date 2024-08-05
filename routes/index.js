@@ -18,6 +18,9 @@ const {
   checkout,
   successPayment,
   verifyOTP,
+  processGeustUser,
+  showGeustPage,
+  showForm,
 logout
 }= require("../controllers/indexController");
 const customerSignupValidation = require('../middleware/customerSignupValidation');
@@ -43,13 +46,17 @@ router.get("/",showHomePage)
 
 router.get("/productDetails/:id",bookDetail)
 
-router.get("/cart",viewCart)
+router.route("/cart").get(viewCart).post(getCartItems)
 
-router.post("/cart",getCartItems)
 
-router.get("/login",loginPage)
+router.route("/login").get(loginPage).post(loginPagePost)
 
-router.post("/login",loginPagePost)
+
+router.get("/askGeust",showGeustPage)
+
+router.route("/showForm").get(showForm).post(processGeustUser)
+
+
 router.post("/search",searchBook)
 
 
@@ -60,6 +67,8 @@ router.get("/signup",signupPage)
 router.post("/signup",customerSignupValidation,signupPost)
 
 router.post( '/checkout',verifyUser,shippingInfoValidation,checkout)
+
+
 
 router.get("/success",successPayment)
 

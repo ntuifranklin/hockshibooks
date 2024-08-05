@@ -21,11 +21,13 @@ const stripe = require("stripe")(process.env.Stripe_secret_key);
 
 let user_email;
 let userId;
-let authUser;
 let username;
 let shippingInfo;
 let items;
 let session;
+let geust=false;
+
+
 const showHomePage = async (req,res)=>{
 
     const books=await bookModel.findAll({
@@ -112,7 +114,8 @@ const loginPagePost = async (req,res)=>{
     try {
             const user = await customerModel.findOne({
                     where: {
-                            email: email,     
+                            email: email,
+                            geust:0     
                           }
                         });                                                   
                     if(!user){
@@ -127,7 +130,6 @@ const loginPagePost = async (req,res)=>{
                                 username= `${user.first_name} ${user.last_name}`
                                     user_email=email
                                     userId=user.customer_id
-                                    authUser=user.dataValues
                                     generateAndSendOTP(user.customer_id,user_email,customerOtpModel)
                             res.status(200).render(`pages/customerOtpVerification`,{
                                     userId:userId,
@@ -178,9 +180,9 @@ If there are errors, render the otpVerification page with an error message.
             const errors=validationResult(req)
             if(!errors.isEmpty()){
                     const {msg}=errors.array()[0]
-                    res.render(`pages/otpVerification`,{
+                    res.render(`pages/customerOtpVerification`,{
                             userId:userId,
-                            username:username,
+                            username:username||false,
                             email:user_email,
                             msg:msg,
 
@@ -193,11 +195,10 @@ If there are errors, render the otpVerification page with an error message.
              * If no OTP record is found, render the otpVerification page with an "invalid OTP record" message.
              */
             if(!otpRecord){
-                    authUser="";
                     
                     res.status(401).render(`pages/customerOtpVerification`,{
                             userId:userId,
-                            username:username,
+                            username:username||false,
                             email:user_email,
                             msg:"invalid OTP record",
 
@@ -207,12 +208,11 @@ If there are errors, render the otpVerification page with an error message.
              * If the OTP record is found but expired, render the otpVerification page with an "OTP expired" message.
              */
             else if(otpRecord.expiration_time < new Date()){
-                    authUser="";
 
                     res.status(401).render(`pages/customerOtpVerification`,{
                             userId:userId,
                             email:user_email,
-                            username:username,
+                            username:username||false,
 
                             msg:"OTP expired",
 
@@ -226,8 +226,8 @@ If there are errors, render the otpVerification page with an error message.
     Redirect the user to the dashboard.
                      */
                     req.session.customer={
-                        username:username,
-                            email:authUser.email,
+                        geust:geust||false,
+                            email:user_email,
                     }
                     await customerOtpModel.destroy({
                             where:{
@@ -265,7 +265,7 @@ const signupPost= async (req,res)=>{
             where:{
                 email:info.email
             }
-        })
+        }) 
         if(temp.count!=0){
             const err = errors.array()
             err.push({
@@ -329,7 +329,7 @@ const searchBook=async (req,res)=>{
             "books":books
         })
     }catch(e){
-        res.redirect(`${process.env.HOST}/`)
+        res.status(500).redirect(`${process.env.HOST}/`)
     }
 
 }
@@ -343,26 +343,65 @@ const checkout = async(req,res)=>{
             return res.status(400).json({ error: 'Invalid items array' });
         }
 
-        const lineItems = await Promise.all(items.map(async (item) => {
-            let productDetails=  await bookModel.findOne({
-                where:{
-                    book_id:item.id
-                }
-            })
-            let product= {
-                price_data: {
-                    currency: 'usd',
-                    product_data: {
-                        name: productDetails.title,
-                    },
-                    unit_amount: productDetails.price*100, // amount in cents
-                },
-                quantity: item.qty,
+    //     const lineItems = await Promise.all(items.map(async (item) => {
+    //         let productDetails=  await bookModel.findOne({
+    //             where:{
+    //                 book_id:item.id
+    //             }
+    //         })
+    //         let product;
+    //         if(productDetails == true){
+    //         product= {
+    //             price_data: {
+    //                 currency: 'usd',
+    //                 product_data: {
+    //                     name: productDetails.title,
+    //                 },
+    //                 unit_amount: productDetails.price*100, // amount in cents
+    //             },
+    //             quantity: item.qty,
 
             
-            };
-            return product
-        }));
+    //         };
+    //         console.log(product)
+    //     }
+        
+    //     return product
+    //     }
+    
+    // ));
+
+    let lineItems=[]
+    for(let i=0;i<items.length;i++){
+        let productDetails=  await bookModel.findOne({
+            where:{
+                book_id:items[i].id
+            }
+        })
+                    let product;
+                    if(productDetails!=null){
+                    product= {
+                        price_data: {
+                            currency: 'usd',
+                            product_data: {
+                                name: productDetails.title,
+                            },
+                            unit_amount: productDetails.price*100, // amount in cents
+                        },
+                        quantity: items[i].qty,
+        
+                    
+                    };
+                    lineItems.push(product)
+                }
+                else {
+                    continue
+                }
+                
+                }
+
+                console.log(lineItems)
+    
          session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: lineItems,
@@ -405,6 +444,7 @@ const successPayment = async(req,res)=>{
                 {model:inventoryModel}
             ]
         })
+        if(productDetails!=null){
         await OrderItem.create({
           order_id: order.order_id,
           book_id: item.id,
@@ -417,7 +457,10 @@ const successPayment = async(req,res)=>{
         productDetails.Inventory.quantity_available-=item.qty
 
         await productDetails.Inventory.save()
-
+    }
+    else{
+        continue
+    }
     }
     const payments= await paymentModel.create({
         order_id: order.order_id,
@@ -430,7 +473,7 @@ const successPayment = async(req,res)=>{
       return res.status(200).render("pages/successPage")
     }
     catch(err){
-        return res.status(500)
+        return res.status(500).redirect(`${process.env.HOST}/`)
     }
 
 }
@@ -455,6 +498,70 @@ const logout=(req,res)=>{
 }
 }
 
+const showGeustPage=(req,res)=>{
+    res.render("pages/showGeustPage")
+}
+const showForm=(req,res)=>{
+    res.render("pages/geustEmailForm",{
+        msg:req.body.msg?req.body.msg:false
+    })
+}
+const processGeustUser=async (req,res)=>{
+    const errors=validationResult(req)
+    if(!errors.isEmpty()){
+        const err = errors.array()
+        req.body.msg=err
+
+      return showForm(req,res)
+    }
+    else
+    {
+        const { email,is_geust } = req.body;
+
+        try {
+            // Check if email already exists
+            let user = await customerModel.findOne({ where: { email:email } });
+      
+            if (!user) {
+              // Create a guest user
+              user = await customerModel.create({ email:email, guest: 1 });
+      
+              // Generate and store OTP
+              userId=user.customer_id
+              user_email=user.email
+              geust=user.guest
+             
+             await generateAndSendOTP(user.customer_id,user.email,customerOtpModel)
+
+             res.render("pages/customerOtpVerification",{
+                username:"",
+                email:user_email,
+                userId:userId,
+
+             })
+                
+              // Send OTP via email
+      
+            } else {
+                req.body.msg="this email is already registered"
+                
+
+                return showForm(req,res)
+            }
+          } catch (error) {
+            console.error(error);
+            req.body.msg=[{
+                msg:"server error"
+            }]
+
+            return showForm(req,res)
+          }
+
+
+    }
+    
+}
+
 module.exports={
     showHomePage,
     bookDetail,
@@ -468,5 +575,8 @@ module.exports={
     searchBook,
     successPayment,
     verifyOTP,
-    logout
+    logout,
+    showForm,
+    showGeustPage,
+    processGeustUser
 }

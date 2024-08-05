@@ -85,8 +85,7 @@ body {
         <div class="row h-100">
             <div class="col-md-5 d-flex align-items-center justify-content-center login-section">
                 <div class="login-box text-center">
-                    <h2>Welcome , <span><%=username %></span></h2>
-                    <p>We sent a code to <%=email%></p>
+                    <p>We sent an otp code to <%=email%></p>
                     <form action="/verifyOTP" method="POST">
                         <div class="otp-input">
                             <input type="text" name="OTP" maxlength="6" class="otp-field">
@@ -97,6 +96,7 @@ body {
                         value="<%= csrfToken %>">
                         <input type="hidden" name="userId"
                       value="<%= userId %>">
+
                       
                     </form>
                 </div>

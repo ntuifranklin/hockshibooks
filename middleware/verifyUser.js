@@ -3,9 +3,9 @@ const verifyLogin=(req,res,next)=>{
         return next();
     } else {
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-            return res.status(401).json({ redirectUrl: '/login' });
+            return res.status(401).json({ redirectUrl: '/askGeust' });
         } else {
-            return res.redirect('/login');
+            return res.redirect('/askGeust');
         }
     }
 

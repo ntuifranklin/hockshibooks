@@ -181,7 +181,7 @@ table th {
             <div class="profile-fields">
                 <div class="input-group">
                     <label for="firstName">customer name:</label>
-                    <p type="text" id="firstName" ><%=order.Customer.first_name %> <%=order.Customer.last_name %> </p>
+                    <p type="text" id="firstName" ><%=order.Customer.first_name || "geust user" %> <%=order.Customer.last_name|| "" %> </p>
                 </div>
                 <div class="input-group">
                     <label for="lastName">customer email:</label>
@@ -189,7 +189,7 @@ table th {
                 </div>
                 <div class="input-group">
                     <label for="lastName">customer phone:</label>
-                    <p type="text" id="lastName" value="Coop"><%=order.Customer.phone %></p>
+                    <p type="text" id="lastName" value="Coop"><%=order.Customer.phone|| " " %></p>
                 </div>
             </div>
         </div>

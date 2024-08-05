@@ -14,11 +14,11 @@ const Customer = sequelize.define('Customer', {
     },
     first_name: {
         type: DataTypes.STRING(64),
-        allowNull: false,
+        allowNull: true,
     },
     last_name: {
         type: DataTypes.STRING(64),
-        allowNull: false,
+        allowNull: true,
     },
     email: {
         type: DataTypes.STRING(64),
@@ -27,31 +27,36 @@ const Customer = sequelize.define('Customer', {
     },
     password: {
         type: DataTypes.STRING(256),
-        allowNull: false,
+        allowNull: true,
     },
+    geust: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 0, // Default to true for guests
+      },
     street_address: {
         type: DataTypes.STRING(256),
-        allowNull: false,
+        allowNull: true,
     },
     city: {
         type: DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: true,
     },
     state_province: {
         type: DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: true,
     },
     country: {
         type: DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: true,
     },
     postal_zipcode: {
         type: DataTypes.STRING(32),
-        allowNull: false,
+        allowNull: true,
     },
     phone: {
         type: DataTypes.STRING(32),
-        allowNull: false,
+        allowNull: true,
     }
     
 }, {
