@@ -32,7 +32,7 @@ const Customer = sequelize.define('Customer', {
     geust: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 0, // Default to true for guests
+        defaultValue: false, 
       },
     street_address: {
         type: DataTypes.STRING(256),

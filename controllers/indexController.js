@@ -25,7 +25,7 @@ let username;
 let shippingInfo;
 let items;
 let session;
-let geust=false;
+let geust;
 
 
 const showHomePage = async (req,res)=>{
@@ -226,9 +226,11 @@ If there are errors, render the otpVerification page with an error message.
     Redirect the user to the dashboard.
                      */
                     req.session.customer={
-                        geust:geust||false,
+                        geust:geust||0,
                             email:user_email,
+
                     }
+                    geust=0
                     await customerOtpModel.destroy({
                             where:{
                                     customerId:userId
@@ -524,12 +526,11 @@ const processGeustUser=async (req,res)=>{
       
             if (!user) {
               // Create a guest user
-              user = await customerModel.create({ email:email, guest: 1 });
-      
+              user = await customerModel.create({ email:email, geust: true });
               // Generate and store OTP
               userId=user.customer_id
               user_email=user.email
-              geust=user.guest
+              geust=user.geust
              
              await generateAndSendOTP(user.customer_id,user.email,customerOtpModel)
 
