@@ -4,7 +4,6 @@
  * This array of middleware functions performs various validations on the book form fields and handles validation errors.
  * 
  */
-const bookModel=require("../models/bookModel")
 
 
 const { body, validationResult } = require('express-validator');

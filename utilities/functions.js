@@ -115,7 +115,14 @@ const generateAndSendOTP=async (userId,mail,otpmodel)=>{
 }
 
 const sendStatusChangedMessage=async(order,status)=>{
-  
+  /**
+ * Sends an email to the customer with the updated order status.
+ *
+ * @param {Object} order - The order object containing the customer ID and order ID.
+ * @param {string} status - The updated status of the order.
+ * @return {Promise<void>} A Promise that resolves when the email is sent successfully.
+ * @throws {Error} If there is an error sending the email.
+ */
   const customer= await customerModel.findOne({
     where:{
       customer_id:order.customer_id
@@ -135,7 +142,7 @@ const mailOptions = {
   to: customer.email,
   subject: 'Order status change',
   text: `
-  dear ${customer.last_name}, 
+  dear ${customer.last_name || "geust user"}, 
 
   the status of your order with the id ${order.order_id} has been changed to ${status}
   

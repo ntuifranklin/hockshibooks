@@ -29,6 +29,13 @@ let geust;
 
 
 const showHomePage = async (req,res)=>{
+    /**
+ * Retrieves all books with their corresponding inventory information and renders the home page view.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {Promise<void>} - A promise that resolves when the home page view is rendered.
+ */
 
     const books=await bookModel.findAll({
         include:[
@@ -41,7 +48,15 @@ const showHomePage = async (req,res)=>{
 
 
 } 
+
 const bookDetail= async (req,res)=>{
+    /**
+ * Retrieves a book detail by its ID and renders the "pages/productDetail" view with the book details.
+ *
+ * @param {Object} req - The request object containing the book ID in the parameters.
+ * @param {Object} res - The response object used to render the "pages/productDetail" view.
+ * @return {Promise<void>} - Returns a Promise that resolves with the rendered "pages/productDetail" view.
+ */
     const param=req.params.id 
 
     const book= await bookModel.findOne({
@@ -61,11 +76,24 @@ const bookDetail= async (req,res)=>{
     })
 }
 const viewCart= async(req,res)=>{
-    
+    /**
+ * Renders the cart page view.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object used to render the cart page view.
+ * @return {Promise<void>} - Returns a Promise that resolves with the rendered cart page view.
+ */
 
     return res.render("pages/cart")
 }
 const getCartItems=async (req,res)=>{
+    /**
+ * Retrieves the detailed cart items based on the provided cart items.
+ *
+ * @param {object} req - The request object containing the cart items in the body.
+ * @param {object} res - The response object to send the detailed cart items.
+ * @return {object[]} An array of detailed cart items with book information and quantity.
+ */
     try {
         const cartItems= req.body.cartItems
     const bookIds= cartItems.map(item=> item.id)
@@ -105,11 +133,26 @@ const getCartItems=async (req,res)=>{
     }
 }
 const loginPage= (req,res)=>{
+    /**
+ * Renders the customer login page with a success status code and a message indicating whether the login was successful or not.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object used to render the customer login page.
+ * @return {Object} The rendered customer login page with a success status code and a message indicating whether the login was successful or not.
+ */
     return res.render("pages/customerLogin",{
         msg:false
     })
 }
 const loginPagePost = async (req,res)=>{
+    /**
+ * Handles the POST request for the customer login page.
+ *
+ * @param {Object} req - The request object containing the customer's email and password.
+ * @param {Object} res - The response object used to render the customer login page or redirect to the customer OTP verification page.
+ * @return {Promise<void>} - Returns a Promise that resolves with the rendered customer login page or redirects to the customer OTP verification page.
+ */
+
     const email=req.body.email
     try {
             const user = await customerModel.findOne({
@@ -154,6 +197,8 @@ const loginPagePost = async (req,res)=>{
           }
    
 }
+
+
 const verifyOTP=(async(req,res)=>{
     /**
      * The verifyOTP function is an asynchronous function that verifies a one-time password (OTP) sent by a user. It interacts with a database to check the OTP, handles validation errors, and manages user session data. If the OTP is valid and not expired, it sets up the user session and redirects to the dashboard.
@@ -242,6 +287,15 @@ If there are errors, render the otpVerification page with an error message.
 }) 
 const signupPage= async(req,res)=>{
 
+    /**
+ * Retrieves all states and countries using provinceStateModel and CountryModel, respectively.
+ * Renders the "pages/customerSignup" view and passes the retrieved states, countries, and any errors present in the request body to the view for rendering.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {Promise<void>} - A promise that resolves when the view is rendered.
+ */
+
     const states=await provinceStateModel.findAll()
     const country=await CountryModel.findAll()
 
@@ -253,6 +307,23 @@ const signupPage= async(req,res)=>{
     })
 }
 const signupPost= async (req,res)=>{
+    /**
+ * Handles the POST request for customer signup. Validates the request body using the validationResult function.
+ * If there are validation errors, it sets the errors in the request body and redirects to the signup page.
+ * If the email is already used, it adds an error message to the request body and redirects to the signup page.
+ * If the email is not used, it creates a new customer record in the database and redirects to the login page.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {Promise<void>} - Returns a Promise that resolves when the function completes.
+ */
+
+    /**
+Validates the request body using validationResult.
+If validation fails, redirects to the sign-up page with error messages.
+Checks if the email is already in use. If so, redirects to the sign-up page with an error message.
+If the email is not in use, creates a new customer record in the database and redirects to the login page.
+     */
     const errors=validationResult(req)
     if(!errors.isEmpty()){
         const err = errors.array()
@@ -310,6 +381,21 @@ const signupPost= async (req,res)=>{
 }
 
 const searchBook=async (req,res)=>{
+    /**
+ * Searches for books based on a query and renders the home page with the search results.
+ *
+ * @param {Object} req - The request object containing the query parameter.
+ * @param {Object} res - The response object used to render the home page with the search results.
+ * @return {Promise<void>} - Returns a promise that resolves when the home page is rendered with the search results.
+ */
+
+    /**
+It extracts the search query from the request body (req.body.query).
+It uses the bookModel to search for books where the title, author, or ISBN matches the query (case-insensitive).
+It includes the inventoryModel in the search results.
+If the search is successful, it renders the homePage template with the search results (books) and returns a 200 status code.
+If an error occurs, it redirects to the root URL with a 500 status code.
+     */
     try{
         const query= req.body.query 
 
@@ -335,8 +421,27 @@ const searchBook=async (req,res)=>{
     }
 
 }
+
 const checkout = async(req,res)=>{
 
+    /**
+ * Creates a checkout session using Stripe API and returns the session ID in the response.
+ *
+ * @param {Object} req - The request object containing the items and shippingInfo in the request body.
+ * @param {Object} res - The response object used to send the session ID in the response.
+ * @return {Promise<void>} - Returns a Promise that resolves with the session ID in the response.
+ * @throws {Error} - Throws an error if the items in the request body is not an array.
+ */
+    /*
+   1. It retrieves the items and shippingInfo from the request body.
+2.   It checks if the items is an array. If not, it returns a JSON response with an error message.
+3. It initializes an empty array called lineItems.
+4. It iterates over each item in the items array and retrieves the corresponding product details from a database.
+5. For each product, it creates a product object with the necessary information (price, quantity, name) and adds it to the lineItems array.
+6. It creates a checkout session using the stripe.checkout.sessions.create method, passing in the lineItems, success and cancel URLs, and other configuration options.
+7. It sends a JSON response with the session ID.
+8. If any error occurs during the process, it logs the error and sends a 500 Internal Server Error response.
+    */
     try {
         items=req.body.items
         shippingInfo=req.body.shippingInfo
@@ -418,7 +523,34 @@ const checkout = async(req,res)=>{
         res.status(500).send('Internal Server Error');
     }
 };
+
 const successPayment = async(req,res)=>{
+    /**
+ * Creates a new order in the orderModel with the customer ID, order date, total amount, payment status, shipping address, city, state, country, postal code, and delivery status.
+ * Iterates over the items array and for each item, retrieves the product details from the bookModel and checks if the product details are not null.
+ * If the product details are not null, creates a new order item in the OrderItem model with the order ID, book ID, quantity, item price, and subtotal.
+ * Updates the quantity available in the inventory model by subtracting the quantity of the item.
+ * Saves the updated inventory model.
+ * After processing all the items, creates a payment record in the paymentModel with the order ID, payment date, payment method, amount, and transaction ID.
+ * Renders the "pages/successPage" view with a success status code.
+ *
+ * @param {Object} req - The request object containing the session and items in the request body.
+ * @param {Object} res - The response object used to render the "pages/successPage" view or redirect to an error page.
+ * @return {Promise<void>} - Returns a Promise that resolves with the success status code or redirects to an error page.
+ */
+
+    /**
+     * 
+     * 1. It retrieves the customer_id from the customerModel based on the email stored in the session.
+        2. It creates a new order in the orderModel with the customer ID, order date, total amount, payment status, shipping address, city, state, country, postal code, and delivery status.
+        3. It iterates over the items array and for each item, it retrieves the product details from the bookModel and checks if the product details are not null.
+        4.If the product details are not null, it creates a new order item in the OrderItem model with the order ID, book ID, quantity, item price, and subtotal.
+        5.It updates the quantity available in the inventory model by subtracting the quantity of the item.
+        6.It saves the updated inventory model.
+        7.After processing all the items, it creates a payment record in the paymentModel with the order ID, payment date, payment method, amount, and transaction ID.
+        8.Finally, it renders the "pages/successPage" view with a success status code.
+     */
+
     try{
 
     const { customer_id}= await customerModel.findOne({
@@ -481,6 +613,12 @@ const successPayment = async(req,res)=>{
 }
 
 const logout=(req,res)=>{
+    /**
+ * The logout function is used to log out signed-in users.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
    
         /*
         the logout function is used to logout signed in users.
@@ -501,14 +639,43 @@ const logout=(req,res)=>{
 }
 
 const showGeustPage=(req,res)=>{
+    /**
+ * Renders the showGeustPage view.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {void}
+ */
     res.render("pages/showGeustPage")
 }
 const showForm=(req,res)=>{
+    /**
+ * Renders the "pages/geustEmailForm" view and passes an optional message to it.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {void}
+ */
     res.render("pages/geustEmailForm",{
         msg:req.body.msg?req.body.msg:false
     })
 }
 const processGeustUser=async (req,res)=>{
+    /**
+ * Processes a guest user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {Promise<void>} - A promise that resolves when the function is complete.
+ */
+
+    /** 
+     *
+1. Validating the request data.
+2.If valid, checking if the provided email already exists in the database.
+3.If the email doesn't exist, creating a new guest user and generating a one-time password (OTP).
+4.Sending the OTP to the user's email and rendering the OTP verification page.
+5.If the email already exists or an error occurs, displaying an error message and rendering the guest email form again.*/
     const errors=validationResult(req)
     if(!errors.isEmpty()){
         const err = errors.array()

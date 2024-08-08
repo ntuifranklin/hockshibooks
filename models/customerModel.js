@@ -7,6 +7,7 @@ const crypto = require('crypto');
 
 const Order= require("./ordersModel")
 
+
 const Customer = sequelize.define('Customer', {
     customer_id: {
         type: DataTypes.UUIDV4,

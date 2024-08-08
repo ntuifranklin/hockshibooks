@@ -161,12 +161,23 @@ align-items: center;
     </div>
 
     <script>
+
+        // Wait for the DOM to be fully loaded before executing the code
         document.addEventListener('DOMContentLoaded', () => {
-            const cartCountElement = document.querySelector('#cart-count');
-            const cartCount = localStorage.getItem('cartItems') || 0;
-            const items=JSON.parse(cartCount)
-            cartCountElement.textContent = items.length;
+                    
+          // Select the element with the ID "cart-count"
+          const cartCountElement = document.querySelector('#cart-count');
+          
+          // Retrieve the value of the "cartItems" key from local storage, or 0 if it doesn't exist
+          const cartCount = localStorage.getItem('cartItems') || 0;
+          
+          // Parse the cartCount value as JSON
+          const items = JSON.parse(cartCount)
+          
+          // Set the text content of the cartCountElement to the length of the items array
+          cartCountElement.textContent = items.length;
         });
+        
     </script>
 </body>
 </html>
