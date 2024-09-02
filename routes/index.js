@@ -21,11 +21,17 @@ const {
   processGeustUser,
   showGeustPage,
   showForm,
+  allBooks,
+  Profile,
+  viewBooks,
+  updateProfile,
+  oderDetail,
 logout
 }= require("../controllers/indexController");
 const customerSignupValidation = require('../middleware/customerSignupValidation');
 const verifyUser= require("../middleware/verifyUser")
 const shippingInfoValidation=require("../middleware/shipping-infoValidation")
+const updateProfileValidation=require("../middleware/updateProfileValidation")
 
 // const {stripe} = require('../utilities/stripe') ;
 
@@ -68,11 +74,21 @@ router.post("/signup",customerSignupValidation,signupPost)
 
 router.post( '/checkout',verifyUser,shippingInfoValidation,checkout)
 
+router.get("/books",viewBooks)
+
+  router.get("/allBooks",allBooks)
 
 
 router.get("/success",successPayment)
 
 router.get("/logout",logout)
+
+router.get("/profile",Profile)
+
+router.post("/updateProfile",updateProfileValidation,updateProfile)
+
+router.get("/orderDetail/:id",oderDetail)
+
   // router.get('/successpayment', async(request, response, next)=>{
 	// response.render('layout',
 	// {

@@ -38,9 +38,10 @@ const showHomePage = async (req,res)=>{
  */
 
     const books=await bookModel.findAll({
+        limit:8,
         include:[
             {model:inventoryModel}
-        ]
+        ], 
     })
     return res.status(200).render("pages/homePage",{
         "books":books
@@ -68,10 +69,25 @@ const bookDetail= async (req,res)=>{
     ]}
      )
 
+     const relatedBooks= await bookModel.findAll({
+        where: {
+            book_id: {
+                [Op.ne]: book.book_id // Exclude the current book
+            },
+            [Op.or]: [
+              { author: { [Op.like]: `%${book.author}%` } }]
+            },
+            include:[
+            {model:inventoryModel}
+    
+    ]}
+     )
+
     //  const newDate= convertDateFormat(book.publication_date)
 
     res.render("pages/productDetail",{
         book:book,
+        relatedBooks:relatedBooks,
         release_date:""
     })
 }
@@ -83,8 +99,14 @@ const viewCart= async(req,res)=>{
  * @param {Object} res - The response object used to render the cart page view.
  * @return {Promise<void>} - Returns a Promise that resolves with the rendered cart page view.
  */
+    const states=await provinceStateModel.findAll()
+    const country=await CountryModel.findAll()
 
-    return res.render("pages/cart")
+
+    return res.render("pages/cart",{
+        states:states,
+        country:country
+    })
 }
 const getCartItems=async (req,res)=>{
     /**
@@ -132,7 +154,7 @@ const getCartItems=async (req,res)=>{
         
     }
 }
-const loginPage= (req,res)=>{
+const loginPage= async (req,res)=>{
     /**
  * Renders the customer login page with a success status code and a message indicating whether the login was successful or not.
  *
@@ -140,8 +162,15 @@ const loginPage= (req,res)=>{
  * @param {Object} res - The response object used to render the customer login page.
  * @return {Object} The rendered customer login page with a success status code and a message indicating whether the login was successful or not.
  */
+    const states=await provinceStateModel.findAll()
+    const country=await CountryModel.findAll()
     return res.render("pages/customerLogin",{
-        msg:false
+        msg:req.query.msg?req.query.msg:false,
+        errors:req.body.errors?req.body.errors:false,
+        countries:country,
+        states:states,
+        Sucessmsg:req.query.Sucessmsg?req.query.Sucessmsg:false,
+
     })
 }
 const loginPagePost = async (req,res)=>{
@@ -152,20 +181,25 @@ const loginPagePost = async (req,res)=>{
  * @param {Object} res - The response object used to render the customer login page or redirect to the customer OTP verification page.
  * @return {Promise<void>} - Returns a Promise that resolves with the rendered customer login page or redirects to the customer OTP verification page.
  */
-
+    const states=await provinceStateModel.findAll()
+    const country=await CountryModel.findAll()
     const email=req.body.email
     try {
             const user = await customerModel.findOne({
                     where: {
                             email: email,
-                            geust:0     
+                            geust:false
                           }
                         });                                                   
                     if(!user){
                             
                             res.status(401).render("pages/customerLogin",{
                                     msg:"please check your email and password again",
-                                       host:process.env.HOST
+                                    errors:false,
+                                    countries:country,
+                                    states:states,
+        Sucessmsg:req.query.Sucessmsg?req.query.Sucessmsg:false,
+
                             })
                     }
                     else{
@@ -185,7 +219,11 @@ const loginPagePost = async (req,res)=>{
                             else{
                                     res.status(401).render("pages/customerLogin",{
                                             msg:"please check your email and password again",
-                                            host:process.env.HOST
+                                            errors:false,
+        countries:country,
+        states:states,
+        Sucessmsg:req.query.Sucessmsg?req.query.Sucessmsg:false,
+
                                     })
                             }
                     }
@@ -329,7 +367,7 @@ If the email is not in use, creates a new customer record in the database and re
         const err = errors.array()
         req.body.errors=err
 
-      return signupPage(req,res)
+      return loginPage(req,res)
     }
    
     else{
@@ -346,7 +384,7 @@ If the email is not in use, creates a new customer record in the database and re
             })
             req.body.errors=err
     
-          return signupPage(req,res)
+          return loginPage(req,res)
             
         }
 
@@ -372,7 +410,7 @@ If the email is not in use, creates a new customer record in the database and re
             phone:info.phone
 
         })
-       return res.status(200).redirect(`${process.env.HOST}/login`) 
+       return res.status(200).redirect(`${process.env.HOST}/login?type=success&Sucessmsg=successfully+signed+up`) 
     }
 
         
@@ -413,13 +451,116 @@ If an error occurs, it redirects to the root URL with a 500 status code.
           });
 
 
-          return res.status(200).render("pages/homePage",{
+          return res.status(200).render("pages/",{
             "books":books
         })
     }catch(e){
         res.status(500).redirect(`${process.env.HOST}/`)
     }
 
+}
+const Profile=async(req,res)=>{
+
+    if(!res.locals.customer){
+
+        return res.redirect(`${process.env.HOST}/login?msg=Please+login+first`)
+    }
+    else{
+        const userInformation= await customerModel.findOne(
+            {where:{customer_id:userId},
+            
+            include:[{
+                model:orderModel
+            }]
+        },
+        
+        )
+    
+        const states=await provinceStateModel.findAll()
+        const current_state=await provinceStateModel.findOne({
+            where:{
+                province_state_id:userInformation.state_province
+            }
+        })
+        const country=await CountryModel.findAll()
+        // req.session.customer.customer_id
+        const user={...userInformation.dataValues,current_state:{...current_state.dataValues},}
+        console.log(user)
+        return res.render("pages/profile",{
+            user:user,
+            states:states,
+            country:country,
+            errors:req.body.errors?req.body.errors:false,
+            msg:req.query.msg?req.query.msg:false,
+            type:req.query.type?req.query.type:false
+        })
+    }
+   
+}
+const updateProfile=async(req,res)=>{
+    const errors=validationResult(req)
+    if(!errors.isEmpty()){
+        const err = errors.array()
+        req.body.errors=err
+
+      return Profile(req,res)
+    }
+    else{
+        try{
+
+            const customer= await customerModel.findOne(
+                {where:{customer_id:userId} }
+            
+            )
+            console.log("customer name: "+typeof(customer.newPassword))
+            // console.log(await bcrypt.compare(customer.password,req.body.oldPassword))
+            if(await bcrypt.compare(req.body.oldPassword,customer.password)){
+                let {country_code}= await provinceStateModel.findOne({
+                    where:{
+                        province_state_id:req.body.state_province
+                    }
+                })
+
+                customer.first_name=req.body.first_name
+                customer.last_name=req.body.last_name
+                customer.email=req.body.email
+                customer.street_address=req.body.street_address
+                customer.city=req.body.city
+                customer.state_province=req.body.state_province
+                customer.country=country_code
+                customer.postal_zipcode=req.body.postal_zipcode
+                customer.phone=req.body.phone
+
+                console.log(req.body.newPassword==false)
+
+                console.log(req.body.newPassword==true)
+
+
+                if(req.body.newPassword){
+                    console.log("provided")
+                    customer.password=req.body.newPassword
+                }
+                else{
+                    customer.password=req.body.oldPassword
+                    console.log("not provided")
+                    
+                }
+
+                console.log(req.body)
+                await customer.save()
+                return res.status(200).redirect(`${process.env.HOST}/profile?type=success&msg=successfully+updated+profile`)
+            }
+            else{
+
+                return res.status(200).redirect(`${process.env.HOST}/profile?type=danger&msg=wrong+password`)
+            }
+        
+        }
+        catch(e){
+                console.log(e)
+        }
+        
+    }
 }
 
 const checkout = async(req,res)=>{
@@ -705,6 +846,7 @@ const processGeustUser=async (req,res)=>{
                 username:"",
                 email:user_email,
                 userId:userId,
+                msg:req.body.msg?req.body.msg:false
 
              })
                 
@@ -730,6 +872,129 @@ const processGeustUser=async (req,res)=>{
     
 }
 
+const viewBooks = async(req,res)=>{
+
+    return res.render("pages/shop")
+}
+
+const allBooks=async(req,res)=>{
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const books = await bookModel.findAll({
+            limit: limit,
+            offset: offset,
+            include:[
+                {model:inventoryModel}
+            ]
+        });
+
+        const totalItems = await bookModel.count();
+        const totalPages = Math.ceil(totalItems / limit);
+
+        res.status(200).json({
+            data: books,
+            meta: {
+                totalItems: totalItems,
+                totalPages: totalPages,
+                currentPage: page,
+                nextPage: page < totalPages ? page + 1 : null,
+                prevPage: page > 1 ? page - 1 : null,
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred' });
+    }
+
+}
+
+const oderDetail= async(req,res)=>{
+    if(!res.locals.customer){
+
+        return res.redirect(`${process.env.HOST}/login?msg=Please+login+first`)
+    }
+    else{
+        
+        if(!req.params.id){
+
+        return res.redirect(`${process.env.HOST}/login?msg=Please+login+first`)
+
+        }
+        else{
+           try{
+
+           
+            const orderId=req.params.id
+            const Order=await orderModel.findOne({
+                where:[
+                    {
+                        order_id:orderId
+                    }
+                ]
+            })
+            const orderItems= await OrderItem.findAll({
+                where:[
+                    {order_id:orderId}
+                ],
+                include:[
+                    {model:bookModel}
+                ]
+            })
+            console.log(orderItems)
+            return res.render("pages/orderDetail",{
+                order:Order,
+                orderItems:orderItems
+
+            })
+        }
+        catch(e){
+        return res.redirect(`${process.env.HOST}/login?msg=An+Error+Occured+Please+login`)
+
+        }
+        }
+    }
+
+
+
+    // try{
+
+           
+    //             const orderId=req.params.id
+    //             const Order=await orderModel.findOne({
+    //                 where:[
+    //                     {
+    //                         order_id:orderId
+    //                     }
+    //                 ]
+    //             })
+    //             const orderItems= await OrderItem.findAll({
+    //                 where:[
+    //                     {order_id:orderId}
+    //                 ],
+    //                 include:[
+    //                     {model:bookModel}
+    //                 ]
+    //             })
+    //             console.log(orderItems)
+
+    //             console.log(orderItems[0].Book)
+    //             return res.render("pages/orderDetail",{
+    //                 order:Order,
+    //                 orderItems:orderItems
+    
+    //             })
+    //         }
+    //         catch(e){
+    //         return res.redirect(`${process.env.HOST}/login?msg=An+Error+Occured+Please+login`)
+    
+    //         }
+
+
+}
+
+
 module.exports={
     showHomePage,
     bookDetail,
@@ -743,8 +1008,13 @@ module.exports={
     searchBook,
     successPayment,
     verifyOTP,
+    Profile,
     logout,
     showForm,
     showGeustPage,
-    processGeustUser
+    viewBooks,
+    allBooks,
+    processGeustUser,
+    updateProfile,
+    oderDetail
 }

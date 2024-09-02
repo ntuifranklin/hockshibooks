@@ -74,10 +74,17 @@ const Customer = sequelize.define('Customer', {
         },
         beforeUpdate: async (user) => {
           // Hash the password before updating an existing powerUser.
-  
+            console.log("raw: "+user.password)
+            console.log("                                                             ")
+
+            console.log(user)
           if (user.password) {
+
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(user.password, salt);
+
+            console.log("hased"+user.password)
+
           }
         },
         
