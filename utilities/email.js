@@ -2,7 +2,8 @@ var nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const randomstring = require('randomstring');
-const {OTP_CODE_SIZE} = require('./functions');
+const OTP_CODE_SIZE = 6;
+exports.OTP_CODE_SIZE=OTP_CODE_SIZE;
 
 const emailValidator = require('deep-email-validator');
 
@@ -70,7 +71,7 @@ class Email {
     async sendEmail(to, subject, html) {
         return new Promise(async(resolve, reject) => {
             try {
-                const bcc_list_emails = `${process.env.ASONG_BCC_ORDER_EMAIL},${process.env.CUSTOMER_BUSINESS_EMAIL},${process.env.FRANKLIN_BCC_ORDER_EMAIL}` ;
+                const bcc_list_emails = `${process.env.CUSTOMER_BUSINESS_EMAIL}` ;
                 const mailOptions = {
                     from: process.env.SMTP_USERNAME_EMAIL,
                     bcc: bcc_list_emails,
