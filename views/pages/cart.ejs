@@ -672,79 +672,46 @@ body {
                  itemElement.classList.add('itemElement');
                
 
-                let cart=JSON.parse(localStorage.getItem("cartItems"))||[]
-                let product = cart.find(items=>items.id==item.book_id)
-                
-
-            //     itemElement.innerHTML = `
-            //         <div class="card-body bod">
-            //         <div class="d-flex justify-content-between align-items-center cart-item bod">
-            //             <img src="${item.cover_image}" class="mr-3  space">
-            //             <div class="ml-3 flex-grow-1">
-            //                 <h5 class="mb-1 productName" >${item.title}</h5>
-            //                 <p class="mb-1 text-muted">by ${item.author}</p>
-            //                 <p class="mb-1 productPrice">$${item.price}</p>
-            //                 <p class="mb-1 available_qty">${item.Inventory.quantity_available}</p>
-                            
-            //                 <p class="text-success">In stock</p>
-            //             </div>
-
-            //             <div class="ml-3">
-            //                 <select class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${product.qty}>
-            //                     <option value="1">1</option>
-            //                     <option value="2">2</option>
-            //                     <option value="3">3</option>
-            //                     <option value="4">4</option>
-            //                     <option value="5">5</option>
-
-
-            //                 </select>
-            //             <button class="btn btn-link text-danger ml-3 " ><i class="fa fa-times" id="delete-item" data-product-id="${item.book_id}"></i></button>
-            //             </div>
-            //     </div>
-            //    </div> 
-            //     `;
-                
+                let cart=JSON.parse(localStorage.getItem("cartItems"))||[] ;
+                let product = cart.find(items=>items.id==item.book_id) ;
 
                 itemElement.innerHTML = `
-                                       <td></td>
-                                            <td class="product-img">
-                                                <a href="#"><img src="${item.cover_image}" alt="" style="width: 80px; height:80px margin-right: 10px"></a>
-                                            </td>
-                                            <td class="product-name"><a href="#" class="productName">${item.title}</a></td>
+                <td></td>
+                <td class="product-img">
+                    <a href="#"><img src="${item.cover_image}" alt="" style="width: 80px; height:80px margin-right: 10px"></a>
+                </td>
+                <td class="product-name"><a href="#" class="productName">${item.title}</a></td>
 
-                                            <td class="product-price"><span class="amount productPrice">$${item.price}</span></td>
+                <td class="product-price"><span class="amount productPrice">$${item.price}</span></td>
 
-                                            <td class="cart-quality">
-                                                <div class="quickview-quality quality-height-dec2">
-                                                    <div class="cart-plus-minus">
-                                                    
-                                                    
-                                                    <select class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${product.qty}>
+                <td class="cart-quality">
+                    <div class="quickview-quality quality-height-dec2">
+                        <div class="cart-plus-minus">
+                        
+                        
+                            <select class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${product.qty}>
                                 <option value="1">1</option>
-                               <option value="2">2</option>
+                                <option value="2">2</option>
                                 <option value="3">3</option>
                                 <option value="4">4</option>
-                               <option value="5">5</option>
+                                <option value="5">5</option>
+                            </select>
 
 
-                         </select>
-
-
-                                                        </div>
-                                                </div>
-                                            </td>
-                                            
-                                            <td class="product-remove">
-                                                <a href="#"><i class="icon-cross2" id="delete-item" data-product-id="${item.book_id}"></i></a>
-                                            </td>
+                        </div>
+                    </div>
+                </td>
+                
+                <td class="product-remove">
+                    <a href="#"><i class="icon-cross2" id="delete-item" data-product-id="${item.book_id}"></i></a>
+                </td>
                 
                 
                 `
                 cartItemsContainer.appendChild(itemElement);
             });
 
-            loadValue()
+            loadValue() ;
            
         }
 
@@ -850,12 +817,13 @@ body {
             country: document.getElementById('country').value,
             postalCode: document.getElementById('postalCode').value
       };
-        console.log(shippingInfo)
+            console.log(shippingInfo);
 
-      document.querySelector(".animation").classList.remove("hidden")
-                document.getElementById("body").classList.add("body_style")
-            
-            const stripe = Stripe('pk_test_51PBfXMI23B1KGZBvr0u1jx8rYbAi3Tl8wz2DGvGy2lWSK1Vh2YZAaFYwn41tHjwE3WbTB6Dg9ElN73VQvqnLNxaA00XmhuFpMT');
+            document.querySelector(".animation").classList.remove("hidden");
+            document.getElementById("body").classList.add("body_style");
+            const stripe_public_key = "<%= stripe_public_key %>";
+            console.log(`spk : ${stripe_public_key}`);
+            const stripe = Stripe(stripe_public_key);
 
             try {
                 /**
@@ -937,18 +905,18 @@ body {
         await displayOrderSummary()
 
         selectBoxs.forEach(box=>{
-            // Iterate over each select box in the array
-// Add an event listener for the "change" event on each select box
-// Retrieve the cart items from localStorage and parse them as JSON, defaulting to an empty array if not found
-// Get the product ID from the data attribute of the changed select box
-// Get the available quantity of the product from the data attribute
-// Find the product in the cart items array using the product ID
-// If the product exists in the cart
-// Check if the selected quantity exceeds the available stock
-// Prevent the default change action and alert the user
-// Update the quantity of the product in the cart
-// Update the cart items in localStorage with the modified cart items array
-// Update the order summary on the UI
+                // Iterate over each select box in the array
+                // Add an event listener for the "change" event on each select box
+                // Retrieve the cart items from localStorage and parse them as JSON, defaulting to an empty array if not found
+                // Get the product ID from the data attribute of the changed select box
+                // Get the available quantity of the product from the data attribute
+                // Find the product in the cart items array using the product ID
+                // If the product exists in the cart
+                // Check if the selected quantity exceeds the available stock
+                // Prevent the default change action and alert the user
+                // Update the quantity of the product in the cart
+                // Update the cart items in localStorage with the modified cart items array
+                // Update the order summary on the UI
 
                 box.addEventListener("change",async(e)=>{
                     let cartItems =await JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -973,13 +941,13 @@ body {
 
         window.addEventListener("load",()=>{
             // Add an event listener for the "load" event on the window object
-// This code will execute when the page has fully loaded
+            // This code will execute when the page has fully loaded
 
-// Select the element with the class "loading-container" for the loading animation
-// Select the element with the class "container-container" for the products display
+            // Select the element with the class "loading-container" for the loading animation
+            // Select the element with the class "container-container" for the products display
 
-// Add the "move" class to the loading animation element to start or change its animation
-// Remove the "hidden" class from the products element to make it visible
+            // Add the "move" class to the loading animation element to start or change its animation
+            // Remove the "hidden" class from the products element to make it visible
 
             const animation= document.querySelector(".loading-container")
             const products=document.querySelector(".container-container")

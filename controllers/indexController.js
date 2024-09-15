@@ -16,8 +16,12 @@ const { validationResult } = require("express-validator");
 const bcrypt = require('bcrypt');
 const sequelize = require('../config/database');
 const {generateAndSendOTP}=require("../utilities/functions");
-const stripe = require("stripe")(process.env.Stripe_secret_key);
 
+require('dotenv').config();
+
+const stripe_public_key = process.env.STRIPE_PUBLIC_KEY;
+const stripe_secret_key = process.env.STRIPE_SECRET_KEY;
+const stripe = require("stripe")(stripe_secret_key);
 
 let user_email;
 let userId;
@@ -93,19 +97,20 @@ const bookDetail= async (req,res)=>{
 }
 const viewCart= async(req,res)=>{
     /**
- * Renders the cart page view.
- *
- * @param {Object} req - The request object.
- * @param {Object} res - The response object used to render the cart page view.
- * @return {Promise<void>} - Returns a Promise that resolves with the rendered cart page view.
- */
-    const states=await provinceStateModel.findAll()
-    const country=await CountryModel.findAll()
+     * Renders the cart page view.
+     *
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object used to render the cart page view.
+     * @return {Promise<void>} - Returns a Promise that resolves with the rendered cart page view.
+     */
+    const states=await provinceStateModel.findAll();
+    const country=await CountryModel.findAll();
 
 
     return res.render("pages/cart",{
         states:states,
-        country:country
+        country:country,
+        stripe_public_key: `${stripe_public_key}`,
     })
 }
 const getCartItems=async (req,res)=>{
