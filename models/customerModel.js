@@ -7,6 +7,7 @@ const crypto = require('crypto');
 
 const Order= require("./ordersModel")
 
+
 const Customer = sequelize.define('Customer', {
     customer_id: {
         type: DataTypes.UUIDV4,
@@ -14,11 +15,11 @@ const Customer = sequelize.define('Customer', {
     },
     first_name: {
         type: DataTypes.STRING(64),
-        allowNull: false,
+        allowNull: true,
     },
     last_name: {
         type: DataTypes.STRING(64),
-        allowNull: false,
+        allowNull: true,
     },
     email: {
         type: DataTypes.STRING(64),
@@ -27,31 +28,36 @@ const Customer = sequelize.define('Customer', {
     },
     password: {
         type: DataTypes.STRING(256),
-        allowNull: false,
+        allowNull: true,
     },
+    geust: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false, 
+      },
     street_address: {
         type: DataTypes.STRING(256),
-        allowNull: false,
+        allowNull: true,
     },
     city: {
         type: DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: true,
     },
     state_province: {
         type: DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: true,
     },
     country: {
         type: DataTypes.STRING(128),
-        allowNull: false,
+        allowNull: true,
     },
     postal_zipcode: {
         type: DataTypes.STRING(32),
-        allowNull: false,
+        allowNull: true,
     },
     phone: {
         type: DataTypes.STRING(32),
-        allowNull: false,
+        allowNull: true,
     }
     
 }, {
@@ -68,10 +74,17 @@ const Customer = sequelize.define('Customer', {
         },
         beforeUpdate: async (user) => {
           // Hash the password before updating an existing powerUser.
-  
+            console.log("raw: "+user.password)
+            console.log("                                                             ")
+
+            console.log(user)
           if (user.password) {
+
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(user.password, salt);
+
+            console.log("hased"+user.password)
+
           }
         },
         

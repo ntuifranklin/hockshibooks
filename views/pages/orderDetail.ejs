@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Order detail</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="icon" href="../assets/images/favicon.ico">
+
+    <!-- CSS
+        ============================================ -->
+
+    <!-- Bootstrap Css -->
+    <link rel="stylesheet" href="../assets/css/vendor/bootstrap.min.css">
+
+    <!-- Icons Css -->
+    <link rel="stylesheet" href="../assets/css/vendor/linearicons.min.css">
+    <link rel="stylesheet" href="../assets/css/vendor/fontawesome-all.min.css">
+
+    <!-- Animation Css -->
+    <link rel="stylesheet" href="../assets/css/plugins/animation.min.css">
+
+    <!-- Slick Slier Css -->
+    <link rel="stylesheet" href="../assets/css/plugins/slick.min.css">
+
+    <!-- Magnific Popup CSS -->
+    <link rel="stylesheet" href="../assets/css/plugins/magnific-popup.css">
+
+    <!-- Easyzoom CSS -->
+    <link rel="stylesheet" href="../assets/css/plugins/easyzoom.css">
+
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+</head>
+
+<body class="">
+
+
+
+    <%- include('../layout/customerNavBar') %>
+
+
+    <!-- breadcrumb-area start -->
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row breadcrumb_box  align-items-center">
+                        <div class="col-lg-6 col-md-6 col-sm-6 text-center text-sm-start">
+                            <h2 class="breadcrumb-title">Order Detail</h2>
+                        </div>
+                        <div class="col-lg-6  col-md-6 col-sm-6">
+                            <!-- breadcrumb-list start -->
+                            <ul class="breadcrumb-list text-center text-sm-end">
+                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item active">order No : <%=order.order_id %> </li>
+                            </ul>
+
+                            <ul class="breadcrumb-list text-center text-sm-end">
+                               
+                                <li class="breadcrumb-item active">delivery_status : <%=order.delivery_status %> </li>
+                            </ul>
+                            <!-- breadcrumb-list end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- breadcrumb-area end -->
+
+
+
+
+
+    <div id="main-wrapper">
+        <div class="site-wrapper-reveal border-bottom">
+
+            <!-- cart start -->
+            <div class="cart-main-area  section-space--ptb_90">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form action="#">
+                                <div class="table-content table-responsive cart-table-content header-color-gray">
+                                    <table>
+                                        <thead>
+                                            <tr class="bg-gray">
+                                                <th></th>
+                                                <th></th>
+                                                <th class="product-name">Product</th>
+                                                
+                                                <th class="product-price"> Price</th>
+                                                
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <% for (let i=0;i != orderItems.length;i++){ %>
+                                                <tr>
+                                          
+
+                                                    <td></td>
+                                                    <td class="product-img">
+                                                        <a href="/productDetails/<%=`${orderItems[i].Book.book_id} `%>">
+                                                                                    
+                                                    <% if(orderItems[i].Book.cover_image_url.split(":")[0]=="https") { %>
+                                                        <img  src="<%=`${orderItems[i].Book.cover_image_url}`%>" class="img-fluid bookCoverImage" alt="Product Images"  >
+                                                        <% } else { %>
+                                                        <img  src="/uploads/<%=`${orderItems[i].Book.cover_image_url}`%>" class="img-fluid bookCoverImage" alt="Product Images"  >
+                                    
+                                                        <% } %>
+                                                        
+                                                        </a>
+                                                    </td>
+                                                    <td class="product-name"><a href="/productDetails/<%=`${orderItems[i].Book.book_id} `%>"><%= orderItems[i].Book.title %></a></td>
+    
+                                                    <td class="product-price"><span class="amount">$<%= orderItems[i].Book.price %></span></td>
+    
+                                                    <td class="cart-quality">
+                                                        <div class="quickview-quality quality-height-dec2">
+                                                            
+                                                                <p class="cart-plus-minus-box" ><%=orderItems[i].quantity %></p>
+                                                           
+                                                        </div>
+                                                    </td>
+                                                    <td class="price-total">
+                                                        <span class="amount">$ <%=orderItems[i].subtotal %></span>
+                                                    </td>
+                                                    
+                                                </tr>
+
+                                                <% } %>
+                                         
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </form>
+                            <div class="shoping-update-area row">
+                                <div class="continue-shopping-butotn col-6 mt-30">
+                                    <a href="/books" class="btn btn--lg btn--black"><i class="icon-arrow-left"></i> Make a new order </a>
+                                </div>
+                                
+                            </div>
+                            <div class="cart-buttom-area">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <!-- <div class="discount-code section-space--mt_60">
+                                            <h6 class="mb-30">Coupon Discount</h6>
+                                            <p>Enter your coupon code if you have one.</p>
+                                            <input type="text" name="name" placeholder="Coupon code">
+                                            <button class="coupon-btn btn btn--lg btn--border_1" type="submit">Apply coupon</button>
+                                        </div> -->
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="cart_totals section-space--mt_60 ms-md-auto">
+                                            <div class="grand-total-wrap">
+                                                <div class="grand-total-content">
+                                                    <ul>
+                                                        <!-- <li>Subtotal <span> $87.00</span></li> -->
+                                                        <li>Total <span>$<%= order.total_amount%></span> </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- cart end -->
+
+        </div>
+
+       
+
+
+
+    </div>
+
+    <%- include('../layout/footer') %>
+
+    
+    
+       
+   
+    
+
+    <!-- JS
+    ============================================ -->
+    <!-- Modernizer JS -->
+    <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
+
+    <!-- jQuery JS -->
+    <script src="../assets/js/vendor/jquery-3.5.1.min.js"></script>
+    <script src="../assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/js/vendor/bootstrap.min.js"></script>
+
+    <!-- Fullpage JS -->
+    <script src="../assets/js/plugins/fullpage.min.js"></script>
+
+    <!-- Slick Slider JS -->
+    <script src="../assets/js/plugins/slick.min.js"></script>
+
+    <!-- Countdown JS -->
+    <script src="../assets/js/plugins/countdown.min.js"></script>
+
+    <!-- Magnific Popup JS -->
+    <script src="../assets/js/plugins/magnific-popup.js"></script>
+
+    <!-- Easyzoom JS -->
+    <script src="../assets/js/plugins/easyzoom.js"></script>
+
+    <!-- ImagesLoaded JS -->
+    <script src="../assets/js/plugins/images-loaded.min.js"></script>
+
+    <!-- Isotope JS -->
+    <script src="../assets/js/plugins/isotope.min.js"></script>
+
+    <!-- YTplayer JS -->
+    <script src="../assets/js/plugins/YTplayer.js"></script>
+
+    <!-- Instagramfeed JS -->
+    <!-- <script src="../assets/js/plugins/jquery.instagramfeed.min.js"></script> -->
+
+    <!-- Ajax Mail JS -->
+    <script src="../assets/js/plugins/ajax.mail.js"></script>
+
+    <!-- wow JS -->
+    <script src="../assets/js/plugins/wow.min.js"></script>
+
+
+
+    <!-- Plugins JS (Please remove the comment from below plugins.min.js for better website load performance and remove plugin js files from avobe) -->
+
+    <!--
+    <script src="../assets/js/plugins/plugins.min.js"></script>
+    -->
+
+    <!-- Main JS -->
+    <script src="../assets/js/main.js"></script>
+
+
+</body>
+
+</html>

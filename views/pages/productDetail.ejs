@@ -4,114 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%=book.title%></title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    
     <style>
         body{
 
             background-color: #f3f4f6;
         }
-
-        .card-custom {
-            height: 560px;
-            width: fit-content;
-            background-color: #d1d5db; /* Equivalent to bg-gray-300 */
-            
+        .product-images{
+            width: 500px;
+            height: auto;
         }
-        .card-img-top-custom {
-            height: 100%;
-            object-fit: cover;
-        }
-        .add-to-cart {
-            width: 150px;
-            height: 40px;
-            border-radius: 5px;
-            color: white;
-            border: none;
-            font-size: 18px;
-            font-family: "poppins";
-        }
-        .submit {
-            background-color: #2874f0; /* Equivalent to dark:hover:bg-gray-700 */
-            border-radius: 20px; /* Full rounded corners */
-            transition:  0.3s ease-in-out;
-        }
-        
-        .submit:hover {
-
-            background-color: transparent;
-            border: 1px solid #2874f0;
-            color:black; /* Equivalent to hover:bg-gray-800 */
-        }
-        
-        .color-selector {
-            width: 24px;
-            height: 24px;
-            border-radius: 9999px;
-            margin-right: 8px;
-        }
-        .product-img{
-            height: 400px;
-            padding: 10px;
-        }
-        .product-img>img{
-            width: 300px;
-            height: 400px;
-        }
-
-   
-
-        .book-details {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-        }
-
-        .book-image {
-            width: 200px;
-            height: 300px;
-            margin-right: 20px;
-            background-color: #e5e5e5;
-            border-radius: 5px;
-        }
-
-        .book-info {
-            flex: 1;
-        }
-
-        .title,
-        .author,
-        .price,
-        .availability,
-        .isbn,
-        .description {
-            height: 20px;
-            margin-bottom: 10px;
-            background-color: #e5e5e5;
-            border-radius: 5px;
-        }
-
-        .title {
-            width: 70%;
-            height: 30px;
-        }
-
-        .author,
-        .isbn {
-            width: 50%;
-        }
-
-        .price,
-        .availability {
-            width: 30%;
-        }
-
-        .description {
-            width: 90%;
-            height: 50px;
-        }
+       
 
         
 
@@ -186,135 +90,430 @@
         }
         
         </style>
+
+<link rel="icon" href="../../assets/images/favicon.ico">
+
+<!-- CSS
+    ============================================ -->
+
+<!-- Bootstrap Css -->
+<link rel="stylesheet" href="../assets/css/vendor/bootstrap.min.css">
+
+<!-- Icons Css -->
+<link rel="stylesheet" href="../assets/css/vendor/linearicons.min.css">
+<link rel="stylesheet" href="../assets/css/vendor/fontawesome-all.min.css">
+
+<!-- Animation Css -->
+<link rel="stylesheet" href="../assets/css/plugins/animation.min.css">
+
+<!-- Slick Slier Css -->
+<link rel="stylesheet" href="../assets/css/plugins/slick.min.css">
+
+<!-- Magnific Popup CSS -->
+<link rel="stylesheet" href="../assets/css/plugins/magnific-popup.css">
+
+<!-- Easyzoom CSS -->
+<link rel="stylesheet" href="../assets/css/plugins/easyzoom.css">
+
+<!-- Main Style CSS -->
+<link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 
   <%- include('../layout/customerNavBar') %>
-  <div class="book-details loading">
-    <div class="book-image animated-background"></div>
-    <div class="book-info">
-        <div class="title animated-background"></div>
-        <div class="author animated-background"></div>
-        <div class="price animated-background"></div>
-        <div class="availability animated-background"></div>
-        <div class="isbn animated-background"></div>
-        <div class="description animated-background"></div>
-        <div class="add-to-cart animated-background"></div>
-    </div>
-</div>
-<div class="py-5">
-    <div class="container hidden">
-        <div class="row">
-            <!-- Image and Buttons -->
-            <div class="col-md-6">
-                <div class="card mb-4 card-custom">
-                    <div class="product-img">
-                        <% if(book.cover_image_url.split(":")[0]=="https") { %>
-                      <img  src="<%=`${book.cover_image_url}`%>" class="img-fluid">
-                      <% } else { %>
-                        <img  src="/uploads/<%=`${book.cover_image_url}`%>" class="img-fluid">
-    
-                        <% } %>
-                    </div>
-                </div>
-                <div class="row mb-4">
-                        <button class="submit add-to-cart  " data-product-id="<%= book.book_id %>">Add to Cart</button>
-                   
-                </div>
-            </div>
-            <!-- Product Details -->
-            <div class="col-md-6">
-                <h2 class="text-dark mb-2"><b><%=book.title%></b></h2>
-                <p class="text-muted mb-4">
-                    by <%=book.author %>
-                </p>
-                <div class="d-flex mb-4">
-                    <div class="mr-4">
-                        <span class="font-weight-bold text-dark">Price:</span>
-                        <span class="text-muted">$ <%=book.price%></span>
-                    </div>
-                    <div>
-                        <span class="font-weight-bold text-dark">Availability:</span>
-                        <%if(book.Inventory.quantity_available>0){ %>
-                        <span class="text-muted">In Stock</span>
-                        <% } else{ %>
-                        <span class="text-muted">Out of  Stock</span>
 
-                            <%}%>
+   <!-- breadcrumb-area start -->
+   <div class="breadcrumb-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="row breadcrumb_box  align-items-center">
+                    <div class="col-lg-6 col-md-6 col-sm-6 text-center text-sm-start">
+                        <h2 class="breadcrumb-title"></h2>
                     </div>
-                </div>
-                <!-- <div class="mb-4">
-                    <span class="font-weight-bold text-dark">publication date</span>
-                    <div class="d-flex mt-2">
-                       <p><%=release_date%></p>
+                    <div class="col-lg-6  col-md-6 col-sm-6">
+                        <!-- breadcrumb-list start -->
+                        <ul class="breadcrumb-list text-center text-sm-end">
+                            <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item active">Books</li>
+                        </ul>
+                        <!-- breadcrumb-list end -->
                     </div>
-                </div> -->
-                <div class="mb-4">
-                    <span class="font-weight-bold text-dark">ISBN:</span>
-                    <div class="d-flex mt-2">
-                        <p><%=book.ISBN %></p>
-                    </div>
-                </div>
-                <div>
-                    <span class="font-weight-bold text-dark">book Description:</span>
-                    <p class="text-muted mt-2">
-                        <%=book.description%>
-                    </p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script>
+<!-- breadcrumb-area end -->
 
-async function addToCart (productId) {
-            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+<div id="main-wrapper">
+    <div class="site-wrapper-reveal">
+
+        <div class="single-product-wrap section-space--pt_90 border-bottom">
+            <div class="book-details loading">
+                <div class="book-image animated-background"></div>
+                <div class="book-info">
+                    <div class="title animated-background"></div>
+                    <div class="author animated-background"></div>
+                    <div class="price animated-background"></div>
+                    <div class="availability animated-background"></div>
+                    <div class="isbn animated-background"></div>
+                    <div class="description animated-background"></div>
+                    <div class="add-to-cart animated-background"></div>
+                </div>
+            </div>
+            <div class="container ">
+                <div class="row">
+                    <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
+
+                        <!-- Product Details Left -->
+                        <div class="product-details-left">
+                            <div class="product-details-images-2 slider-lg-image-2">
+
+                                <div class="easyzoom-style">
+                                    <div class="">
+                                        <% if(book.cover_image_url.split(":")[0]=="https") { %>
+                                            <a href="<%=`${book.cover_image_url}`%>" class="poppu-img">
+                                            <img  src="<%=`${book.cover_image_url}`%>" class="img-fluid product-images" ></a>
+
+                                            <% } else { %>
+                                                <a href="/uploads/<%=`${book.cover_image_url}`%>" class="poppu-img">
+                                              <img  src="/uploads/<%=`${book.cover_image_url}`%>" class="img-fluid product-images"></a>
+                                              
+                          
+                                              <% } %>
+                                       
+                                    </div>
+                                </div>
+                                
+                               
+                                
+                            </div>
+                           
+                        </div>
+                        <!--// Product Details Left -->
+
+                    </div>
+                    <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                        <div class="product-details-content ">
+
+                            <h5 class="font-weight--reguler mb-10"><%=book.title%></h5>
+
+                            <h3 class="price">$<%=book.price%></h3>
 
 
 
-            let product = cartItems.find(item => item.id == productId);
+                            <div class="quickview-peragraph mt-10">
+                                <p>By <%=book.author%></p>
+                            </div>
 
-                if (product) {
-                alert("product already exists in your shopping cart")
 
-                } else {
-                     await cartItems.push({ id: productId, qty: 1 });
-                    changeCartValue()
-                
 
-                }
+                            <div class="product_meta mt-30">
+                                <div class="sku_wrapper item_meta">
+                                    <span class="label"> ISBN: </span>
+                                    <span class="sku"> <%=book.ISBN %> </span>
+                                </div>
+                               
+                               
+                            </div>
 
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
 
+                            
+
+                                
+                            
+
+
+                            <div class="quickview-action-wrap mt-30">
+
+                                <div>
+                                    <span class="font-weight-bold text-dark">Availability:</span>
+                                    <%if(book.Inventory.quantity_available>0){ %>
+                                        <div class="quickview-cart-box">
+                                            <div class="quickview-quality">
+                                                <div class="cart-plus-minus">
+                                                    <input class="cart-plus-minus-box" type="text" name="qtybutton" value="1" max="5">
+                                                </div>
+                                            </div>
+        
+                                            <div class="quickview-button">
+                                                <div class="quickview-cart button">
+                                                    <p class="submit add-to-cart btn--lg btn--black font-weight--reguler text-white" data-product-id="<%= book.book_id %>">Add to cart</p>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    <% } else{ %>
+                                        <p  class="btn--lg btn--black font-weight--reguler text-white">Out of Stock</p>
+
+            
+                                        <%}%>
+                                </div>
+                                
+
+                            </div>
+
+                           
+                           
+
+                        </div>
+                    </div>
+                </div>
+               
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="product-details-tab section-space--pt_90">
+                            <ul role="tablist" class=" nav">
+                                <li class="active" role="presentation">
+                                    <a data-bs-toggle="tab" role="tab" href="#description" class="active">Description</a>
+                                </li>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="product_details_tab_content tab-content mt-30">
+                            <!-- Start Single Content -->
+                            <div class="product_tab_content tab-pane active" id="description" role="tabpanel">
+                                <div class="product_description_wrap">
+                                    <div class="product-details-wrap">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-7 order-md-1 order-2">
+                                                <div class="details mt-30">
+                                                    <h5 class="mb-10">Detail</h5>
+                                                    <p> <%=book.description%></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 order-md-2 order-1">
+                                                <div class="images">
+                                                    <img src="assets/images/product/single-product-01.webp" class="img-fluid" alt="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+
+                <div class="related-products section-space--ptb_90">
+                    <% if(relatedBooks.length>0) { %>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="section-title text-center mb-30">
+                                <h4>Related products</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-slider-active">
+                            <% for(let i=0; i < relatedBooks.length; i++) { %>
+            
+                        
+                      
+            
+                       
+                          <div class="single-product-item text-center col-lg-12">
+                              <div class="products-images">
+                                  <a href="/productDetails/<%=`${relatedBooks[i].book_id} `%>" class="product-thumbnail">
+      
+                                    <% if(relatedBooks[i].cover_image_url.split(":")[0]=="https") { %>
+                                      <img  src="<%=`${relatedBooks[i].cover_image_url}`%>" class="img-fluid" alt="Product Images" width="400" height="400" >
+                                      <% } else { %>
+                                        <img  src="/uploads/<%=`${relatedBooks[i].cover_image_url}`%>" class="img-fluid" alt="Product Images" width="400" height="400" >
+                    
+                                        <% } %>
+      
+                                        <% if (relatedBooks[i].Inventory.quantity_available <= 0) { %>
+                                      <span class="ribbon out-of-stock">
+                                      Out Of Stock
+                                  </span>
+                                  <% } %>
+                                  </a>
+                                  <div class="product-actions">
+                                    <a href="/productDetails/<%=`${relatedBooks[i].book_id} `%>"  data-bs-target="#prodect-modal"><i class="p-icon icon-plus"></i><span class="tool-tip">Quick View</span></a>
+                                    <% if (relatedBooks[i].Inventory.quantity_available>0) { %>
+                                      <a class="add-to-cart"><i class="p-icon icon-bag2 " data-product-id="<%= relatedBooks[i].book_id %>"></i> <span class="tool-tip">Add to cart</span></a>
+                                      <% } %>
+                                  </div>
+                              </div>
+                              <div class="product-content">
+                                  <h6 class="prodect-title"><a href="/productDetails/<%=`${relatedBooks[i].book_id} `%>"><%=relatedBooks[i].title %></a></h6>
+                                  <div class="prodect-price">
+                                      <span class="new-price">$<%=relatedBooks[i].price %></span>
+                                  </div>
+                              </div>
+                          </div><!-- Single Product Item End -->
+                          <% } %>
+                       
+
+                       
+                    </div>
+
+                    <% } %>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+  
+<%- include('../layout/footer') %>
+
+
+
+
+
+<script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
+
+    <!-- jQuery JS -->
+    <script src="../assets/js/vendor/jquery-3.5.1.min.js"></script>
+    <script src="../assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/js/vendor/bootstrap.min.js"></script>
+
+    <!-- Fullpage JS -->
+    <script src="../assets/js/plugins/fullpage.min.js"></script>
+
+    <!-- Slick Slider JS -->
+    <script src="../assets/js/plugins/slick.min.js"></script>
+
+    <!-- Countdown JS -->
+    <script src="../assets/js/plugins/countdown.min.js"></script>
+
+    <!-- Magnific Popup JS -->
+    <script src="../assets/js/plugins/magnific-popup.js"></script>
+
+    <!-- Easyzoom JS -->
+    <script src="../assets/js/plugins/easyzoom.js"></script>
+
+    <!-- ImagesLoaded JS -->
+    <script src="../assets/js/plugins/images-loaded.min.js"></script>
+
+    <!-- Isotope JS -->
+    <script src="../assets/js/plugins/isotope.min.js"></script>
+
+    <!-- YTplayer JS -->
+
+    <!-- Instagramfeed JS -->
+    <!-- <script src="../assets/js/plugins/jquery.instagramfeed.min.js"></script> -->
+
+    <!-- Ajax Mail JS -->
+    <script src="../assets/js/plugins/ajax.mail.js"></script>
+
+    <!-- wow JS -->
+    <script src="../assets/js/plugins/wow.min.js"></script>
+
+
+
+    <!-- Plugins JS (Please remove the comment from below plugins.min.js for better website load performance and remove plugin js files from avobe) -->
+
+    <!--
+    <script src="../assets/js/plugins/plugins.min.js"></script>
+    -->
+
+    <!-- Main JS -->
+    <script src="../assets/js/main.js"></script>
+
+    <script>
+ document.addEventListener('DOMContentLoaded', function () {
+    let input;
+
+    let maxVal = parseInt(document.querySelector('.cart-plus-minus-box').getAttribute('max')) || 5; // Set a default max value if not specified
+    
+    document.querySelector('.inc').addEventListener('click', function () {
+         input = this.previousElementSibling; // Select the input field
+        console.log(input)
+        let val = parseInt(input.value);
+        if (val < maxVal) {
+            input.value = val + 1;
         }
-const changeCartValue=()=>{
-    const cartCountElement = document.querySelector('#cart-count');
+        else{
+            input.value = maxVal
+        }
+    });
 
-                    const cartCount = localStorage.getItem('cartItems') || [];
-                    const items=JSON.parse(cartCount)
-                     cartCountElement.textContent = items.length;
+    document.querySelector('.dec').addEventListener('click', function () {
+         input = this.nextElementSibling; // Select the input field
+        console.log(input)
 
-}
-        // Event listener for the add to cart button
-        document.querySelectorAll('.add-to-cart').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const productId = event.target.getAttribute('data-product-id');
-                // updateCartCount();
-                addToCart(productId);
-            });
-        });
+        let val = parseInt(input.value);
+        if (val > 1) {
+            input.value = val - 1;
+        }
+    });
 
-        window.addEventListener("load",()=>{
-            const animation= document.querySelector(".loading")
-            const products=document.querySelector(".container")
+    // Prevent manual input of values greater than the max
+    document.querySelector('.cart-plus-minus-box').addEventListener('input', function () {
+        let val = parseInt(this.value);
+        if (val > maxVal) {
+            this.value = maxVal;
+        }
+    });
 
-            animation.classList.add("move")
-            products.classList.remove("hidden")
-        })
 
-</script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    async function addToCart (productId) {
+                    let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        
+        
+        
+                    let product = cartItems.find(item => item.id == productId);
+        
+                        if (product) {
+                        alert("product already exists in your shopping cart")
+        
+                        } else {
+                            let maxVal = document.querySelector('.cart-plus-minus-box')
+                            let quantity=maxVal.value>0?maxVal.value:1
+                              cartItems.push({id: productId, qty:quantity});
+                            alert("Product successfully added to your cart")
+                            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                             changeCartValue()
+                        
+        
+                        }
+        
+        
+                }
+        const changeCartValue=()=>{
+            const cartCountElement = document.querySelector('#cart-count');
+        
+                            const cartCount = localStorage.getItem('cartItems') || [];
+                            const items=JSON.parse(cartCount)
+                             cartCountElement.textContent = items.length;
+        
+        }
+                // Event listener for the add to cart button
+                document.querySelectorAll('.add-to-cart').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const productId = event.target.getAttribute('data-product-id');
+                        // updateCartCount();
+                        addToCart(productId);
+                    });
+                });
+        
+});
+    
+                window.addEventListener("load",()=>{
+                    const animation= document.querySelector(".loading")
+                    const products=document.querySelector(".container")
+        
+                    animation.classList.add("move")
+                    products.classList.remove("hidden")
+                })
+        
+        </script>
 </body>
 </html>

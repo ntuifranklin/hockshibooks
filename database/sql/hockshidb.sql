@@ -33,8 +33,6 @@ DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS categories;
 
 
-
-
 -- Customers Table
 
 
@@ -55,8 +53,6 @@ CREATE TABLE Books (
     publication_date DATE,
     language VARCHAR(64),
     cover_image_url VARCHAR(1024)
-
-
 );
 
 
@@ -117,16 +113,17 @@ CREATE TABLE `Products` (
 -- Customers Table
 CREATE TABLE Customers (
     customer_id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    first_name VARCHAR(64) NOT NULL,
-    last_name VARCHAR(64) NOT NULL,
+    first_name VARCHAR(64)  NULL,
+    last_name VARCHAR(64)  NULL,
     email VARCHAR(64) UNIQUE NOT NULL ,
-    password VARCHAR(256) NOT NULL,
-    street_address VARCHAR(256) NOT NULL,
-    city VARCHAR(128) NOT NULL,
-    state_province VARCHAR(128) NOT NULL,
-    country VARCHAR(128) NOT NULL,
-    postal_zipcode VARCHAR(32) NOT NULL,
-    phone VARCHAR(32) NOT NULL
+    password VARCHAR(256)  NULL,
+    geust boolean default (0),
+    street_address VARCHAR(256)  NULL,
+    city VARCHAR(128)  NULL,
+    state_province VARCHAR(128)  NULL,
+    country VARCHAR(128)  NULL,
+    postal_zipcode VARCHAR(32)  NULL,
+    phone VARCHAR(32)  NULL
 );
 CREATE TABLE customerOtpTable (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
@@ -235,7 +232,7 @@ CREATE TABLE Orders (
     shipping_city VARCHAR(128) NOT NULL,
     shipping_state_province VARCHAR(128) NOT NULL,
     shipping_country VARCHAR(128) NOT NULL,
-    shipping_postal_code VARCHAR(32) NOT NULL,  
+    shipping_postal_code VARCHAR(32) NOT NULL,
     delivery_status ENUM('Processing', 'Shipped', 'Delivered') NOT NULL,
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
 );

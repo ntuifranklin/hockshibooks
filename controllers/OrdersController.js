@@ -6,6 +6,13 @@ const {sendStatusChangedMessage}= require("../utilities/functions")
 
 let order;
 const viewOrder=async(req,res)=>{
+    /**
+ * Retrieves an order and its associated order items from the database and renders a view to display them.
+ *
+ * @param {Object} req - The request object containing the order ID in the parameters.
+ * @param {Object} res - The response object used to render the view or redirect to an error page.
+ * @return {Promise<void>} - Returns a Promise that resolves with the rendered view or redirects to an error page.
+ */
     try{
         const id= req.params.id;
 
@@ -41,6 +48,15 @@ const viewOrder=async(req,res)=>{
 }
 
 const changeToProcessing= async(req,res)=>{
+    /**
+ * Updates the delivery status of an order to "Processing" and saves the changes to the database.
+ * Sends a status change message to the appropriate channel.
+ * Redirects to the admin dashboard with a success or error message.
+ *
+ * @param {Object} req - The request object containing the order ID in the parameters.
+ * @param {Object} res - The response object used to redirect to the admin dashboard.
+ * @return {Promise<void>} - Returns a Promise that resolves with a redirect to the admin dashboard.
+ */
     try{
         const id= req.params.id;
 
@@ -110,6 +126,13 @@ const changeToShipped = async(req,res)=>{
 }
 
 const changeToDelivered =async(req,res)=>{
+    /**
+ * Updates the delivery status of an order to "Shipped" and sends a status changed message.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {Promise<void>} Redirects the user to the admin dashboard with a success or error message.
+ */
     try{
         const id= req.params.id;
 

@@ -229,7 +229,6 @@ const saveUpdate=async(req,res)=>{
 
 }
 
-
 const deleteBook=async (req,res)=>{
     
       /**
@@ -266,14 +265,37 @@ const deleteBook=async (req,res)=>{
 }
 
 const getaddBookWithISBNForm=(req,res)=>{
-    res.render("pages/addBookWithISBNForm",{
+    /**
+ * Renders the "pages/addBookWithISBNForm" template with a message set to false.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {Promise<void>} A promise that resolves when the template is rendered.
+ */
+    res.status(200).render("pages/addBookWithISBNForm",{
         msg:false,
     })
 }
 
 const addBookWithISBN= async(req,res)=>{
+    /**
+ * Adds a book to the database using its ISBN number.
+ * 
+ * This function performs the following steps:
+ * 1. Retrieves the ISBN number from the request body.
+ * 2. Validates the request body for any errors.
+ * 3. If there are errors, renders the "pages/addBookWithISBNForm" template with the error message.
+ * 4. If there are no errors, fetches the book data from the Open Library API using the ISBN number.
+ * 5. If the book data is found, creates a new book record in the database and adds it to the inventory.
+ * 6. If the book record is created successfully, redirects the user to the admin dashboard with a success message.
+ * 7. If any error occurs during the process, redirects the user to the admin dashboard with an error message.
+ *
+ * @param {Object} req - The request object containing the ISBN number and other book details.
+ * @param {Object} res - The response object used to render templates or redirect the user.
+ * @return {Promise<void>} A promise that resolves when the function is completed.
+ */
     const isbn=req.body.isbn
-    const price=req.body.price ||25
+    const price=req.body.price || 25
     const qty=10;
     const errors=validationResult(req)
 
@@ -318,9 +340,11 @@ const addBookWithISBN= async(req,res)=>{
                         quantity_available:qty,
                         location:"warehouse"
                     })
-                    return res.status(200).redirect(`${process.env.HOST}/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
+
+                    return res.status(302).redirect(`${process.env.HOST}/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
                 }
                 else{
+
                     res.status(500).render("pages/addBookWithISBNForm",{
                         msg:{
                             msg:"a book with this title already exists"
@@ -328,15 +352,18 @@ const addBookWithISBN= async(req,res)=>{
                     })
                 }
                 } catch (error) {
+
         return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+creating+book&type=danger`);
                 }
                 
             }
             else{
+
         return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
             }
         }
         catch(e){
+
         return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
 
         }

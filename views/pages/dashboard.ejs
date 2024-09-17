@@ -126,7 +126,7 @@ gap: 50px;
 
                             <tr>
                               <th scope="row"><%= orders[i].order_id %></th>
-                              <td><%= orders[i].Customer.first_name %> <%= orders[i].Customer.last_name %></td>
+                              <td><%= orders[i].Customer.first_name ||"geust" %> <%= orders[i].Customer.last_name|| "" %></td>
                               <td><%= orders[i].Customer.email %></td>
                               <td>$<%= orders[i].total_amount %></td>
                               <td><%= orders[i].delivery_status %></td>

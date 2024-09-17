@@ -183,6 +183,9 @@ app.use ("/admin",adminRoute)
 app.use("/admin/books",booksRouter)
 app.use("/admin/order",OrdersRouter)
 
+app.use((req,res)=>{
+	res.render("pages/404")
+})
 
 app.listen(port, () => {
     console.log(`Express server listening on port ${port}`);
