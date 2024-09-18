@@ -5,6 +5,11 @@ const BooksModel=require("../models/bookModel")
 const {sendStatusChangedMessage}= require("../utilities/functions")
 
 let order;
+
+//routes
+const admin_route=process.env.ADMIN_ROUTE
+const book_route=process.env.ADMIN_BOOKS_ROUTE
+const order_route=process.env.ADMIN_ORDERS_ROUTE
 const viewOrder=async(req,res)=>{
     /**
  * Retrieves an order and its associated order items from the database and renders a view to display them.
@@ -41,11 +46,13 @@ const viewOrder=async(req,res)=>{
 
     }
     catch(e){
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=a+Problem+occured&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=a+Problem+occured&type=danger`);
 
     }
 
 }
+
+
 
 const changeToProcessing= async(req,res)=>{
     /**
@@ -71,12 +78,12 @@ const changeToProcessing= async(req,res)=>{
             order.delivery_status="Processing"
             await order.save()
             sendStatusChangedMessage(order,"processing")
-        return res.status(200).redirect(`${process.env.HOST}/admin/dashboard?msg=status+successfully+changed+to+Processing&type=success`);
+        return res.status(200).redirect(`${process.env.HOST + admin_route}/dashboard?msg=status+successfully+changed+to+Processing&type=success`);
 
            
         }
         else{
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=a+Problem+occured&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=a+Problem+occured&type=danger`);
 
 
         }
@@ -87,7 +94,7 @@ const changeToProcessing= async(req,res)=>{
 
     }
     catch(e){
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=a+Problem+occured&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=a+Problem+occured&type=danger`);
     }
     
 
@@ -110,18 +117,18 @@ const changeToShipped = async(req,res)=>{
             await order.save()
             sendStatusChangedMessage(order,"shipped")
 
-        return res.status(200).redirect(`${process.env.HOST}/admin/dashboard?msg=status+successfully+changed+to+shipped&type=success`);
+        return res.status(200).redirect(`${process.env.HOST + admin_route}/dashboard?msg=status+successfully+changed+to+shipped&type=success`);
 
            
         }
         else{
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=a+Problem+occured&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST+ admin_route}/dashboard?msg=a+Problem+occured&type=danger`);
 
 
         }
     }
     catch(e){
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=a+Problem+occured&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=a+Problem+occured&type=danger`);
     }
 }
 
@@ -148,18 +155,18 @@ const changeToDelivered =async(req,res)=>{
             await order.save()
             sendStatusChangedMessage(order,"delivered")
 
-        return res.status(200).redirect(`${process.env.HOST}/admin/dashboard?msg=status+successfully+changed+to+delivered&type=success`);
+        return res.status(200).redirect(`${process.env.HOST + admin_route}/dashboard?msg=status+successfully+changed+to+delivered&type=success`);
 
            
         }
         else{
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=a+Problem+occured&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=a+Problem+occured&type=danger`);
 
 
         }
     }
     catch(e){
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=a+Problem+occured&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST+ admin_route}/dashboard?msg=a+Problem+occured&type=danger`);
     }
 }
 

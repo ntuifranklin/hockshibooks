@@ -1,78 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <style>
-        body{
-            font-family: "poppins";
-        }
-
-        a{
-            text-decoration: none;
-        }
-        .main-navbar{
-    border-bottom: 1px solid #ccc;
-}
-.main-navbar .top-navbar{
-    background-color: #2874f0;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-.main-navbar .top-navbar .brand-name{
-    color: #fff;
-}
-.brand-name{
-    color: #000;
-    z-index: 999;
-}
-.main-navbar .top-navbar .nav-link{
-    color: #fff;
-    font-size: 16px;
-    font-weight: 500;
-}
-.main-navbar .top-navbar .dropdown-menu{
-    padding: 0px 0px;
-    border-radius: 0px;
-}
-.main-navbar .top-navbar .dropdown-menu .dropdown-item{
-    padding: 8px 16px;
-    border-bottom: 1px solid #ccc;
-    font-size: 14px;
-}
-.main-navbar .top-navbar .dropdown-menu .dropdown-item i{
-    width: 20px;
-    text-align: center;
-    color: #2874f0;
-    font-size: 14px;
-}
-.main-navbar .navbar{
-    padding: 0px;
-    background-color: #ddd;
-}
-.main-navbar .navbar .nav-item .nav-link{
-    padding: 8px 20px;
-    color: #000;
-    font-size: 15px;
-}
-
-@media only screen and (max-width: 600px) {
-    .main-navbar .top-navbar .nav-link{
-        font-size: 12px;
-        padding: 8px 10px;
-    }
-}
-.flex{
-display: flex;
-gap:30px;
-align-items: center;
-}
-    </style>
+   
 
 <link rel="icon" href="../../assets/images/favicon.ico">
 
@@ -100,93 +33,24 @@ align-items: center;
 
 <!-- Main Style CSS -->
 <link rel="stylesheet" href="../assets/css/style.css">
- 
+
 </head>
 <body>
-    <!-- <div class="main-navbar shadow-sm sticky-top">
-        <div class="top-navbar">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-2 my-auto ">
-                        <h5 class="brand-name"><a class="navbar-brand " href="/">
-                            HOCKSHI
-                        </a></h5> 
-                    </div>
-                    <div class="col-md-5 my-auto">
-                        <form role="search" action="/search" method="POST">
-                            <div class="input-group">
-                                <input type="search" placeholder="Enter the author's name,book title or isbn" class="form-control" name="query"/>
-                                <input type="hidden" name="_csrf"
-                                    value="<%= csrfToken %>">
-                                
-                                <button class="btn bg-white" type="submit">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-md-5 my-auto">
-                        <ul class="nav justify-content-end">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/cart">
-                                    <i class="fa fa-shopping-cart"></i> Cart  <span id="cart-count">0</span> 
-                                </a>
-                            </li>
-                            <% if(customer){ %>
-                                <% if(customer.geust==0){ %>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa fa-user"></i> <%= customer.username %> 
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <i class="fa fa-user"></i> <%= customer.email %> 
-
-                               
-                                <li><a class="dropdown-item" href="/logout"><i class="fa fa-sign-out"></i> Logout</a></li>
-
-                                </ul>
-                            </li>
-                            <% }else {%>
-                                <li>geust account</li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/login">
-                                        <i class="fa fa-sign-in"></i> login 
-                                    </a>
-                                </li>
-
-
-                             <% } %>   
-
-                            <% }else {%>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/login">
-                                        <i class="fa fa-sign-in"></i> login 
-                                    </a>
-                                </li>
-                             <% } %>   
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-       
-    </div> -->
+  
 
     <div class="header-area header-area--default">
 
         <!-- Header Bottom Wrap Start -->
         <header class="header-area  header_height-90 header-sticky">
-            <div class="container">
+            <div class="container"> 
                 <div class="row align-items-center">
                     <div class="col-lg-4 col-md-4 d-none d-md-block">
                         <div class="header-left-search">
                             <form role="search"  method="get" class="header-search-box" id="searchBox">
                                 <input class="search-field form-control" type="text" placeholder="Enter book name,ISBN or Author"  name="query" id="book">
 
-                                
+                                <input type="hidden" name="_csrf"
+                                    value="<%= csrfToken %>">
                                 
                                 <button class="search-icon" type="submit">
                                     <i class="icon-magnifier"></i>
@@ -196,45 +60,33 @@ align-items: center;
                     </div>
                     <div class="col-lg-4 col-md-4 col-6">
                         <div class="logo text-md-center">
-                            <a href="/"><img src="../assets/images/logo/logo.svg" alt=""></a>
+                            <a href="<%=admin_route%>/dashboard"><img src="../assets/images/logo/logo.svg" alt=""></a>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4 col-6">
                         <div class="header-right-side text-end">
                             <div class="header-right-items  d-none d-md-block">
-                              <!-- <% if(customer){ %>  
-                                <% if (customer.geust == 0) { %>
+                                <a href="<%=host%><%=admin_route%>/adminProfile " >
+                                    <i class="icon-user"></i>
+                                </a>
+                                <!-- <% if(customer){ %>
                                 <a href="/profile" >
                                     <i class="icon-user"></i>
                                 </a>
-                                <% } %>
-
-                                <% } %> -->
-                                <% if(customer ){ %>
-                                   <% if(customer.geust==false){ %>
-                                        
-                                        <a href="/profile" >
-                                            <i class="icon-user"></i>
-                                        </a>
-                                    <% } %> 
                                 <% }else {%>
                                     <a href="/login?msg=Please+login+first" >
                                         <i class="icon-user"></i>
                                     </a>
-                                <% } %>
+                                <% } %> -->
                             </div>
                           
 
                             <div class="header-right-items">
-                                <a href="/cart" class=" header-cart  header-icon">
-                                    <i class="icon-bag2"></i>
-                                    <span class="item-counter" id="cart-count">0</span>
-                                </a>
+                                <i class="fa fa-globe"></i>
+                                  <%= role %>
                             </div>
                             <div class="header-right-items d-block d-md-none">
-                                <a href="javascript:void(0)" class="search-icon" id="search-overlay-trigger">
-                                    <i class="icon-magnifier"></i>
-                                </a>
+                               
                             </div>
                             <div class="header-right-items">
                                 <a href="javascript:void(0)" class="mobile-navigation-icon" id="mobile-menu-trigger">
@@ -278,36 +130,34 @@ align-items: center;
                 </div>
                 <nav class="offcanvas-navigation">
                     <ul>
-                        <% if(!customer) { %>
+                      
+                        <li class="has-children"></li>
+                        <i class="fa fa-user"></i>
+                        <%= email %>
+
+                            
+                        </li>
                         <li class="has-children">
-                            <a href="/login">Login</a>
+                            <a href="<%=host%><%=admin_route%>/dashboard">dashboard</a>
+
+                            
+                        </li>
+                        <li class="has-children">
+                            <a href="<%=host%><%=books_route%>/insert-book">insert a book</a>
+                            
+                        </li>
+                        <li class="has-children">
+                            <a href="<%=host%><%=books_route%>/addBookWithISBN">add book with isbn</a>
+                            
                             
                         </li>
 
-                        <% } %>
                         <li class="has-children">
-                            <a href="/">Home</a>
-                            
-                        </li>
-                        <li class="has-children">
-                            <a href="/books">Shop</a>
-                            
-                            
-                        </li>
-
-                        <li class="has-children">
-                            <a href="/cart">shopping cart</a>
+                            <a href="<%=admin_route%>/logout">Logout</a>
                             
                             
                         </li>
                         
-                        <% if(customer) { %>
-                            <li class="has-children">
-                                <a href="/logout">Logout</a>
-                                
-                            </li>
-    
-                            <% } %>
 
                     </ul>
                 </nav>
@@ -337,10 +187,6 @@ align-items: center;
 
     </div>
 
-
-    <script  src="../assets/js/customerJS/customerNavBar.js"></script>
-
-    <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
 
     <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
 
@@ -373,7 +219,6 @@ align-items: center;
     <script src="../assets/js/plugins/isotope.min.js"></script>
 
     <!-- YTplayer JS -->
-    <script src="../assets/js/plugins/YTplayer.js"></script>
 
     <!-- Instagramfeed JS -->
     <!-- <script src="../assets/js/plugins/jquery.instagramfeed.min.js"></script> -->
@@ -394,11 +239,6 @@ align-items: center;
 
     <!-- Main JS -->
     <script src="../assets/js/main.js"></script>
-    <script>
-
-        // Wait for the DOM to be fully loaded before executing the code
-        
-        
-    </script>
+    
 </body>
 </html>

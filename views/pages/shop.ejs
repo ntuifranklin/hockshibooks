@@ -84,24 +84,20 @@
                         <div class="col-lg-6 col-md-6">
                             <div class="shop-toolbar__items shop-toolbar__item--left">
                                 <div class="shop-toolbar__item shop-toolbar__item--result">
-                                    <p class="result-count"> Showing 1–9 of 21 results</p>
+                                    <p class="result-count"> </p>
                                 </div>
 
                                 <div class="shop-toolbar__item shop-short-by">
-                                    <ul>
-                                        <li>
-                                            <a href="#">Sort by <i class="fa fa-angle-down angle-down"></i></a>
-                                            <ul>
-                                                <li class="active"><a href="#">Default sorting</a></li>
-                                                <li><a href="#">Sort by popularity</a></li>
-                                                <li><a href="#">Sort by average rating</a></li>
-                                                <li><a href="#">Sort by latest</a></li>
-                                                <li><a href="#">Sort by price: low to high</a></li>
-                                                <li><a href="#">Sort by price: high to low</a></li>
-                                            </ul>
-                                        </li>
+                                    
+                                    <select id="filter">
+                                                <option selected>Sort by <i class="fa fa-angle-down angle-down"></i></option>
+                                                <option class="active" value="latest">Default sorting</option>
+                                                <!-- <option value="latest">Sort by latest</option> -->
+                                                <option value="price_low_to_high">Sort by price: low to high</option>
+                                                <option value="price_high_to_low">Sort by price: high to low</option>
+                                            </select>
 
-                                    </ul>
+                                  
 
                                 </div>
                             </div>
@@ -166,11 +162,11 @@
                             <div class="col-lg-12">
                                 <ul class="pagination-box">
                                     <li>
-                                        <a href="#" class="Previous" id="prevPage"><i class="icon-chevron-left"></i></a>
+                                        <button class="Previous btn btn--full btn--black" id="prevPage" ><i class="icon-chevron-left"></i>prev</button>
                                     </li>
                                     
                                     <li>
-                                        <a href="#" class="Next" id="nextPage"><i class="icon-chevron-right"></i></a>
+                                        <button class="Next btn btn--full btn--black" id="nextPage"><i class="icon-chevron-right"></i>next</button>
                                     </li>
                                 </ul>
                             </div>
@@ -186,137 +182,11 @@
       
     </div>
 
-    <%- include('../layout/footer') %>
+    <%- include('../layout/footer',{companyDetails:companyDetails}) %>
+    <script src="../assets/js/customerJS/customerCommon.js"></script>
+    <script  src="../assets/js/customerJS/customerBooks.js"></script>
 
-    <script>
-        let currentPage = 1;
-        const limit = 5; // Number of items per page
-
-        async function fetchBooks(page = 1) {
-            const response = await fetch(`/allBooks?page=${page}&limit=${limit}`,);
-            const result = await response.json();
-            console.log(result)
-            const bookList = document.getElementById('booksContainer');
-            bookList.innerHTML = '';
-
-            result.data.forEach(book => {
-                    let bookimage=""
-                    if(book.cover_image_url.split(":")[0]=="https") {   
-                        bookimage=book.cover_image_url
-                    }
-                    else{
-                        bookimage=`/uploads/${book.cover_image_url}`
-                    }
-                const bookItem = document.createElement('div');
-                bookItem.classList.add('col-lg-4');
-                bookItem.classList.add('col-sm-6');
-                bookItem.classList.add('col-md-4');
-
-                bookItem.innerHTML = `
-                <div class="single-product-item text-center">
-                 <div class="products-images">
-                            <a href="/productDetails/${book.book_id}" class="product-thumbnail">
-
-                              
-                                <img  src="${bookimage}" class="img-fluid bookCoverImage1" alt="Product Images" width="300px" height="300px" >
-                                
-                                 
-              
-                                 ${book.Inventory.quantity_available <= 0? `<span class="ribbon out-of-stock">Out Of Stock</span>`:""}
-
-                                 
-                            </a>
-                            
-                            <div class="product-actions">
-                              <a href="/productDetails/${book.book_id} "  data-bs-target="#prodect-modal"><i class="p-icon icon-plus"></i><span class="tool-tip">Quick View</span></a>
-                              ${book.Inventory.quantity_available > 0? `<a class="add-to-cart"><i class="p-icon icon-bag2" data-product-id="${book.book_id}"></i> <span class="tool-tip">Add to cart</span></a>`:""}
-                              
-                             
-                            </div>
-                        </div>
-                        <div class="product-content">
-                            <h6 class="prodect-title"><a href="/productDetails/${book.book_id}">${book.title}</a></h6>
-                            <div class="prodect-price">
-                                <span class="new-price">$ ${book.price} </span>
-                            </div>
-                        </div>
-
-                        </div>
-                `;
-                document.querySelector(".result-count").innerHTML = `Showing  page ${result.meta.currentPage} of ${result.meta.totalPages} results.`
-                bookList.appendChild(bookItem);
-            });
-
-            // Update pagination controls
-            currentPage = result.meta.currentPage;
-            document.getElementById('prevPage').disabled = !result.meta.prevPage;
-            document.getElementById('nextPage').disabled = !result.meta.nextPage;
-        }
-
-        document.getElementById('prevPage').addEventListener('click', () => {
-            if (currentPage > 1) {
-                fetchBooks(currentPage - 1);
-            }
-        });
-
-        document.getElementById('nextPage').addEventListener('click', () => {
-            fetchBooks(currentPage + 1);
-        });
-
-        window.addEventListener("load",()=>{
-                      // Attaches an event listener to the window object that triggers when the page has finished loading.
-                      // 
-                      // When the page finishes loading, the event listener function is executed.
-                      // 
-                      // The function selects the element with the class 'timeline-wrapper' and assigns it to the variable 'animation'.
-                      // It also selects the element with the class 'product-list' and assigns it to the variable 'products'.
-                      // 
-                      // The function then adds the class 'move' to the 'animation' element and removes the class 'hidden' from the 'products' element.
-                      //
-                      // Returns: None
-
-                      document.querySelectorAll('.add-to-cart').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const productId = event.target.getAttribute('data-product-id');
-                // updateCartCount();
-                addToCart(productId);
-            });
-        });
-    })
-        function addToCart(productId) {
-        // Adds a product to the user's shopping cart.
-        // 
-        // Parameters:
-        // - productId (number): The ID of the product to be added.
-        //
-        // Returns: None
-            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-
-
-            let product = cartItems.find(item => item.id == productId);
-
-                 if (product) {
-                    alert("product already exists in your shopping cart")
-
-                } else { 
-                    cartItems.push({ id: productId, qty: 1 });
-                    const cartCountElement = document.querySelector('#cart-count');
-                    const cartCount = localStorage.getItem('cartItems') || 0;
-                    const items=JSON.parse(cartCount)
-                     cartCountElement.textContent = items.length;
-
-                     localStorage.setItem('cartItems', JSON.stringify(cartItems));
-                     alert("Product successfully added to your cart")
-                }
-
-
-        }
-
-        // Initial fetch
-        fetchBooks();
-    </script>
-    <!--====================  End of scroll top  ====================-->
-
+   
     <!-- JS
     ============================================ -->
     <!-- Modernizer JS -->

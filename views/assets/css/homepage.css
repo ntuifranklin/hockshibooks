@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400');
+
+body {
+  background-color: #fff;
+  width: 100vw;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+
+.timeline-wrapper{
+    margin-top: 90px;
+}
+
+
+.timeline-item {
+  background: #fff;
+  padding: 4px;
+  width: 190px;
+  display: inline-block;
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -450px 0;
+  }
+  100% {
+    background-position: 450px 0;
+  }
+}
+
+.animated-background {
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: #f6f7f8;
+  background: linear-gradient(to right, #f5f4f3 8%, #ebebeb 18%, #f5f4f3 33%);
+  background-size: 1200px 104px;
+  height: 264px;
+  position: relative;
+}
+
+.background-masker {
+  background: #fff;
+  position: absolute;
+}
+
+.background-masker.content-top,
+.background-masker.content-second-line,
+.background-masker.content-third-line,
+.background-masker.content-second-end,
+.background-masker.content-third-end,
+.background-masker.content-first-end {
+  top: 204px;
+  left: 0;
+  right: 0;
+  height: 12px;
+}
+
+.background-masker.content-top{
+    width: 255px;
+    height: 255px;
+}
+
+.background-masker.content-top {
+  top: 190px;
+  height: 14px;
+}
+
+.background-masker.content-first-end,
+.background-masker.content-second-end,
+.background-masker.content-third-end {
+  width: auto;
+  left: 152px;
+  right: 0;
+  top: 204px;
+  height: 12px;
+}
+
+.background-masker.content-second-line {
+  top: 216px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+.background-masker.content-second-end {
+  left: 171px;
+  top: 226px;
+}
+
+.background-masker.content-third-line {
+  top: 238px;
+  height: 14px;
+}
+
+.background-masker.content-third-end {
+  left: 76px;
+  top: 252px;
+}
+
+        a{
+            text-decoration: none;
+        }
+        .product-list{
+            margin-top: 90px;
+        }
+     .product-img {
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            background-color: #e5e7eb;
+        }
+        .product-img img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s;
+        }
+        .product-img:hover img {
+            opacity: 0.75;
+        }
+        .product-title {
+            margin-top: 1rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .product-price {
+            margin-top: 0.25rem;
+            font-size:  0.875rem;
+            font-weight: 500;
+            
+            color: #4b5563;
+        }
+
+        .flexi{
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .add-to-cart{
+            
+        }
+        .hidden{
+            visibility: hidden;
+            display: none;
+        }
+        .move{
+            animation: remove .1s forwards;
+
+        }
+        .bookCoverImage{
+            width: 300px !important;
+            height:  300px !important;
+        }
+        #overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(247, 0, 0, 0.5); /* Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+        @keyframes remove {
+            100%{
+                opacity: 0;
+                visibility: hidden;
+                display: none;
+            }
+        }

@@ -5,265 +5,214 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>orders</title>
 
-    <style>
-        body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f5f7fa;
-  
-    height: 200vh;
-    margin: 0;
-}
-a{
-    text-decoration: none;
-    color: black;
-}
+   
 
-.container {
-    color: black;
+<link rel="icon" href="/assets/images/favicon.ico">
 
-    background-color: #fff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: left;
-    width: 90%;
-    max-width: 900px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
+<!-- CSS
+    ============================================ -->
 
-h2 {
-    text-align: left;
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-.profile-section {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.profile-image img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin-right: 20px;
-}
-
-.profile-fields {
-    display: flex;
-    gap: 20px;
-}
-
-.input-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.input-group label {
-    width: 150px;
-    font-weight: bold;
-}
-
-.input-group ,
-.input-group  {
-    width: calc(100% - 160px);
-    margin-left: 10px;
-    box-sizing: border-box;
-}
-
-.input-group textarea {
-    resize: vertical;
-    height: 100px;
-}
-
-.verified {
-    color: green;
-    margin-left: 10px;
-}
-
-.edit-button, .save-button {
-    background-color: transparent;
-    border: none;
-    color: #7c4dff;
-    cursor: pointer;
-    font-size: 18px;
-    margin-left: 10px;
-}
-
-.bio-group textarea {
-    width: calc(100% - 10px);
-    margin-left: 10px;
-}
+<!-- Bootstrap Css -->
+<link rel="stylesheet" href="/assets/css/vendor/bootstrap.min.css">
 
 
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: auto;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-}
+<!-- Icons Css -->
+<link rel="stylesheet" href="/assets/css/vendor/linearicons.min.css">
+<link rel="stylesheet" href="/assets/css/vendor/fontawesome-all.min.css">
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+<!-- Animation Css -->
+<link rel="stylesheet" href="/assets/css/plugins/animation.min.css">
 
-table thead {
-    background-color: #f1f1f1;
-}
 
-table th,
-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-}
+<!-- Slick Slier Css -->
+<link rel="stylesheet" href="/assets/css/plugins/slick.min.css">
 
-table th {
-    font-weight: bold;
-}
 
-.button{
-    width: 200px;
-    height: 200px;
-    padding:  10px;
-    border-radius: 10px;
-    color: #ffffff;
-}
-.status {
-    border-radius: 5px;
-    font-size: 18px;
-    padding: 10px;
-    color: #fff;
-    width: 100px;
-    height: 60px;
-    display: inline-block;
-}
+<!-- Magnific Popup CSS -->
+<link rel="stylesheet" href="/assets/css/plugins/magnific-popup.css">
 
-.Delivered {
-    background-color: #28a745;
-}
 
-.Processing {
-    background-color: #007bff;
-}
+<!-- Easyzoom CSS -->
+<link rel="stylesheet" href="/assets/css/plugins/easyzoom.css">
 
-.Shipped {
-    background-color: #ffc107;
-}
+<!-- Main Style CSS -->
+<link rel="stylesheet" href="/assets/css/style.css">
 
-.flex{
-    display: flex;
-    gap: 30px;
-    flex-direction: column;
-}
-    </style>
+<link rel="stylesheet" href="/assets/css/dashboard.css">   
 </head>
 <body>
+    <!-- <%- include('../navBar',{email:"juniorhoza56@gmail",role:"admin",host:"http://localhost:3000"}) %> -->
+
     <%  if (user) { %>
-        <%- include('../navBar',{email:user.email,role:user.role,host:host}) %>
-        <% } %>
+    <%- include('navBar',{email:user.email,role:user.role,host:host}) %>
+    <% } %>
     <div class="container">
-        <h1>Order information </h1>
+        <h1 class="mx-auto w-50 my-3">Order information </h1>
         <h2>order Id: <%= order.order_id %> </h2>
 
         <div class="profile-section">
           
             <div class="profile-fields">
-                <div class="input-group">
-                    <label for="firstName">customer name:</label>
-                    <p type="text" id="firstName" ><%=order.Customer.first_name || "geust user" %> <%=order.Customer.last_name|| "" %> </p>
+                <div class="row gx-5  my-2 p-3 text-center">
+                    <label for="firstName" class="fw-bold fs-4 col">customer name:</label>
+                    <p type="text" id="firstName" class="fs-7 col" ><%=order.Customer.first_name || "geust user" %> <%=order.Customer.last_name|| "" %> </p>
                 </div>
-                <div class="input-group">
-                    <label for="lastName">customer email:</label>
-                    <p type="text" id="lastName" value="Coop"><%=order.Customer.email %></p>
+                <div class="row gx-5 my-2 p-3 text-center">
+                    <label for="lastName" class="fw-bold fs-4 col">customer email:</label>
+                    <p type="text" id="lastName" class="fs-7 col"><%=order.Customer.email %></p>
                 </div>
-                <div class="input-group">
-                    <label for="lastName">customer phone:</label>
-                    <p type="text" id="lastName" value="Coop"><%=order.Customer.phone|| " " %></p>
+                <div class="row gx-5 my-2 p-3 text-center">
+                    <label for="lastName" class="fw-bold fs-4 col">customer phone:</label>
+                    <p type="text" id="lastName" class="fs-7 col"><%=order.Customer.phone|| "not provided" %></p>
                 </div>
             </div>
         </div>
-            <div class="input-group">
-                <label for="email">status: </label>
+            <div class="row gx-5 my-2 p-3 text-center">
+                <label for="email" class="fw-bold fs-4 col">status: </label>
 
                 <div class="flex">
 
-                    <p type="email" class="status <%=order.delivery_status%>"><%= order.delivery_status %></p>
+                    <p type="email" class="btn btn-dark  col"><%= order.delivery_status %></p>
 
                     <div class="actions">
-                        <a href="<%= `/admin/order/changeToProcessing/${order.order_id}` %>" class="button Processing">change to processing</a>
-                        <a href="<%= `/admin/order/changeToShipped/${order.order_id}` %>" class="button Shipped">change to shipped</a>
-                        <a href="<%= `/admin/order/chnageToDelivered/${order.order_id}` %>" class="button Delivered">change to delivered</a>
+                        <a href="<%= `${order_route}/changeToProcessing/${order.order_id}` %>" class="btn btn-dark">change to processing</a>
+                        <a href="<%= `${order_route}/changeToShipped/${order.order_id}` %>" class="btn btn-dark">change to shipped</a>
+                        <a href="<%= `${order_route}/chnageToDelivered/${order.order_id}` %>" class="btn btn-dark">change to delivered</a>
                     </div>
                 </div>
                
             </div>
-            <div class="input-group">
-                <label for="phoneNumber">delivery address</label>
+            <div class="cart-main-area  section-space--ptb_90">
                 <div class="container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>shipping address</th>
-                                <th>shipping city</th>
-                                <th>state/province</th>
-                                <th>country</th>
-                                <th>postal code</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><%=order.shipping_address %></td>
-                                <td><%= order.shipping_city %></td>
-                                <td ><%=order.shipping_state_province%></td>
-                                <td><%=order.shipping_country%></td>
-                                <td><%=order.shipping_postal_code%></td>
-                            </tr>                           
-                        </tbody>
-                    </table>
+                    <div class="row">
+                        <h1>Shipping Address</h1>
+                        <div class="col-lg-12">
+                           
+                                <div class="table-content table-responsive cart-table-content header-color-gray">
+                                    <table>
+                                        <thead>
+                                            <tr class="bg-gray">
+                                                <th>shipping address</th>
+                                                <th>shipping city</th>
+                                                <th>state/province</th>
+                                                <th>country</th>
+                                                <th>postal code</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><%=order.shipping_address %></td>
+                                                <td><%= order.shipping_city %></td>
+                                                <td ><%=order.shipping_state_province%></td>
+                                                <td><%=order.shipping_country%></td>
+                                                <td><%=order.shipping_postal_code%></td>
+                                            </tr>      
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                          
+                          
+  
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="input-group">
-                <label for="dob">Items Ordered</label>
-                <div class="container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>book name </th>
-                                <th>author</th>
 
-                                <th>unit price</th>
-                                <th>qauntity ordered</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <%for(let i=0;i< orderI.length;i++){  %>
-                            <tr>
-                                <td><%=orderI[i].Book.title%></td>
-                                <td><%=orderI[i].Book.author%></td>
-                                <td>$<%=orderI[i].item_price%></td>
-                                <td><%=orderI[i].quantity%></td>
-                                <td>$<%=orderI[i].subtotal%></td>
-                                
-                                <% } %>
-                            </tr>
-                            <!-- Add more rows as needed -->
-                        </tbody>
-                    </table>
+
+            <div class="cart-main-area  section-space--ptb_90">
+                <div class="container">
+                    <div class="row">
+                        <h1>Items Ordered</h1>
+                        <div class="col-lg-12">
+                                <div class="table-content table-responsive cart-table-content header-color-gray">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>book name </th>
+                                                <th>author</th>
+                
+                                                <th>unit price</th>
+                                                <th>qauntity ordered</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <%for(let i=0;i< orderI.length;i++){  %>
+                                                <tr>
+                                                    <td><%=orderI[i].Book.title%></td>
+                                                    <td><%=orderI[i].Book.author%></td>
+                                                    <td>$<%=orderI[i].item_price%></td>
+                                                    <td><%=orderI[i].quantity%></td>
+                                                    <td>$<%=orderI[i].subtotal%></td>
+                                                    
+                                                    <% } %>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                          
+                          
+  
+                        </div>
+                    </div>
                 </div>
             </div>
+         
            
     </div>
+
+    <script src="/assets/js/vendor/modernizr-2.8.3.min.js"></script>
+
+    <!-- jQuery JS -->
+    <script src="/assets/js/vendor/jquery-3.5.1.min.js"></script>
+    <script src="/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="/assets/js/vendor/bootstrap.min.js"></script>
+    
+    <!-- Fullpage JS -->
+    <script src="/assets/js/plugins/fullpage.min.js"></script>
+    
+    <!-- Slick Slider JS -->
+    <script src="/assets/js/plugins/slick.min.js"></script>
+    
+    <!-- Countdown JS -->
+    <script src="/assets/js/plugins/countdown.min.js"></script>
+    
+    <!-- Magnific Popup JS -->
+    <script src="/assets/js/plugins/magnific-popup.js"></script>
+    
+    <!-- Easyzoom JS -->
+    <script src="/assets/js/plugins/easyzoom.js"></script>
+    
+    <!-- ImagesLoaded JS -->
+    <script src="/assets/js/plugins/images-loaded.min.js"></script>
+    
+    <!-- Isotope JS -->
+    <script src="/assets/js/plugins/isotope.min.js"></script>
+    
+    <!-- YTplayer JS -->
+    <script src="/assets/js/plugins/YTplayer.js"></script>
+    
+    <!-- Instagramfeed JS -->
+    <!-- <script src="/assets/js/plugins/jquery.instagramfeed.min.js"></script> -->
+    
+    <!-- Ajax Mail JS -->
+    <script src="/assets/js/plugins/ajax.mail.js"></script>
+    
+    <!-- wow JS -->
+    <script src="/assets/js/plugins/wow.min.js"></script>
+    
+    
+    
+    <!-- Plugins JS (Please remove the comment from below plugins.min.js for better website load performance and remove plugin js files from avobe) -->
+    
+    <!--
+    <script src="/assets/js/plugins/plugins.min.js"></script>
+    -->
+    
+    <!-- Main JS -->
+    <script src="/assets/js/main.js"></script>
 </body>
 </html>

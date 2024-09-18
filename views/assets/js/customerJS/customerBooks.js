@@ -1,0 +1,129 @@
+    let currentPage = 1;
+    const limit = 6; // Number of items per page
+    let result
+    let data
+    let currentSort = 'latest';  // Default sort value
+
+        async function fetchBooks(page = 1,bookName="",sort="latest") {
+            const response = await fetch(`/allBooks?page=${page}&limit=${limit}&bookName=${bookName}&sort=${sort}`);
+             result = await response.json();
+             data= result.data
+            console.log(result)
+            renderBooks(data)
+        }
+
+       const renderBooks=(data)=>{
+        const bookList = document.getElementById('booksContainer');
+        bookList.innerHTML = '';
+
+        data.forEach(book => {
+                let bookimage=""
+                if(book.cover_image_url.split(":")[0]=="https") {   
+                    bookimage=book.cover_image_url
+                }
+                else{
+                    bookimage=`/uploads/${book.cover_image_url}`
+                }
+            const bookItem = document.createElement('div');
+            bookItem.classList.add('col-lg-4');
+            bookItem.classList.add('col-sm-6');
+            bookItem.classList.add('col-md-4');
+
+            bookItem.innerHTML = `
+            <div class="single-product-item text-center">
+             <div class="products-images">
+                        <a href="/productDetails/${book.book_id}" class="product-thumbnail">
+
+                          
+                            <img  src="${bookimage}" class="img-fluid bookCoverImage1" alt="Product Images" width="300px" height="300px" >
+                            
+                             
+          
+                             ${book.Inventory.quantity_available <= 0? `<span class="ribbon out-of-stock">Out Of Stock</span>`:""}
+
+                             
+                        </a>
+                        
+                        <div class="product-actions">
+                          <a href="/productDetails/${book.book_id} "  data-bs-target="#prodect-modal"><i class="p-icon icon-plus"></i><span class="tool-tip">Quick View</span></a>
+                          ${book.Inventory.quantity_available > 0? `<a class="add-to-cart"><i class="p-icon icon-bag2" data-product-id="${book.book_id}"></i> <span class="tool-tip">Add to cart</span></a>`:""}
+                          
+                         
+                        </div>
+                    </div>
+                    <div class="product-content">
+                        <h6 class="prodect-title"><a href="/productDetails/${book.book_id}">${book.title}</a></h6>
+                        <div class="prodect-price">
+                            <span class="new-price">$ ${book.price} </span>
+                        </div>
+                    </div>
+
+                    </div>
+            `;
+            document.querySelector(".result-count").innerHTML = `Showing  page ${result.meta.currentPage} of ${result.meta.totalPages} results.`
+            bookList.appendChild(bookItem);
+        });
+
+        // Update pagination controls
+        currentPage = result.meta.currentPage;
+        document.getElementById('prevPage').disabled = !result.meta.prevPage;
+        document.getElementById('nextPage').disabled = !result.meta.nextPage;
+       }
+
+       const findAddCartButton=()=>{
+
+           console.log("found")
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productId = event.target.getAttribute('data-product-id');
+                // updateCartCount();
+                addToCart(productId);
+            });
+          }); 
+      }
+        
+    
+     
+                    // Returns: None
+        fetchBooks()
+        
+      
+
+
+        document.getElementById("filter").addEventListener("change", (e) => {
+            currentSort = e.target.value;
+
+            fetchBooks(currentPage,"", currentSort);
+
+            // Re-render the sorted result.data
+        })
+
+
+        window.addEventListener("load",async()=>{
+            console.log("finished loading")
+            document.getElementById('prevPage').addEventListener('click', async() => {
+                if (currentPage > 1) {
+                    await fetchBooks(currentPage - 1,"", currentSort);
+                    findAddCartButton()
+                }
+              });
+      
+              document.getElementById('nextPage').addEventListener('click', async() => {
+                  await fetchBooks(currentPage + 1,"", currentSort);
+                  findAddCartButton()
+
+              });
+      
+                      // Attaches an event listener to the window object that triggers when the page has finished loading.
+                      // 
+                      // When the page finishes loading, the event listener function is executed.
+                      // 
+                      // The function selects the element with the class 'timeline-wrapper' and assigns it to the variable 'animation'.
+                      // It also selects the element with the class 'product-list' and assigns it to the variable 'products'.
+                      // 
+                      // The function then adds the class 'move' to the 'animation' element and removes the class 'hidden' from the 'products' element.
+                      //
+                    });
+
+
+        

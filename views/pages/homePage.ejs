@@ -5,189 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>home page</title>
 
-   
+   <link rel="stylesheet" href="../assets/css/homepage.css">
 
-    <style>
-       @import url('https://fonts.googleapis.com/css?family=Roboto:300,400');
-
-body {
-  background-color: #fff;
-  width: 100vw;
-  margin: 0 auto;
-  overflow-x: hidden;
-}
-
-
-.timeline-wrapper{
-    margin-top: 90px;
-}
-
-
-.timeline-item {
-  background: #fff;
-  padding: 4px;
-  width: 190px;
-  display: inline-block;
-}
-
-@keyframes placeHolderShimmer {
-  0% {
-    background-position: -450px 0;
-  }
-  100% {
-    background-position: 450px 0;
-  }
-}
-
-.animated-background {
-  animation-duration: 1s;
-  animation-fill-mode: forwards;
-  animation-iteration-count: infinite;
-  animation-name: placeHolderShimmer;
-  animation-timing-function: linear;
-  background: #f6f7f8;
-  background: linear-gradient(to right, #f5f4f3 8%, #ebebeb 18%, #f5f4f3 33%);
-  background-size: 1200px 104px;
-  height: 264px;
-  position: relative;
-}
-
-.background-masker {
-  background: #fff;
-  position: absolute;
-}
-
-.background-masker.content-top,
-.background-masker.content-second-line,
-.background-masker.content-third-line,
-.background-masker.content-second-end,
-.background-masker.content-third-end,
-.background-masker.content-first-end {
-  top: 204px;
-  left: 0;
-  right: 0;
-  height: 12px;
-}
-
-.background-masker.content-top{
-    width: 255px;
-    height: 255px;
-}
-
-.background-masker.content-top {
-  top: 190px;
-  height: 14px;
-}
-
-.background-masker.content-first-end,
-.background-masker.content-second-end,
-.background-masker.content-third-end {
-  width: auto;
-  left: 152px;
-  right: 0;
-  top: 204px;
-  height: 12px;
-}
-
-.background-masker.content-second-line {
-  top: 216px;
-  left: 0;
-  right: 0;
-  height: 10px;
-}
-
-.background-masker.content-second-end {
-  left: 171px;
-  top: 226px;
-}
-
-.background-masker.content-third-line {
-  top: 238px;
-  height: 14px;
-}
-
-.background-masker.content-third-end {
-  left: 76px;
-  top: 252px;
-}
-
-        a{
-            text-decoration: none;
-        }
-        .product-list{
-            margin-top: 90px;
-        }
-     .product-img {
-            aspect-ratio: 1 / 1;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 0.75rem;
-            background-color: #e5e7eb;
-        }
-        .product-img img {
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
-            transition: opacity 0.3s;
-        }
-        .product-img:hover img {
-            opacity: 0.75;
-        }
-        .product-title {
-            margin-top: 1rem;
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: #1f2937;
-        }
-        .product-price {
-            margin-top: 0.25rem;
-            font-size:  0.875rem;
-            font-weight: 500;
-            
-            color: #4b5563;
-        }
-
-        .flexi{
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .add-to-cart{
-            
-        }
-        .hidden{
-            visibility: hidden;
-            display: none;
-        }
-        .move{
-            animation: remove .1s forwards;
-
-        }
-        .bookCoverImage{
-            width: 300px !important;
-            height:  300px !important;
-        }
-        #overlay {
-  position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
-  width: 100%; /* Full width (cover the whole page) */
-  height: 100%; /* Full height (cover the whole page) */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(247, 0, 0, 0.5); /* Black background with opacity */
-  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
-  cursor: pointer; /* Add a pointer on hover */
-}
-        @keyframes remove {
-            100%{
-                opacity: 0;
-                visibility: hidden;
-                display: none;
-            }
-        }
-    </style>
+    
 </head>
 <body>
 
@@ -294,84 +114,7 @@ body {
                 </div>
             </div>
         </div>
-        <!-- <div class="featuted-product-wrap section-space--pt_120">
-            <div class="container">
-                <div class="row align-items-center featuted-product-one">
-                    <div class="col-lg-6 col-md-6 order-md-1 order-1">
-                        <div class="product-thumbnail">
-                            <a href="#"><img src="../assets/images/featured-product/df-1.webp" class="img-fluid" alt="Featured Image" height="451" width="397"></a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 order-md-2 order-2">
-                        <div class="featured-product-contect">
-                            <h6 class="sub-heading mb-2">FEATURED PRODUCT</h6>
-                            <h2 class="section-title--one"><a href="#">Nancy Chair</a></h2>
-                            <p class="mt-30">When an unknown printer took a galley of type and scrambled it to make a
-                                type specimen book. Excepteur sint occaecat cupidatat non proident, sunt in
-                                culpa qui officia.</p>
-                            <div class="button-box section-space--mt_60">
-                                <a href="product-details.html" class="btn btn--md btn--border_1">Only $90 <i class="icon-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="images-text-bg text-end">
-                <img src="../assets/images/text-bg/bg-df-1-300x49.webp" class="img-fluid" width="300" height="49" alt="Wood Coth">
-            </div>
-        </div>
-
-        <div class="featuted-product-wrap section-space--pt_120">
-            <div class="container">
-                <div class="row align-items-center featuted-product-one">
-                    <div class="col-lg-6 col-md-6 order-md-2 order-1">
-                        <div class="product-thumbnail">
-                            <a href="#"><img src="../assets/images/featured-product/df-2.webp" class="img-fluid" alt="Table Wood Pine" width="561" height="266"></a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 order-md-1 order-2">
-                        <div class="featured-product-contect">
-                            <h6 class="sub-heading mb-2">FEATURED PRODUCT</h6>
-                            <h2 class="section-title--one"><a href="#">Table Wood Pine</a></h2>
-                            <p class="mt-30">Excepteur sint occaecat cupidatat non proident, sunt in culpaqui <br>
-officia deserunt mollit anim id est laborum</p>
-                            <div class="button-box section-space--mt_60">
-                                <a href="product-details.html" class="btn btn--md btn--border_1">Only $50 <i class="icon-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="images-text-bg text-start">
-                <img src="../assets/images/text-bg/h1-1-300x122.webp" class="img-fluid" width="300" height="122" alt="pine">
-            </div>
-        </div>
-
-        <div class="featuted-product-wrap section-space--pt_120">
-            <div class="container">
-                <div class="row align-items-center featuted-product-one">
-                    <div class="col-lg-6 col-md-6 order-md-1 order-1">
-                        <div class="product-thumbnail">
-                            <a href="#"><img src="../assets/images/featured-product/df-3.webp" class="img-fluid" alt="Featured Image" width="300" height="277"></a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6  order-md-2 order-2">
-                        <div class="featured-product-contect">
-                            <h6 class="sub-heading mb-2">FEATURED PRODUCT</h6>
-                            <h2 class="section-title--one"><a href="#">Art Deco Home</a></h2>
-                            <p class="mt-30">Many desktop publishing packages and web page editors now use <br>
-Lorem Ipsum as their default model text, and a search for.</p>
-                            <div class="button-box section-space--mt_60">
-                                <a href="product-details.html" class="btn btn--md btn--border_1">Only $30 <i class="icon-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="images-text-bg text-end">
-                <img src="../assets/images/text-bg/h1-2.webp" class="img-fluid" alt="art decorations" width="673" height="168">
-            </div>
-        </div> -->
+      
 
         <div class="product-wrapper section-space--ptb_120 ">
           <div class="timeline-wrapper">
@@ -501,10 +244,6 @@ Lorem Ipsum as their default model text, and a search for.</p>
 
     </div>
 
-    <!--====================  footer area ====================-->
-
-    <!--====================  End of footer area  ====================-->
-
 
 
 
@@ -531,82 +270,20 @@ Lorem Ipsum as their default model text, and a search for.</p>
 
 
 </div>
-<%- include('../layout/footer') %>
+<%- include('../layout/footer',{companyDetails:companyDetails}) %>
 
 
   
    
 
       
-<script>
-        function addToCart(productId) {
-                  // Adds a product to the user's shopping cart.
-        // 
-        // Parameters:
-        // - productId (number): The ID of the product to be added.
-        //
-        // Returns: None
-            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-
-
-            let product = cartItems.find(item => item.id == productId);
-
-                 if (product) {
-                    alert("product already exists in your shopping cart")
-
-                } else { 
-                    cartItems.push({ id: productId, qty: 1 });
-                    const cartCountElement = document.querySelector('#cart-count');
-                    const cartCount = localStorage.getItem('cartItems') || 0;
-                    const items=JSON.parse(cartCount)
-                     cartCountElement.textContent = items.length;
-                     alert("Product successfully added to your cart")
-                }
-
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
-
-        }
-
-        // Event listener for the add to cart button
-
-                // Attaches an event listener to all HTML elements with the class 'add-to-cart'.
-                // When any of these elements are clicked, the event listener is triggered.
-                // 
-                // The event listener retrieves the 'data-product-id' attribute from the clicked element,
-                // and then calls the addToCart function with this ID as an argument.
-                //
-                // Returns: None
-
-        window.addEventListener("load",()=>{
-                      // Attaches an event listener to the window object that triggers when the page has finished loading.
-                      // 
-                      // When the page finishes loading, the event listener function is executed.
-                      // 
-                      // The function selects the element with the class 'timeline-wrapper' and assigns it to the variable 'animation'.
-                      // It also selects the element with the class 'product-list' and assigns it to the variable 'products'.
-                      // 
-                      // The function then adds the class 'move' to the 'animation' element and removes the class 'hidden' from the 'products' element.
-                      //
-                      // Returns: None
-
-                      document.querySelectorAll('.add-to-cart').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const productId = event.target.getAttribute('data-product-id');
-                // updateCartCount();
-                addToCart(productId);
-            });
-        });
-            const animation= document.querySelector(".timeline-wrapper")
-            const products=document.querySelector(".product-list")
-
-            animation.classList.add("move")
-            products.classList.remove("hidden")
-
-        })
-
-        // Initialize cart count on page load
-        
+<script src="../assets/js/customerJS/customerCommon.js">
 </script>
+<script src="../assets/js/customerJS/customerHomePage.js">
+</script>
+
+      
+        
 <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
 
     <!-- jQuery JS -->

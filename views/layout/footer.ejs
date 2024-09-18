@@ -12,7 +12,33 @@
 
     <!-- CSS
         ============================================ -->
+        <link rel="icon" href="../../assets/images/favicon.ico">
 
+        <!-- CSS
+            ============================================ -->
+        
+        <!-- Bootstrap Css -->
+        <link rel="stylesheet" href="../assets/css/vendor/bootstrap.min.css">
+        
+        <!-- Icons Css -->
+        <link rel="stylesheet" href="../assets/css/vendor/linearicons.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="../assets/css/vendor/fontawesome-all.min.css">
+        
+        <!-- Animation Css -->
+        <link rel="stylesheet" href="../assets/css/plugins/animation.min.css">
+        
+        <!-- Slick Slier Css -->
+        <link rel="stylesheet" href="../assets/css/plugins/slick.min.css">
+        
+        <!-- Magnific Popup CSS -->
+        <link rel="stylesheet" href="../assets/css/plugins/magnific-popup.css">
+        
+        <!-- Easyzoom CSS -->
+        <link rel="stylesheet" href="../assets/css/plugins/easyzoom.css">
+        
+        <!-- Main Style CSS -->
+        <link rel="stylesheet" href="../assets/css/style.css">
     <!-- Bootstrap Css -->
     
 </head>
@@ -32,26 +58,24 @@
                         <div class="col-lg-4 col-md-4 col-sm-6 footer-widget">
                             <h6 class="footer-widget__title mb-20">Address</h6>
                             <ul class="footer-widget__list">
-                                <li><i class="icon_pin"></i> Helendo, Chicago, USA 2023</li>
-                                <li> <i class="icon_phone"></i><a href="tel:846677028028" class="hover-style-link">+846677028028</a></li>
+                                <li><i class="icon_pin"></i> <%=companyDetails.companyAdress%></li>
+                                <li> <i class="icon_phone"></i><a href="tel:<%=companyDetails.companyPhone%>" class="hover-style-link">+<%=companyDetails.companyPhone%></a></li>
 
                             </ul>
                             <ul class="list footer-social-networks mt-25">
 
                                 <li class="item">
-                                    <a href="https://twitter.com" target="_blank" aria-label="Twitter">
-                                        <i class="social social_facebook"></i>
+                                    <a href="<%=companyDetails.XPage%>" target="_blank" aria-label="Twitter">
+                                        <i class="fa-brands fa-x-twitter"></i>                                    </a>
+                                </li>
+                                <li class="item">
+                                    <a href="<%=companyDetails.facebookPage%>" target="_blank" aria-label="Facebook">
+                                        <i class="fa-brands fa-facebook-f"></i>
                                     </a>
                                 </li>
                                 <li class="item">
-                                    <a href="https://facebook.com" target="_blank" aria-label="Facebook">
-                                        <i class="social social_twitter"></i>
-                                    </a>
-                                </li>
-                                <li class="item">
-                                    <a href="https://instagram.com" target="_blank" aria-label="Instagram">
-                                        <i class="social social_tumblr"></i>
-                                    </a>
+                                    <a href="<%=companyDetails.instagramPage%>" target="_blank" aria-label="Instagram">
+                                        <i class="fa-brands fa-instagram"></i>                                    </a>
                                 </li>
                             </ul>
                         </div>
@@ -106,21 +130,20 @@
                         <div class="col-lg-4 col-md-5 order-md-3">
                             <div class="footer-bottom-social">
                                 <h6 class="title">Follow Us On Social</h6>
-                                <ul class="list footer-social-networks ">
+                                <ul class="list footer-social-networks mt-25">
+
                                     <li class="item">
-                                        <a href="https://twitter.com" target="_blank" aria-label="Twitter">
-                                            <i class="social social_facebook"></i>
+                                        <a href="<%=companyDetails.XPage%>" target="_blank" aria-label="Twitter">
+                                            <i class="fa-brands fa-x-twitter"></i>                                    </a>
+                                    </li>
+                                    <li class="item">
+                                        <a href="<%=companyDetails.facebookPage%>" target="_blank" aria-label="Facebook">
+                                            <i class="fa-brands fa-facebook-f"></i>
                                         </a>
                                     </li>
                                     <li class="item">
-                                        <a href="https://facebook.com" target="_blank" aria-label="Facebook">
-                                            <i class="social social_twitter"></i>
-                                        </a>
-                                    </li>
-                                    <li class="item">
-                                        <a href="https://instagram.com" target="_blank" aria-label="Instagram">
-                                            <i class="social social_tumblr"></i>
-                                        </a>
+                                        <a href="<%=companyDetails.instagramPage%>" target="_blank" aria-label="Instagram">
+                                            <i class="fa-brands fa-instagram"></i>                                    </a>
                                     </li>
                                 </ul>
                             </div>

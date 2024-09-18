@@ -320,4 +320,4 @@ INSERT INTO powerUsers (email,password,role) VALUES ('juniorhoza56@gmail.com','$
 
 INSERT INTO powerUsers ( email,password,role) VALUES ( 'franklinwebdev704@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
 
--- password = plaintextpassword
+-- password =   

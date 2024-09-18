@@ -102,8 +102,10 @@
                                                     <% for(let i=0; i < errors.length; i++) { %>
                                                                             
                                                         
-                                                        <div class="alert alert-danger" role="alert">
+                                                        <div class="alert alert-danger alert-dismissible fade show"  role="alert">
                                                             <p><%= errors[i].msg %>!</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
                                                         </div>
                                                         <% } %>
                                                         
@@ -111,8 +113,10 @@
                                                     <% } %>
 
                                                     <% if (msg) { %>
-                                                        <div class="alert alert-<%=type%>" role="alert">
+                                                        <div class="alert alert-<%=type%> alert-dismissible fade show" role="alert">
                                                             <p><%= msg %>!</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
                                                         </div>
                                                     <% } %>
                                         <div class="tab-content" id="myaccountContent">
@@ -343,7 +347,7 @@
         
 
 
-        <%- include('../layout/footer') %>
+        <%- include('../layout/footer',{companyDetails:companyDetails}) %>
 
 
 
@@ -368,6 +372,8 @@
 
 
     </div>
+<script src="../assets/js/customerJS/customerCommon.js"></script>
+
 
     <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
 

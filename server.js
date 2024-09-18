@@ -61,7 +61,7 @@ const validateOTP=require("./middleware/OTPmiddleware")
 
 
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, './views')));
+app.use(express.static(path.join(__dirname, '/views')));
 app.set('views', path.join(__dirname, './views'));
 app.use(express.json());
 
@@ -167,8 +167,21 @@ app.use(parseForm, csrfProtection, async(request, response, next) => {
 		if(req.session.user!=false){
 			res.locals.user=req.session.user
 
+			res.locals.admin_route=`${process.env.ADMIN_ROUTE}`
+			res.locals.order_route=`${process.env.ADMIN_ROUTE + process.env.ADMIN_ORDERS_ROUTE}`
+			res.locals.books_route=`${process.env.ADMIN_ROUTE + process.env.ADMIN_BOOKS_ROUTE}`
 		}
 		if(req.session.customer!=false){
+		res.locals.companyDetails={
+			companyAdress:process.env.COMPANY_ADDRESS,
+			companyPhone:process.env.COMPANY_PHONE_NUMBER,
+			facebookPage:process.env.FACEBOOK_PAGE,
+			XPage:process.env.X_PAGE,
+			instagramPage:process.env.INSTAGRAM_PAGE
+		}
+
+		res.locals.customer_route=`${process.env.CUSTOMER_ROUTE}`
+
 			res.locals.customer=req.session.customer
 
 		}
@@ -178,10 +191,20 @@ app.use(parseForm, csrfProtection, async(request, response, next) => {
 	});
 
 
-app.use('/',index);
-app.use ("/admin",adminRoute)
-app.use("/admin/books",booksRouter)
-app.use("/admin/order",OrdersRouter)
+// app.use('/',index);
+// app.use ("/admin",adminRoute)
+// app.use("/admin/books",booksRouter)
+// app.use("/admin/order",OrdersRouter)
+
+app.use(`${process.env.CUSTOMER_ROUTE}`,index);
+app.use (`${process.env.ADMIN_ROUTE}`,adminRoute)
+app.use(`${process.env.ADMIN_ROUTE + process.env.ADMIN_BOOKS_ROUTE}`,booksRouter)
+app.use(`${process.env.ADMIN_ROUTE +process.env.ADMIN_ORDERS_ROUTE}`,OrdersRouter)
+
+console.log(process.env.CUSTOMER_ROUTE)
+console.log(process.env.ADMIN_ROUTE)
+console.log(`${process.env.ADMIN_ROUTE + process.env.ADMIN_BOOKS_ROUTE}`)
+console.log(`${process.env.ADMIN_ROUTE + process.env.ADMIN_ORDERS_ROUTE}`)
 
 app.use((req,res)=>{
 	res.render("pages/404")

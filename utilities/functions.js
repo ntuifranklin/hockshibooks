@@ -5,9 +5,12 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const otpModel=require("../models/otpModel")
 const customerModel=require("../models/customerModel")
+const adminModel=require("../models/adminModel")
 const cusomerOtpModel=require("../models/customerOtpModel")
 const nodemailerMock=require("nodemailer-mock")
 const axios= require("axios")
+const ejs = require('ejs');
+
 require("dotenv").config()
 
 function isTestEnvironment(root_dir=new String(__dirname)) {
@@ -85,6 +88,7 @@ const generateAndSendOTP=async (userId,mail,otpmodel)=>{
 
 //   } 
   // else{ 
+
     
     Transporter=nodemailer.createTransport({
       service:'gmail',
@@ -95,21 +99,35 @@ const generateAndSendOTP=async (userId,mail,otpmodel)=>{
 
       }
     });
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to: mail,
-    subject: 'Your OTP Code',
-    text: `Your OTP code is ${otpCode}. It will expire in 15 minutes.`,
-  };
-  try{
+    
+    const templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,`OTPcodeTemplate.ejs`);
+    ejs.renderFile(templatePath,{code:otpCode}, (err, html) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: mail,
+        subject: 'Your OTP Code',
+        html: html,
+        
+        
+      };
+      try{
 
-      await Transporter.sendMail(mailOptions,()=>{
-        console.log("Email sent successfully.");        });
-        // console.log(otpCode)
-  }
-  catch(e){
-    console.log("email error" , e)
-  }
+         Transporter.sendMail(mailOptions,()=>{
+          console.log("Email sent successfully.");        });
+          // console.log(otpCode)
+    }
+    catch(e){
+      console.log("email error" , e)
+    }
+    })
+
+
+  
+ 
 
  return otpCode
 }
@@ -137,26 +155,116 @@ const sendStatusChangedMessage=async(order,status)=>{
 
     }
   });
+  const templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,`OrderChangedTemplate.ejs`);
+  ejs.renderFile(templatePath,{customerName:customer.last_name || "geust user", status:status,orderId:order.order_id}, (err, html) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
 const mailOptions = {
   from: process.env.EMAIL,
   to: customer.email,
   subject: 'Order status change',
-  text: `
-  dear ${customer.last_name || "geust user"}, 
-
-  the status of your order with the id ${order.order_id} has been changed to ${status}
-  
-  `,
+  html:html
 };
 try{
 
-    await Transporter.sendMail(mailOptions,()=>{
+     Transporter.sendMail(mailOptions,()=>{
       console.log("Email sent successfully.");        });
       // console.log(otpCode)
 }
 catch(e){
   console.log("email error" , e)
 }
+})
+}
+
+const sendOrderCompletedMessage=async(customer,order)=>{
+  /** }
+   * 
+   * 
+ **/
+
+  Transporter=nodemailer.createTransport({
+    service:'gmail',
+
+    auth:{
+      user:process.env.EMAIL_USER,
+      pass:process.env.EMAIL_PASS //google does not allow you to use your regular password for third party apps instead , you will generate an app pass , app passwords can only be generated for accounts with 2FA
+
+    }
+  });
+  const templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,`orderCompletedMessage.ejs`);
+  ejs.renderFile(templatePath,{customerName:customer.last_name + " " + customer.first_name || "geust user", orderId:order.order_id}, (err, html) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+const mailOptions = {
+  from: process.env.EMAIL,
+  to: customer.email,
+  subject: 'Your Order Was Recieved',
+  html:html
+};
+try{
+
+     Transporter.sendMail(mailOptions,()=>{
+      console.log("Email sent successfully.");        });
+      // console.log(otpCode)
+      sendEmailToAdmin(customer,order)
+}
+catch(e){
+  console.log("email error" , e)
+}
+})
+
+
+
+}
+
+const sendEmailToAdmin=async(customer,order)=>{
+  
+  Transporter=nodemailer.createTransport({
+    service:'gmail',
+
+    auth:{
+      user:process.env.EMAIL_USER,
+      pass:process.env.EMAIL_PASS //google does not allow you to use your regular password for third party apps instead , you will generate an app pass , app passwords can only be generated for accounts with 2FA
+
+    }
+  });
+  const templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,`newOrderInitiated.ejs`);
+  ejs.renderFile(templatePath,{customerName:customer.last_name + " " + customer.first_name || "geust user", orderId:order.order_id,total:order.total_amount,orderDate:order.order_date}, async (err, html) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    const superAdmins= await adminModel.findAll({
+      where:{
+        role:"super_admin"
+      }
+    })
+superAdmins.forEach((admin)=>{
+  
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: admin.email,
+    subject: 'New Order Made',
+    html:html
+  };
+  try{
+  
+       Transporter.sendMail(mailOptions,()=>{
+        console.log("Email sent successfully.");        });
+        // console.log(otpCode)
+  }
+  catch(e){
+    console.log("email error" , e)
+  }
+    
+})
+})
 }
 const Md5Rand=()=>{
   /**
@@ -224,6 +332,11 @@ const checkFileExtension=(file, cb)=>{
 
 }
 
+/**
+ * Retrieves the book description from the Open Library API by its identifier.
+ * @param {string} openLibraryId - The Open Library identifier for the book.
+ * @returns {string} The book description if available, otherwise 'No description available'.
+ */
 const getBookDescription= async (openLibraryId)=>{
 
   const url = `https://openlibrary.org/works/${openLibraryId}.json`;
@@ -237,4 +350,14 @@ const getBookDescription= async (openLibraryId)=>{
         return 'No description available';
     }
 }
-module.exports={sendStatusChangedMessage,convertDateFormat,connect,isTestEnvironment,generateAndSendOTP,Md5Rand,checkFileExtension,checkUploadDir,getBookDescription}
+module.exports={sendStatusChangedMessage,
+  convertDateFormat,
+  connect,
+  isTestEnvironment,
+  generateAndSendOTP,
+  Md5Rand,
+  checkFileExtension,
+  checkUploadDir,
+  getBookDescription,
+  sendOrderCompletedMessage
+}

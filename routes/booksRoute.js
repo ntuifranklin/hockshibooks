@@ -48,7 +48,8 @@ router.get("/delete/:id",verifyLogin,deleteBook)
 // router.get("/update/:id",updateBook)
 // router.post("/update/",upload.single("coverImage"),bookUpdateMiddleware,saveUpdate)
 
-
+// router.get("/addBookWithISBN",getaddBookWithISBNForm)
+// router.post("/addBookWithISBN",addBookWithISBNValidation,addBookWithISBN)
 // router.get("/delete/:id",deleteBook)
 
 

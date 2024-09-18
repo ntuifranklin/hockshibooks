@@ -1,6 +1,7 @@
 const csrf = require('csurf');
 let csrfProtection = csrf({ cookie: true });
 
+
 const sequelize = require('../config/database');
 const { validationResult } = require('express-validator');
 const { json } = require('body-parser');
@@ -24,6 +25,12 @@ const { language } = require('googleapis/build/src/apis/language');
 //variables
 let updateBookId;
 
+
+//routes
+const admin_route=process.env.ADMIN_ROUTE
+const book_route=process.env.ADMIN_BOOKS_ROUTE
+const order_route=process.env.ADMIN_ORDERS_ROUTE
+
 const GetinsertBook= async(req,res)=>{
 
     /**
@@ -37,7 +44,7 @@ Here's what it does:
      */
     const genre= await genreModel.findAll()
 
-    res.render("pages/bookInsert",{
+    res.render("pages/admin/bookInsert",{
         host:process.env.HOST,
         genre:genre,
         msg:false,
@@ -55,7 +62,7 @@ const CreateBook=async (req,res)=>{
     //The function first checks for any validation errors using validationResult(req).
 
         const errors=validationResult(req)
-        const error={}
+        let error=[]
         // If there are validation errors, it retrieves all genres from the database and adds an error message if no file (cover image) is uploaded.
         if(!req.file){
 
@@ -71,13 +78,17 @@ const CreateBook=async (req,res)=>{
                 if(!errors.isEmpty()){
                         const genre= await genreModel.findAll()
 
-                        error={...errors.array()}
+                        // error=[...error , errors.array()]
+
+                        errors.array().map(err=>{
+                            error.push(err)
+                        })
                        
                         
                         }
                         
                       
-                    res.render("pages/bookInsert",{
+                    res.render("pages/admin/bookInsert",{
                         host:process.env.HOST,
                         msg:error,
                         formdata:req.body,
@@ -104,7 +115,7 @@ const CreateBook=async (req,res)=>{
                         location:req.body.location
                     })
             
-                    return res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+added&type=success`);
+                    return res.redirect(`${process.env.HOST + admin_route}/dashboard?msg=item+successfully+added&type=success`);
                 }
                 // File information is available in req.file
 }
@@ -131,7 +142,7 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
 ]},)
 const genre= await genreModel.findAll()
     // res.send(book)
-    res.render("pages/updateBook",{
+    res.render("pages/admin/updateBook",{
         book:book,
         root_path:process.env.ROOT_PATH,
         image:book.cover_image_url,
@@ -168,7 +179,7 @@ const saveUpdate=async(req,res)=>{
         const inventory=await inventoryModel.findByPk(req.body.bookId)
 
         if(!book || !inventory){
-           return res.status(404).redirect(`${process.env.HOST}/admin/dashboard?msg=item+not+found&type=danger`);
+           return res.status(404).redirect(`${process.env.HOST + admin_route}/dashboard?msg=item+not+found&type=danger`);
         }
         else{
             //The function updates the fields of the book and inventory records with the data from the request body.
@@ -195,7 +206,7 @@ const saveUpdate=async(req,res)=>{
                 // Delete the cover image file
                 fs.unlink(coverImagePath, async (err) => {
                     if (err) {
-                        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
+                        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+deleting+image&type=danger`);;
                     }
                 })
         
@@ -213,7 +224,7 @@ const saveUpdate=async(req,res)=>{
    
                 //After successful update, the user is redirected to the dashboard with a success message.
 
-       res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+updated&type=success`);
+       res.redirect(`${process.env.HOST +    admin_route}/dashboard?msg=item+successfully+updated&type=success`);
        
         
         }
@@ -221,7 +232,7 @@ const saveUpdate=async(req,res)=>{
 }
     
     catch(e){
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=server+error&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=server+error&type=danger`);
 
 
     }
@@ -245,21 +256,26 @@ const deleteBook=async (req,res)=>{
      */
     let book= await bookModel.findByPk(req.params.id)
     try{
+
+        
         const coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url);
         // Delete the cover image file
+
+        if(fs.existsSync(coverImagePath)){
         fs.unlink(coverImagePath, async (err) => {
             if (err) {
-                return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
+                return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+deleting+image&type=danger`);;
 
             } 
         })
+    }
         
         await book.destroy()
-    res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+deleted&type=success`);
+    return res.redirect(`${process.env.HOST + admin_route}/dashboard?msg=item+successfully+deleted&type=success`);
         
     }
     catch(e){
-    res.redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+record&type=danger`);
+    res.redirect(`${process.env.HOST +admin_route}/dashboard?msg=error+when+deleting+record&type=danger`);
 
     }
 }
@@ -272,7 +288,7 @@ const getaddBookWithISBNForm=(req,res)=>{
  * @param {Object} res - The response object.
  * @return {Promise<void>} A promise that resolves when the template is rendered.
  */
-    res.status(200).render("pages/addBookWithISBNForm",{
+    res.status(200).render("pages/admin/addBookWithISBNForm",{
         msg:false,
     })
 }
@@ -302,7 +318,7 @@ const addBookWithISBN= async(req,res)=>{
     
     if(!errors.isEmpty()){
         const err=errors.array()[0]
-        res.render("pages/addBookWithISBNForm",{
+        res.render("pages/admin/addBookWithISBNForm",{
             msg:err,
         })
 
@@ -341,11 +357,11 @@ const addBookWithISBN= async(req,res)=>{
                         location:"warehouse"
                     })
 
-                    return res.status(302).redirect(`${process.env.HOST}/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
+                    return res.status(302).redirect(`${process.env.HOST + admin_route}/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
                 }
                 else{
 
-                    res.status(500).render("pages/addBookWithISBNForm",{
+                    res.status(500).render("pages/admin/addBookWithISBNForm",{
                         msg:{
                             msg:"a book with this title already exists"
                         },
@@ -353,18 +369,18 @@ const addBookWithISBN= async(req,res)=>{
                 }
                 } catch (error) {
 
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+creating+book&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+creating+book&type=danger`);
                 }
                 
             }
             else{
 
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
             }
         }
         catch(e){
 
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
 
         }
     }

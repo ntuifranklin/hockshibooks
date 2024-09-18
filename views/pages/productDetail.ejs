@@ -373,6 +373,8 @@
 
 
 
+<script src="../assets/js/customerJS/customerCommon.js"></script>
+<script src="../assets/js/customerJS/customerProductDetail.js"></script>
 
 
 <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
@@ -427,93 +429,6 @@
     <!-- Main JS -->
     <script src="../assets/js/main.js"></script>
 
-    <script>
- document.addEventListener('DOMContentLoaded', function () {
-    let input;
-
-    let maxVal = parseInt(document.querySelector('.cart-plus-minus-box').getAttribute('max')) || 5; // Set a default max value if not specified
-    
-    document.querySelector('.inc').addEventListener('click', function () {
-         input = this.previousElementSibling; // Select the input field
-        console.log(input)
-        let val = parseInt(input.value);
-        if (val < maxVal) {
-            input.value = val + 1;
-        }
-        else{
-            input.value = maxVal
-        }
-    });
-
-    document.querySelector('.dec').addEventListener('click', function () {
-         input = this.nextElementSibling; // Select the input field
-        console.log(input)
-
-        let val = parseInt(input.value);
-        if (val > 1) {
-            input.value = val - 1;
-        }
-    });
-
-    // Prevent manual input of values greater than the max
-    document.querySelector('.cart-plus-minus-box').addEventListener('input', function () {
-        let val = parseInt(this.value);
-        if (val > maxVal) {
-            this.value = maxVal;
-        }
-    });
-
-
-    async function addToCart (productId) {
-                    let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        
-        
-        
-                    let product = cartItems.find(item => item.id == productId);
-        
-                        if (product) {
-                        alert("product already exists in your shopping cart")
-        
-                        } else {
-                            let maxVal = document.querySelector('.cart-plus-minus-box')
-                            let quantity=maxVal.value>0?maxVal.value:1
-                              cartItems.push({id: productId, qty:quantity});
-                            alert("Product successfully added to your cart")
-                            localStorage.setItem('cartItems', JSON.stringify(cartItems));
-                             changeCartValue()
-                        
-        
-                        }
-        
-        
-                }
-        const changeCartValue=()=>{
-            const cartCountElement = document.querySelector('#cart-count');
-        
-                            const cartCount = localStorage.getItem('cartItems') || [];
-                            const items=JSON.parse(cartCount)
-                             cartCountElement.textContent = items.length;
-        
-        }
-                // Event listener for the add to cart button
-                document.querySelectorAll('.add-to-cart').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const productId = event.target.getAttribute('data-product-id');
-                        // updateCartCount();
-                        addToCart(productId);
-                    });
-                });
-        
-});
-    
-                window.addEventListener("load",()=>{
-                    const animation= document.querySelector(".loading")
-                    const products=document.querySelector(".container")
-        
-                    animation.classList.add("move")
-                    products.classList.remove("hidden")
-                })
-        
-        </script>
+   
 </body>
 </html>
