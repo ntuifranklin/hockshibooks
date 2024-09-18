@@ -199,8 +199,6 @@ const loginPagePost = async (req,res)=>{
                         });      
 
 
-                        geust=user.geust
-                        console.log(geust)
                         
                     if(!user){
                             
@@ -218,6 +216,8 @@ const loginPagePost = async (req,res)=>{
                                 username= `${user.first_name} ${user.last_name}`
                                     user_email=email
                                     userId=user.customer_id
+                        geust=user.geust 
+
                                     generateAndSendOTP(user.customer_id,user_email,customerOtpModel)
                             res.status(200).render(`pages/customerOtpVerification`,{
                                     userId:userId,
