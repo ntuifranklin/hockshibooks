@@ -47,7 +47,7 @@
     "mysql": "^2.18.1",
     "mysql2": "^3.9.7",
     "node-fetch": "^3.3.2",
-    "nodemailer": "^6.9.13",
+    "nodemailer": "^6.9.15",
     "nodemailer-mock": "^2.0.6",
     "otp-generator": "^4.0.1",
     "path": "^0.12.7",
