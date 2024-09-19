@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Update Book</title>
+
+    <!-- CSS
+        ============================================ -->
+    
+    <!-- Bootstrap Css -->
+    <link rel="icon" href="/assets/images/favicon.ico">
+
+     <!-- CSS
+         ============================================ -->
+     
+     <!-- Bootstrap Css -->
+     <link rel="stylesheet" href="/assets/css/vendor/bootstrap.min.css">
+     
+     <!-- Icons Css -->
+     <link rel="stylesheet" href="/assets/css/vendor/linearicons.min.css">
+     <link rel="stylesheet" href="/assets/css/vendor/fontawesome-all.min.css">
+     
+     <!-- Animation Css -->
+     <link rel="stylesheet" href="/assets/css/plugins/animation.min.css">
+     
+     <!-- Slick Slier Css -->
+     <link rel="stylesheet" href="/assets/css/plugins/slick.min.css">
+     
+     <!-- Magnific Popup CSS -->
+     <link rel="stylesheet" href="/assets/css/plugins/magnific-popup.css">
+     
+     <!-- Easyzoom CSS -->
+     <link rel="stylesheet" href="/assets/css/plugins/easyzoom.css">
+     
+     <!-- Main Style CSS -->
+     <link rel="stylesheet" href="/assets/css/style.css">
+
+    <!-- <style>
+        body {
+            background-color: #f8f5f0;
+        }
+        .container {
+            max-width: 1500px;
+            margin-top: 50px;
+           
+        }
+        .form-container {
+            display: flex;
+            border: 1px solid #e0e0e0;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .form-content {
+            padding: 40px;
+            flex-grow: 1;
+        }
+        .form-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-header h2 {
+            font-size: 24px;
+            letter-spacing: 2px;
+            color: #1e0b52;
+            font-weight: bold;
+        }
+        .form-header .dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .form-header .dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #e0d3ba;
+            margin: 0 5px;
+        }
+        .form-header .dots .active {
+            background-color: #8fb476;
+        }
+        .form-content h5 {
+            color: #8fb476;
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            color: #737373;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .form-control {
+            border: none;
+            border-bottom: 1px solid #e0e0e0;
+            border-radius: 0;
+            padding-left: 0;
+        }
+        .form-check-label {
+            color: #737373;
+        }
+        .btn-primary {
+            background-color: #e0d3ba;
+            border: none;
+            color: #737373;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .checkbox-label {
+            font-size: 12px;
+            color: #737373;
+        }
+        .errors{
+            width:80vw;
+            display: grid;
+            grid-template-rows:  auto  ;
+            column-gap: 40px;
+            grid-template-columns: auto 400px auto;
+        }
+    </style> -->
+</head>
+<body>
+   
+
+     <%  if (user) { %>
+        <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
+        <% } %>
+<div class="container">
+    
+
+
+<div id="main-wrapper">
+    <div class="site-wrapper-reveal border-bottom">
+
+        <div class="my-account-page-warpper section-space--ptb_120">
+            <div class="container">
+                <div class="errors">
+                    <% if (msg.length!=0) { %>
+                        <% for(let i=0; i < msg.length; i++) { %>
+                                                
+                            
+                            <div class="alert alert-danger" role="alert">
+                                <p><%= msg[i].msg %>!</p>
+                            </div>
+                            <% } %>
+                    <% } %>
+            
+                </div>
+                    <div class="col-md-5 mx-auto w-100 d-flex justify-content-center align-items-center ">
+                        <% if(book.cover_image_url.split(":")[0]=="https") { %>
+                            <img  src="<%=`${book.cover_image_url}`%>" class="img-fluid mx-auto w-30 h-20">
+                            <% } else { %>
+                              <img  src="/uploads/<%=`${book.cover_image_url}`%>" class="img-fluid mx-auto w-30 h-20">
+            
+                              <% } %>
+                    </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-7 m-auto">
+                        <div class="myaccount-box-wrapper">
+                         
+                            <div class="tab-content content-modal-box">
+                              
+                                <div class="tab-pane fade show active"  >
+
+                                    <form enctype="multipart/form-data" action="/admin/books/update?_csrf=<%= csrfToken%>"  method="post" class="account-form-box">
+                                        <h1>Update : <%= book.title %></h1>
+                                        <div class="form-row">
+                                            <input type="hidden"   value="<%= book.book_id %>"  name="bookId">
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group single-input">
+                                                <label  class="w-100">Title:
+
+                                                    <input type="text"  id="Book_Title" placeholder="Book Title" value="<%= book.title %>" name="title">
+
+                                                </label>
+                                            </div>
+                                            <div class="form-group single-input">
+                                                <label for="" class="w-100">Author Name:
+
+                                                    <input type="text"  id="autho" placeholder="Book Author" value="<%= book.author %>" name="author">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">ISBN:
+
+                                                <input type="text"  id="ISBN" placeholder="ISBN" name="ISBN" value="<%= book.ISBN %>" name="ISBN">
+                                            </label>
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Language:
+
+                                                <input type="text"  id="phone" placeholder="language" name="language" value="<%= book.language %>">
+                                            </label>
+
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Unit Price:
+
+
+                                                <input type="number"  id="price" placeholder="Price" name="price" value="<%= book.price %>">
+                                            </label>
+
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Quantity Available:
+
+                                                <input type="number"  id="location" placeholder="Location" name="quantity" value="<%= book.Inventory.quantity_available %>">
+
+                                            </label>
+
+                                        </div>
+                                        
+                                        <div class="single-input">
+                                            <label for="" class="w-100">
+                                                Location:
+
+                                                <input type="text"  id="location" placeholder="Location" name="location" value="<%= book.Inventory.location %>">
+                                            </label>
+
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Release Date:
+
+                                                <input type="date" class="form-control" id="date" name="date" >
+
+                                            </label>
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Cover Image:
+
+                                                <input type="file"  id="customFile"  name="coverImage">
+
+                                            </label>
+                                        </div>
+                                        <div class="single-input">
+
+                                            <label for="" class="w-100">Description:
+
+                                                <textarea type="date" class="w-100" id="description" name="description" value="<%= book.description %>"  resize=false rows="10"  width="1000px"><%= book.description %></textarea>
+                                            </label>
+
+                                        </div>
+                                    
+
+                                        <input type="hidden" name="_csrf"
+                                        value="<%= csrfToken %>">
+                                        <div class="button-box mt-25">
+                                            <button type="submit" class="btn btn--full btn--black">Save updates</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    
+    <!--====================  End of footer area  ====================-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+    </div>
+
+<script src="../assets/js/adminDashboard.js"></script>
+
+  
+<script src="/assets/js/vendor/modernizr-2.8.3.min.js"></script>
+
+<!-- jQuery JS -->
+<script src="/assets/js/vendor/jquery-3.5.1.min.js"></script>
+<script src="/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="/assets/js/vendor/bootstrap.min.js"></script>
+
+<!-- Fullpage JS -->
+<script src="/assets/js/plugins/fullpage.min.js"></script>
+
+<!-- Slick Slider JS -->
+<script src="/assets/js/plugins/slick.min.js"></script>
+
+<!-- Countdown JS -->
+<script src="/assets/js/plugins/countdown.min.js"></script>
+
+<!-- Magnific Popup JS -->
+<script src="/assets/js/plugins/magnific-popup.js"></script>
+
+<!-- Easyzoom JS -->
+<script src="/assets/js/plugins/easyzoom.js"></script>
+
+<!-- ImagesLoaded JS -->
+<script src="/assets/js/plugins/images-loaded.min.js"></script>
+
+<!-- Isotope JS -->
+<script src="/assets/js/plugins/isotope.min.js"></script>
+
+<!-- YTplayer JS -->
+<script src="/assets/js/plugins/YTplayer.js"></script>
+
+<!-- Instagramfeed JS -->
+<!-- <script src="/assets/js/plugins/jquery.instagramfeed.min.js"></script> -->
+
+<!-- Ajax Mail JS -->
+<script src="/assets/js/plugins/ajax.mail.js"></script>
+
+<!-- wow JS -->
+<script src="/assets/js/plugins/wow.min.js"></script>
+
+
+
+<!-- Plugins JS (Please remove the comment from below plugins.min.js for better website load performance and remove plugin js files from avobe) -->
+
+<!--
+<script src="/assets/js/plugins/plugins.min.js"></script>
+-->
+
+<!-- Main JS -->
+<script src="/assets/js/main.js"></script>
+</body>
+</html> 
