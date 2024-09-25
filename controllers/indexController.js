@@ -860,6 +860,7 @@ const successPayment = async(req,res)=>{
         transaction_id: session.id
       });
       await sendOrderCompletedMessage(customer,order)
+      req.session.cart=[]
       return res.status(200).render("pages/successPage",{
         title:"Successful Payment"
       })
