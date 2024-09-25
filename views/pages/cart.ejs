@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
+    <title><%= title %></title>
     <meta name="csrf-token" content="<%= csrfToken %>">
     <link rel="icon" href="../../assets/images/favicon.ico">
 
@@ -344,6 +344,14 @@ body {
                         </form>
                        
                         <div class="cart-buttom-area">
+                            <div class="shoping-update-area row">
+                                <div class="continue-shopping-butotn col-6 mt-30">
+                                    <a href="/books" class="btn btn--lg btn--black"><i class="icon-arrow-left"></i> Continue Shopping </a>
+                                </div>
+                                <div class="update-cart-button col-6 text-end mt-30">
+                                    <button class="btn btn--lg btn--border_1 " id="updateCart">Update cart</button>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     
@@ -414,6 +422,7 @@ body {
                             </div>
                         </div> -->
                     </div>
+                   
                    
                 </div>
 
@@ -629,7 +638,6 @@ body {
       <p>Processing, Please Wait ...</p>
   </div>
 
-  <%- include('../layout/footer',{companyDetails:companyDetails}) %>
   
   
 <script src="../assets/js/customerJS/customerCommon.js"></script>

@@ -50,7 +50,9 @@ const showHomePage = async (req,res)=>{
         ], 
     })
     return res.status(200).render("pages/homePage",{
-        "books":books
+        
+        books:books,
+        title:"home page"
     })
 
 
@@ -94,7 +96,8 @@ const bookDetail= async (req,res)=>{
     res.render("pages/productDetail",{
         book:book,
         relatedBooks:relatedBooks,
-        release_date:""
+        release_date:"",
+        
     })
 }
 const viewCart= async(req,res)=>{
@@ -110,8 +113,10 @@ const viewCart= async(req,res)=>{
 
 
     return res.render("pages/cart",{
+        title:"My cart",
         states:states,
-        country:country
+        country:country,
+        
     })
 }
 const getCartItems=async (req,res)=>{
@@ -123,8 +128,10 @@ const getCartItems=async (req,res)=>{
  * @return {object[]} An array of detailed cart items with book information and quantity.
  */
     try {
-        const cartItems= req.body.cartItems
-    const bookIds= cartItems.map(item=> item.id)
+        if(req.session.cart){
+            const cart=req.session.cart
+        // const cartItems= req.body.cartItems
+    const bookIds= cart.map(item=> item.productId)
 
     const books= await bookModel.findAll({
         where :{
@@ -144,21 +151,108 @@ const getCartItems=async (req,res)=>{
         }else{
             imgUrl=`${book.cover_image_url}`
         }
-        const cartItem=cartItems.find(item=>item.id==book.book_id)
+        const cartItem=cart.find(item=>item.productId==book.book_id)
         return{
             ...book.dataValues,
             cover_image: imgUrl,
-            qty:cartItem.qty
+            qty:cartItem.quantity
         }
     })
 
     res.json(detailedcartItems);
+}
+
         
     } catch (error) {
         console.error('Error fetching cart items:', error);
         res.status(500).json({ error: 'Internal Server Error' });
         
     }
+}
+
+const addToCart = async(req,res)=>{
+      const product= req.params.id
+      const quantity=req.body.quantity||1
+
+      try{
+        const detailedProduct=await bookModel.findOne({
+            where:{
+                book_id:product
+            },
+            include:[{
+                model:inventoryModel
+            }]
+        })
+
+
+
+      if(!req.session.cart){
+        req.session.cart=[]
+      }
+      
+        const cart= req.session.cart
+
+        const itemIndex= cart.findIndex(
+            item=>{
+                return item.productId==product
+            }
+        )
+
+        if(itemIndex==-1){
+            cart.push({productId:product,quantity:quantity})
+                res.status(200).json({message:"item successfully added"})
+            
+        }
+        else{
+
+            if(cart[itemIndex].quantity>detailedProduct.Inventory.quantity_available){
+                 res.status(500).json({message:"insufficent quantity "})
+
+            }else{
+                cart[itemIndex].quantity+=quantity
+                 res.status(200).json({message:"cart successfully updated"})
+
+
+            }
+        }
+        req.session.cart=cart
+        console.log(`cart:` + cart)
+
+      }
+      catch(e){
+        console.log(e)
+        return res.status(500).json({message:"an error occured"})
+      }
+
+}
+const updateCart= async (req,res)=>{
+    const cartArray=req.body||[]
+
+    if(cartArray){
+        req.session.cart=cartArray
+        res.status(200).json({message:"cart updated successfully"})
+    }
+    else{
+        res.status(500).json({message:"error when updating your cart"})
+
+    }
+    
+}
+const GetCartLength= async(req,res)=>{
+    if(req.session.cart){
+        res.status(200).json({cartLength:req.session.cart.length})
+    }
+    else{
+        res.status(200).json({cartLength:0})
+
+    }
+}
+const deleteCart = async (req,res)=>{
+    const productId=req.params.id
+    req.session.cart=req.session.cart.filter(item=>item.productId!==productId)
+
+    res.status(200).json({message:"item removed"})
+
 }
 const loginPage= async (req,res)=>{
     /**
@@ -171,6 +265,8 @@ const loginPage= async (req,res)=>{
     const states=await provinceStateModel.findAll()
     const country=await CountryModel.findAll()
     return res.render("pages/customerLogin",{
+        title:"login Page",
+
         msg:req.query.msg?req.query.msg:false,
         errors:req.body.errors?req.body.errors:false,
         countries:country,
@@ -203,6 +299,8 @@ const loginPagePost = async (req,res)=>{
                     if(!user){
                             
                             res.status(401).render("pages/customerLogin",{
+                                    title:"login page",
+
                                     msg:"please check your email and password again",
                                     errors:false,
                                     countries:country,
@@ -220,6 +318,7 @@ const loginPagePost = async (req,res)=>{
 
                                     generateAndSendOTP(user.customer_id,user_email,customerOtpModel)
                             res.status(200).render(`pages/customerOtpVerification`,{
+                                title:"OTP VERIFICATION",
                                     userId:userId,
                                     username:username,
                                     email:user_email,
@@ -229,6 +328,8 @@ const loginPagePost = async (req,res)=>{
                     }
                             else{
                                     res.status(401).render("pages/customerLogin",{
+                                title:"OTP VERIFICATION",
+
                                             msg:"please check your email and password again",
                                             errors:false,
         countries:country,
@@ -274,7 +375,8 @@ If there are errors, render the otpVerification page with an error message.
             if(!errors.isEmpty()){
                     const {msg}=errors.array()[0]
                     res.render(`pages/customerOtpVerification`,{
-                            userId:userId,
+                        title:"OTP VERIFICATION",
+                        userId:userId,
                             username:username||false,
                             email:user_email,
                             msg:msg,
@@ -290,6 +392,9 @@ If there are errors, render the otpVerification page with an error message.
             if(!otpRecord){
                     
                     res.status(401).render(`pages/customerOtpVerification`,{
+                        title:"OTP VERIFICATION",
+
+
                             userId:userId,
                             username:username||false,
                             email:user_email,
@@ -303,6 +408,9 @@ If there are errors, render the otpVerification page with an error message.
             else if(otpRecord.expiration_time < new Date()){
 
                     res.status(401).render(`pages/customerOtpVerification`,{
+                        title:"OTP VERIFICATION",
+
+
                             userId:userId,
                             email:user_email,
                             username:username||false,
@@ -319,6 +427,7 @@ If there are errors, render the otpVerification page with an error message.
     Redirect the user to the dashboard.
                      */
                     req.session.customer={
+                        customer_id:userId,
                         geust:geust,
                             email:user_email,
 
@@ -348,6 +457,8 @@ const signupPage= async(req,res)=>{
     const country=await CountryModel.findAll()
 
     return res.render("pages/customerSignup",{
+        title:"Signup",
+
         errors:req.body.errors?req.body.errors:false,
         countries:country,
         states:states
@@ -462,7 +573,8 @@ If an error occurs, it redirects to the root URL with a 500 status code.
 
 
           return res.status(200).render("pages/",{
-            "books":books
+            title:"Books",
+            books:books
         })
     }catch(e){
         res.status(500).redirect(`${process.env.HOST + customer_route}`)
@@ -487,8 +599,11 @@ const Profile=async(req,res)=>{
         }
 
         else{
+            try{
+
+            
         const userInformation= await customerModel.findOne(
-            {where:{customer_id:userId},
+            {where:{customer_id:req.session.customer.customer_id},
             
             include:[{
                 model:orderModel
@@ -507,14 +622,20 @@ const Profile=async(req,res)=>{
         // req.session.customer.customer_id
         const user={...userInformation.dataValues,current_state:{...current_state.dataValues},}
         return res.render("pages/profile",{
+            title:"Profile",
+
             user:user,
             states:states,
             country:country,
             errors:req.body.errors?req.body.errors:false,
             msg:req.query.msg?req.query.msg:false,
             type:req.query.type?req.query.type:false
-        })
-    }
+        })}
+        catch(e){
+        return res.redirect(`${process.env.HOST+ customer_route}login?msg=Please+login+first`)
+
+
+        }    }
     }
    
 }
@@ -530,7 +651,7 @@ const updateProfile=async(req,res)=>{
         try{
 
             const customer= await customerModel.findOne(
-                {where:{customer_id:userId} }
+                {where:{customer_id:req.session.customer.customer_id} }
             
             )
             console.log("customer name: "+typeof(customer.newPassword))
@@ -605,7 +726,7 @@ const checkout = async(req,res)=>{
 8. If any error occurs during the process, it logs the error and sends a 500 Internal Server Error response.
     */
     try {
-        items=req.body.items
+        items=req.session.cart
         shippingInfo=req.body.shippingInfo
 
         if (!Array.isArray(items)) {
@@ -617,7 +738,7 @@ const checkout = async(req,res)=>{
     for(let i=0;i<items.length;i++){
         let productDetails=  await bookModel.findOne({
             where:{
-                book_id:items[i].id
+                book_id:items[i].productId
             }
         })
                     let product;
@@ -630,7 +751,7 @@ const checkout = async(req,res)=>{
                             },
                             unit_amount: productDetails.price*100, // amount in cents
                         },
-                        quantity: items[i].qty,
+                        quantity: items[i].quantity,
         
                     
                     };
@@ -708,7 +829,7 @@ const successPayment = async(req,res)=>{
       for (const item of items) {
         let productDetails=  await bookModel.findOne({
             where:{
-                book_id:item.id
+                book_id:item.productId
             },include:[
                 {model:inventoryModel}
             ]
@@ -716,14 +837,14 @@ const successPayment = async(req,res)=>{
         if(productDetails!=null){
         await OrderItem.create({
           order_id: order.order_id,
-          book_id: item.id,
-          quantity: item.qty,
+          book_id: item.productId,
+          quantity: item.quantity,
           item_price: productDetails.price,
-          subtotal: item.qty * productDetails.price
+          subtotal: item.quantity * productDetails.price
             
         });
 
-        productDetails.Inventory.quantity_available-=item.qty
+        productDetails.Inventory.quantity_available-=item.quantity
 
         await productDetails.Inventory.save()
     }
@@ -739,7 +860,9 @@ const successPayment = async(req,res)=>{
         transaction_id: session.id
       });
       await sendOrderCompletedMessage(customer,order)
-      return res.status(200).render("pages/successPage")
+      return res.status(200).render("pages/successPage",{
+        title:"Successful Payment"
+      })
     }
     catch(err){
         return res.status(500).redirect(`${process.env.HOST + customer_route}`)
@@ -781,7 +904,10 @@ const showGeustPage=(req,res)=>{
  * @param {Object} res - The response object.
  * @return {void}
  */
-    res.render("pages/showGeustPage")
+    res.render("pages/showGeustPage",{
+        title:"Geust Login Page",
+
+    })
 }
 const showForm=(req,res)=>{
     /**
@@ -792,6 +918,8 @@ const showForm=(req,res)=>{
  * @return {void}
  */
     res.render("pages/geustEmailForm",{
+        title:"Geust Login",
+
         msg:req.body.msg?req.body.msg:false
     })
 }
@@ -870,7 +998,9 @@ const processGeustUser=async (req,res)=>{
 
 const viewBooks = async(req,res)=>{
 
-    return res.render("pages/shop")
+    return res.render("pages/shop",{
+        title:"All Books"
+    })
 }
 
 const allBooks=async(req,res)=>{
@@ -965,6 +1095,7 @@ const oderDetail= async(req,res)=>{
             })
             console.log(orderItems)
             return res.render("pages/orderDetail",{
+                title:"Order Details", 
                 order:Order,
                 orderItems:orderItems
 
@@ -1006,5 +1137,9 @@ module.exports={
     allBooks,
     processGeustUser,
     updateProfile,
-    oderDetail
+    oderDetail,
+    updateCart,
+    GetCartLength,
+    addToCart,
+    deleteCart
 }

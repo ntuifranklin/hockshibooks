@@ -4,7 +4,6 @@ const { faker } = require('@faker-js/faker');
 const path = require('path');
 const createError = require('http-errors');
 const {isTestEnvironment,connect,checkUploadDir}=require("./utilities/functions");
-
 const bodyParser = require('body-parser');
 const {decode} = require('html-entities');
 const template_folder = './statictemplate';
@@ -12,6 +11,8 @@ const routes = require('./routes');
 const multer=require("multer")
 const csrf = require('csurf');
 const cookieSession = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(cookieSession.Store);
+
 const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
 
@@ -40,7 +41,14 @@ const sequelize = require('./config/database');
 process.env.ROOT_PATH=path.join(__dirname, './');
 
 //connects to the database
-connect()
+const sequeliz=connect()
+const sessionStore = new SequelizeStore({
+    db: sequeliz,
+    tableName: 'sessions' // Table where sessions will be stored
+});
+
+// Sync the session store table to the database
+sessionStore.sync();  
 //checks if the uploads dir exists, this dir is where all our cover images will be stored
 checkUploadDir()
 //models
@@ -70,7 +78,8 @@ app.use(express.json());
 const site_secret = faker.internet.password({ length:64 });
 let dynamicCookie =  {
     sameSite: 'none',
-	secret:site_secret,
+	secret:process.env.SITE_SECRET, 
+	store: sessionStore,
 	cookie:{
 
 		maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS),
@@ -78,6 +87,7 @@ let dynamicCookie =  {
     secure: false,
     httpOnly: false,
 	resave: false,
+	
   saveUninitialized: false
 };
 
@@ -159,7 +169,7 @@ app.use(parseForm, csrfProtection, async(request, response, next) => {
 });
 	*/
 
-
+ 
 
 	app.use((req, res, next) => {
 		res.locals.csrfToken = req.csrfToken();

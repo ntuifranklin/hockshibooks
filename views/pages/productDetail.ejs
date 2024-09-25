@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%=book.title%></title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
 
     
     <style>
@@ -239,7 +240,7 @@
         
                                             <div class="quickview-button">
                                                 <div class="quickview-cart button">
-                                                    <p class="submit add-to-cart btn--lg btn--black font-weight--reguler text-white" data-product-id="<%= book.book_id %>">Add to cart</p>
+                                                    <p class="submit  btn--lg btn--black font-weight--reguler text-white" data-product-id="<%= book.book_id %>" id="add-to-cart">Add to cart</p>
                                                 </div>
                                                 
                                             </div>

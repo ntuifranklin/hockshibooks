@@ -45,7 +45,8 @@ Here's what it does:
     const genre= await genreModel.findAll()
 
     res.render("pages/admin/bookInsert",{
-        host:process.env.HOST,
+        title:"Create A Book",
+        host:process.env.HOST,  
         genre:genre,
         msg:false,
         formdata:false,
@@ -89,6 +90,8 @@ const CreateBook=async (req,res)=>{
                         
                       
                     res.render("pages/admin/bookInsert",{
+        title:"Create A Book",
+
                         host:process.env.HOST,
                         msg:error,
                         formdata:req.body,
@@ -143,6 +146,8 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
 const genre= await genreModel.findAll()
     // res.send(book)
     res.render("pages/admin/updateBook",{
+        title:"Update Book",
+
         book:book,
         root_path:process.env.ROOT_PATH,
         image:book.cover_image_url,
@@ -289,6 +294,8 @@ const getaddBookWithISBNForm=(req,res)=>{
  * @return {Promise<void>} A promise that resolves when the template is rendered.
  */
     res.status(200).render("pages/admin/addBookWithISBNForm",{
+        title:"ISBN Book Insert",
+
         msg:false,
     })
 }
@@ -319,6 +326,8 @@ const addBookWithISBN= async(req,res)=>{
     if(!errors.isEmpty()){
         const err=errors.array()[0]
         res.render("pages/admin/addBookWithISBNForm",{
+        title:"ISBN Book Insert",
+
             msg:err,
         })
 
@@ -362,6 +371,8 @@ const addBookWithISBN= async(req,res)=>{
                 else{
 
                     res.status(500).render("pages/admin/addBookWithISBNForm",{
+        title:"ISBN Book Insert",
+
                         msg:{
                             msg:"a book with this title already exists"
                         },

@@ -10,6 +10,10 @@ const cusomerOtpModel=require("../models/customerOtpModel")
 const nodemailerMock=require("nodemailer-mock")
 const axios= require("axios")
 const ejs = require('ejs');
+const session = require("express-session");
+
+const SequelizeStore = require('connect-session-sequelize')(session.Store);  
+
 
 require("dotenv").config()
 
@@ -56,6 +60,14 @@ const connect = () => {
   }).catch(err => {
     console.error('Unable to connect to the database:', err);
   });
+
+  const sessionStore = new SequelizeStore({
+    db: sequelize,
+    tableName: 'sessions' // Table where sessions will be stored
+});
+
+// Sync the session store table to the database
+sessionStore.sync();
   // Return the Sequelize instance
   return sequelize;
 };

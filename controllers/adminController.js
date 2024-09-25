@@ -38,6 +38,7 @@ const login=(req,res,next)=>{
         //the login function renders the login page that will request the email and password of the users who wishes to login
         res.status(200)
         res.render("pages/admin/admin_login",{
+                title:"Admin Login",
                 msg:false,
                 host:process.env.HOST
         })
@@ -67,9 +68,12 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                         if(!user){
                                 
                                 res.status(401).render("pages/admin/admin_login",{
+                                         title:"Admin Login",
+
                                         csrfToken: req.csrfToken(),
                                         msg:"please check your email and password again",
                                            host:process.env.HOST
+                                           
                                 })
                         }
                         else{
@@ -79,6 +83,8 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                         authUser=user.dataValues
                                         generateAndSendOTP(user.id,user_email,otpModel)
                                 res.status(200).render(`pages/admin/otpVerification`,{
+                                         title:"Admin Otp Verification",
+
                                         userId:userId,
                                         email:user_email,
                                         msg:false,
@@ -87,6 +93,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                         }
                                 else{
                                         res.status(401).render("pages/admin/admin_login",{
+                                                title:"Admin Login",
                                                 csrfToken: req.csrfToken(),
                                                 msg:"please check your email and password again",
                                                 host:process.env.HOST
@@ -129,6 +136,8 @@ If there are errors, render the otpVerification page with an error message.
                 if(!errors.isEmpty()){
                         const {msg}=errors.array()[0]
                         res.render(`pages/admin/otpVerification`,{
+                                title:"Admin Otp verification",
+
                                 userId:userId,
                                 email:user_email,
                                 msg:msg,
@@ -146,6 +155,8 @@ If there are errors, render the otpVerification page with an error message.
                         authUser="";
                         
                         res.status(401).render(`pages/admin/otpVerification`,{
+                                title:"Admin Otp verification",
+
                                 userId:userId,
                                 email:user_email,
                                 msg:"invalid OTP record",
@@ -160,6 +171,8 @@ If there are errors, render the otpVerification page with an error message.
                         
 
                         res.status(401).render(`pages/admin/otpVerification`,{
+                                title:"Admin Otp verification",
+
                                 userId:userId,
                                 email:user_email,
 
@@ -175,6 +188,7 @@ If there are errors, render the otpVerification page with an error message.
         Redirect the user to the dashboard.
                          */
                         req.session.user={
+                                admin_id:userId,
                                 email:authUser.email,
                                 role:authUser.role
                         }
@@ -239,6 +253,7 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
         })
 
         res.status(200).render("pages/admin/dashboard",{
+                title:"Admin Dashboard",
                 books:books,
                 payments:payments,
                 // orders:orders,
@@ -292,10 +307,11 @@ catch(err){
 const adminProfile = async(req,res)=>{
         const {email}=await powerUSer.findOne({
                 where:{
-                        id:userId
+                        id:req.session.user.admin_id
                 }
         })
         return res.render(`pages/admin/admin_profile`,{
+                title:"My Profile",
                 errors:req.body.errors?req.body.errors:false,
                 msg:req.query.msg?req.query.msg:false,
             type:req.query.type?req.query.type:false,
@@ -316,7 +332,7 @@ const processAccountChanges = async(req,res)=>{
                 const {email,New_password,Old_password}= req.body
                 const user= await powerUSer.findOne({
                         where:{
-                                id:userId
+                                id:req.session.user.admin_id
                         }
                 })
 

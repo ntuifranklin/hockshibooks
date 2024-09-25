@@ -41,12 +41,11 @@
 <link rel="stylesheet" href="/assets/css/dashboard.css">   
 </head>
 <body>
-    <!-- <%- include('../navBar',{email:"juniorhoza56@gmail",role:"admin",host:"http://localhost:3000"}) %> -->
-
-    <%  if (user) { %>
-    <%- include('navBar',{email:user.email,role:user.role,host:host}) %>
-    <% } %>
-    <div class="container">
+         
+    <%  if (user) { %>        
+    <%- include('../admin/navBar',{email:user.email,role:user.role,host:host}) %>
+    <% } %>                                             
+    <div class="container"> 
         <h1 class="mx-auto w-50 my-3">Order information </h1>
         <h2>order Id: <%= order.order_id %> </h2>
 

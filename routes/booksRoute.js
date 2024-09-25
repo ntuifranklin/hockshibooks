@@ -31,7 +31,7 @@ const upload=multer({storage:storage ,
  
 
 
-//Books CRUD
+//Books CRUD   
 router.get("/insert-book",verifyLogin,GetinsertBook)
 router.post("/insert-book",verifyLogin,upload.single("coverImage"),validatForm,CreateBook)
 router.get("/update/:id",verifyLogin,updateBook)

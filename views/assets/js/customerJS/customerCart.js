@@ -1,7 +1,7 @@
+
 let deleteButton;
 let cartLength;
 
-const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 let detailedCartItems=[];
 const fetchCartItems= async ()=> {
@@ -26,11 +26,13 @@ const fetchCartItems= async ()=> {
                 'Content-Type': 'application/json',
                 
             },
-            body: JSON.stringify({ cartItems })
+            
         })
         .then(response => response.json())
         .then(detailedCartItems => {
             detailedCartItems=detailedCartItems
+            console.log("cart items")
+            console.log(detailedCartItems)
             cartLength=detailedCartItems.length
             console.log(cartLength)
             if(cartLength>0){
@@ -39,6 +41,8 @@ const fetchCartItems= async ()=> {
             }
             else{
                 document.getElementById("reveal").disabled= true
+                document.getElementById("updateCart").disabled= true
+
             }
         })
         .catch(error => {
@@ -46,14 +50,57 @@ const fetchCartItems= async ()=> {
         });
     }
 
-    function removeFromCart(productId) {
+    async function removeFromCart(productId) {
                 // Refresh the cart display after removing the specified product from the cart.
-        let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        cartItems = cartItems.filter(item => item.id != productId);
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
-        fetchCartItems(); // Refresh the cart display after removal
+
+                await fetch(`/deleteItem/${productId}`,{
+                    method:"POST",
+                    headers:{
+                        "X-CSRF-Token":csrfToken,
+                'Content-Type': 'application/json',
+                    }
+                })
+                // old code
+        // let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        // cartItems = cartItems.filter(item => item.id != productId);
+        // localStorage.setItem('cartItems', JSON.stringify(cartItems));
+
+        // end of old code
+        await fetchCartItems(); // Refresh the cart display after removal
     }
-    function displayCartItems(detailedCartItems) {
+    async function updateCart(cart){
+
+       const request= await fetch("/update-cart",{
+            method:"POST", 
+            headers: {
+                "X-CSRF-Token":csrfToken,
+                'Content-Type': 'application/json',
+                
+            },
+            body:JSON.stringify(cart)
+        })
+        const response= await request.json()
+        console.log(response)
+        location.reload()
+
+    }
+    document.getElementById("updateCart").addEventListener("click",async ()=>{
+        const cartItems=document.querySelectorAll(".productQty")
+        console.log(cartItems)
+        const cartArray=[]
+        cartItems.forEach(cart=>{
+          
+            cartArray.push( {
+                productId:cart.getAttribute("data-product-id"),
+                quantity:cart.value
+            })
+        })
+
+        
+        await updateCart(cartArray)
+
+    })
+    async function displayCartItems(detailedCartItems) {
                 /**
      * Displays the detailed cart items in the cartItemsContainer element.
      *
@@ -68,38 +115,11 @@ const fetchCartItems= async ()=> {
              itemElement.classList.add('itemElement');
            
 
-            let cart=JSON.parse(localStorage.getItem("cartItems"))||[]
-            let product = cart.find(items=>items.id==item.book_id)
+            // let cart=JSON.parse(localStorage.getItem("cartItems"))||[]
+            // let product = cart.find(items=>items.id==item.book_id)
             
 
-        //     itemElement.innerHTML = `
-        //         <div class="card-body bod">
-        //         <div class="d-flex justify-content-between align-items-center cart-item bod">
-        //             <img src="${item.cover_image}" class="mr-3  space">
-        //             <div class="ml-3 flex-grow-1">
-        //                 <h5 class="mb-1 productName" >${item.title}</h5>
-        //                 <p class="mb-1 text-muted">by ${item.author}</p>
-        //                 <p class="mb-1 productPrice">$${item.price}</p>
-        //                 <p class="mb-1 available_qty">${item.Inventory.quantity_available}</p>
-                        
-        //                 <p class="text-success">In stock</p>
-        //             </div>
-
-        //             <div class="ml-3">
-        //                 <select class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${product.qty}>
-        //                     <option value="1">1</option>
-        //                     <option value="2">2</option>
-        //                     <option value="3">3</option>
-        //                     <option value="4">4</option>
-        //                     <option value="5">5</option>
-
-
-        //                 </select>
-        //             <button class="btn btn-link text-danger ml-3 " ><i class="fa fa-times" id="delete-item" data-product-id="${item.book_id}"></i></button>
-        //             </div>
-        //     </div>
-        //    </div> 
-        //     `;
+     
             
 
             itemElement.innerHTML = `
@@ -116,7 +136,7 @@ const fetchCartItems= async ()=> {
                                                 <div class="cart-plus-minus">
                                                 
                                                 
-                                                <select class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${product.qty}>
+                                                <select class="productQty" id="selectInput" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${(item.qty)}>
                             <option value="1">1</option>
                            <option value="2">2</option>
                             <option value="3">3</option>
@@ -140,11 +160,11 @@ const fetchCartItems= async ()=> {
             cartItemsContainer.appendChild(itemElement);
         });
 
-        loadValue()
+         loadValue(detailedCartItems)
        
     }
 
-    const loadValue= ()=>{
+    const loadValue= (detailedCartItems)=>{
                 /**
      * Loads the saved quantity values for each product in the cart.
      * 
@@ -157,10 +177,10 @@ const fetchCartItems= async ()=> {
 
         selectBoxes.forEach(select=>{
         let id=select.getAttribute("data-product-id")
-        const items=JSON.parse(localStorage.getItem("cartItems"))
+        const items=detailedCartItems
         
-            let saved=items.find(item=>item.id==id)
-
+            let saved=items.find(item=>item.book_id==id)
+           
             if(saved){
                 select.selectedIndex=saved.qty-1
                 
@@ -215,6 +235,7 @@ const fetchCartItems= async ()=> {
     document.addEventListener('DOMContentLoaded', async () => {
         // updateCartCount();
         await fetchCartItems();
+        console.log(detailedCartItems)
 
         deleteButton=document.querySelectorAll("#delete-item")
         let selectBoxs=document.querySelectorAll(".productQty")
@@ -263,7 +284,6 @@ const fetchCartItems= async ()=> {
          *
          * @return {Promise<void>} This function does not return anything.
          */
-            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
         const response = await fetch('/checkout', {
             method: 'POST',
@@ -273,7 +293,6 @@ const fetchCartItems= async ()=> {
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                items: cartItems,
                 shippingInfo:shippingInfo
             })
         }); 

@@ -5,10 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
     
     document.querySelector('.inc').addEventListener('click', function () {
          input = this.previousElementSibling; // Select the input field
-        console.log(input)
         let val = parseInt(input.value);
         if (val < maxVal) {
-            input.value = val + 1;
+            input.value = val++;
         }
         else{
             input.value = maxVal
@@ -17,11 +16,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('.dec').addEventListener('click', function () {
          input = this.nextElementSibling; // Select the input field
-        console.log(input)
 
         let val = parseInt(input.value);
         if (val > 1) {
-            input.value = val - 1;
+            input.value = val--;
+        }
+        else{
+            input.value=1
         }
     });
 
@@ -32,6 +33,15 @@ document.addEventListener('DOMContentLoaded', function () {
             this.value = maxVal;
         }
     });
+
+    document.getElementById('add-to-cart').addEventListener("click",(e)=>{
+        const qty= document.querySelector('.cart-plus-minus-box')
+    const productId = e.target.getAttribute('data-product-id');
+
+        console.log(qty)
+        addToCart(productId,parseInt(qty.value));
+
+    })
 
 })
 

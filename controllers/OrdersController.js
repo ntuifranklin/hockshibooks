@@ -39,6 +39,7 @@ const viewOrder=async(req,res)=>{
         })
        
         return res.status(200).render("pages/orders/viewOrders",{
+            title:"View Order",
             order:order,
             orderI:orderItems
         })

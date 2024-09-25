@@ -26,6 +26,10 @@ const {
   viewBooks,
   updateProfile,
   oderDetail,
+  addToCart,
+  updateCart,
+  deleteCart,
+  GetCartLength,
 logout
 }= require("../controllers/indexController");
 const customerSignupValidation = require('../middleware/customerSignupValidation');
@@ -52,7 +56,6 @@ router.get("/",showHomePage)
 
 router.get("/productDetails/:id",bookDetail)
 
-router.route("/cart").get(viewCart).post(getCartItems)
 
 
 router.route("/login").get(loginPage).post(loginPagePost)
@@ -85,36 +88,18 @@ router.get("/logout",logout)
 
 router.get("/profile",Profile)
 
-router.post("/updateProfile",updateProfileValidation,updateProfile)
+router.post("/updateProfile",verifyUser,updateProfileValidation,updateProfile)
 
-router.get("/orderDetail/:id",oderDetail)
+router.get("/orderDetail/:id",verifyUser,oderDetail)
 
-  // router.get('/successpayment', async(request, response, next)=>{
-	// response.render('layout',
-	// {
-	// 	template:'successpayment',
-	// 	successmessage:"Congratulations! Your payment was a success!",
-	// });
-  // });
 
-  // router.post("/create-payment-intent", async (request, response,next) => {
-  //   const { items } = request.body;
 
-  //   // Create a PaymentIntent with the order amount and currency
-  //   const paymentIntent = await stripe.paymentIntents.create({
-  //     amount: calculateOrderAmount(items),
-  //     currency: "usd",
-  //     // In the latest version of the API, specifying the `automatic_payment_methods` 
-  //     // parameter is optional because Stripe enables its functionality by default.
-  //     automatic_payment_methods: {
-  //       enabled: true,
-  //     },
-  //   });
+  // cart management
+  router.route("/cart").get(viewCart).post(getCartItems)
+  router.post("/cartLength",GetCartLength)
 
-  //   response.send({
-  //     clientSecret: paymentIntent.client_secret,
-  //   });
-  // });
-
+  router.post('/add-to-cart/:id',addToCart)
+  router.post('/update-cart',updateCart)
+  router.post('/deleteItem/:id',deleteCart)
 
 module.exports = router
