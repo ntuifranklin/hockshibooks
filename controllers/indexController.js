@@ -44,7 +44,8 @@ const showHomePage = async (req,res)=>{
         ], 
     })
     return res.status(200).render("pages/home",{
-        "books":books
+        "books":books,
+        "pagetitle":"Books Available"
     })
 
 
@@ -451,8 +452,9 @@ If an error occurs, it redirects to the root URL with a 500 status code.
           });
 
 
-          return res.status(200).render("pages/",{
-            "books":books
+          return res.status(200).render("pages/books",{
+            "books":books,
+            "pagetitle":"Search Books"
         })
     }catch(e){
         res.status(500).redirect(`${process.env.HOST}/`)
@@ -874,7 +876,9 @@ const processGeustUser=async (req,res)=>{
 
 const viewBooks = async(req,res)=>{
 
-    return res.render("pages/books")
+    return res.render("pages/books", {
+        "pagetitle":"Books Available"
+    })
 }
 
 const allBooks=async(req,res)=>{
