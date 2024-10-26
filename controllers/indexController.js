@@ -16,7 +16,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require('bcrypt');
 const sequelize = require('../config/database');
 const {generateAndSendOTP}=require("../utilities/functions");
-const stripe = require("stripe")(process.env.Stripe_secret_key);
+const stripe = require("stripe")(process.env.stripe_secret_key);
 
 
 let user_email;
