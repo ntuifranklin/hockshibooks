@@ -1,0 +1,71 @@
+
+      
+<script>
+    function addToCart(productId) {
+              // Adds a product to the user's shopping cart.
+    // 
+    // Parameters:
+    // - productId (number): The ID of the product to be added.
+    //
+    // Returns: None
+        let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+
+        let product = cartItems.find(item => item.id == productId);
+
+             if (product) {
+                alert("product already exists in your shopping cart")
+
+            } else { 
+                cartItems.push({ id: productId, qty: 1 });
+                const cartCountElement = document.querySelector('#cart-count');
+                const cartCount = localStorage.getItem('cartItems') || 0;
+                const items=JSON.parse(cartCount)
+                 cartCountElement.textContent = items.length;
+                 alert("Product successfully added to your cart")
+            }
+
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+
+    }
+
+    // Event listener for the add to cart button
+
+            // Attaches an event listener to all HTML elements with the class 'add-to-cart'.
+            // When any of these elements are clicked, the event listener is triggered.
+            // 
+            // The event listener retrieves the 'data-product-id' attribute from the clicked element,
+            // and then calls the addToCart function with this ID as an argument.
+            //
+            // Returns: None
+
+    window.addEventListener("load",()=>{
+                  // Attaches an event listener to the window object that triggers when the page has finished loading.
+                  // 
+                  // When the page finishes loading, the event listener function is executed.
+                  // 
+                  // The function selects the element with the class 'timeline-wrapper' and assigns it to the variable 'animation'.
+                  // It also selects the element with the class 'product-list' and assigns it to the variable 'products'.
+                  // 
+                  // The function then adds the class 'move' to the 'animation' element and removes the class 'hidden' from the 'products' element.
+                  //
+                  // Returns: None
+
+                  document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const productId = event.target.getAttribute('data-product-id');
+            // updateCartCount();
+            addToCart(productId);
+        });
+    });
+        const animation= document.querySelector(".timeline-wrapper")
+        const products=document.querySelector(".product-list")
+
+        animation.classList.add("move")
+        products.classList.remove("hidden")
+
+    })
+
+    // Initialize cart count on page load
+    
+</script>

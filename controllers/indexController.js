@@ -43,7 +43,7 @@ const showHomePage = async (req,res)=>{
             {model:inventoryModel}
         ], 
     })
-    return res.status(200).render("pages/homePage",{
+    return res.status(200).render("pages/home",{
         "books":books
     })
 

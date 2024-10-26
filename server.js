@@ -130,12 +130,14 @@ app.locals.companyName = process.env.COMPANY_NAME;
 app.locals.companyCity = process.env.COMPANY_CITY;
 app.locals.companyState = process.env.COMPANY_STATE;
 app.locals.companyZip = process.env.COMPANY_ZIP;
+app.locals.websiteUrl = process.env.WEBSITE_URL ;
 app.locals.companyPhoneNumber = process.env.COMPANY_PHONE_NUMBER;
 app.locals.customerBusinessEmail = process.env.CUSTOMER_BUSINESS_EMAIL;
 app.locals.companyAddress = process.env.COMPANY_ADDRESS;
-app.locals.facebookPage = process.env.FACEBOOK_PAGE;
+app.locals.facebookpage = process.env.FACEBOOK_PAGE;
 app.locals.xpage = process.env.X_PAGE;
-app.locals.instagramPage = process.env.INSTAGRAM_PAGE
+app.locals.instagrampage = process.env.INSTAGRAM_PAGE;
+app.locals.linkedinpage = process.env.LINKEDIN_PAGE
 
 
 

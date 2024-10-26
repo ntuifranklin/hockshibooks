@@ -6,29 +6,35 @@
                 <div class="col-lg-4 col-md-4 col-sm-6 footer-widget">
                     <h6 class="footer-widget__title mb-20">Address</h6>
                     <ul class="footer-widget__list">
-                        <li><i class="icon_pin"></i> Helendor, Chicago, USA 2023</li>
-                        <li> <i class="icon_phone"></i><a href="tel:846677028028" class="hover-style-link">+846677028028</a></li>
+                        <li><i class="icon_pin"></i> <%= companyName %> <%= companyCity  %> <%= companyState  %>, <%= companyZip %></li>
+                        <li> <i class="icon_phone"></i><a href="tel:846677028028" class="hover-style-link"> <%= companyPhoneNumber %></a></li>
 
                     </ul>
                     <ul class="list footer-social-networks mt-25">
 
                         <li class="item">
-                            <a href="https://twitter.com" target="_blank" aria-label="Twitter">
+                            <a href="<%= xpage %>" target="_blank" aria-label="Twitter">
                                 <i class="social social_facebook"></i>
                             </a>
                         </li>
                         <li class="item">
-                            <a href="https://facebook.com" target="_blank" aria-label="Facebook">
+                            <a href="<%= facebookpage %>" target="_blank" aria-label="Facebook">
                                 <i class="social social_twitter"></i>
                             </a>
                         </li>
                         <li class="item">
-                            <a href="https://instagram.com" target="_blank" aria-label="Instagram">
+                            <a href="<%= instagrampage %>" target="_blank" aria-label="Instagram">
                                 <i class="social social_tumblr"></i>
+                            </a>
+                        </li>
+                        <li class="item">
+                            <a href="<%= linkedinpage %>" target="_blank" aria-label="LinkedIn">
+                                <i class="social social_linkedin"></i>
                             </a>
                         </li>
                     </ul>
                 </div>
+                <!--
                 <div class="col-lg-3 col-md-4 col-sm-6 footer-widget">
                     <h6 class="footer-widget__title mb-20">Help & Information</h6>
                     <ul class="footer-widget__list">
@@ -59,6 +65,7 @@
                         <li><a href="#">Map</a></li>
                     </ul>
                 </div>
+                -->
             </div>
         </div>
     </div>
@@ -74,7 +81,7 @@
                 </div>
                 <div class="col-lg-4 col-md-2 text-center">
                     <div class="footer-logo">
-                        <a href="#"><img src="../assets/images/logo/logo.svg" alt="Logo images"></a>
+                        <a href="#"><img src="../assets/images/logo/hockshi.svg" alt="Logo images"></a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-5 order-md-3">
@@ -82,18 +89,23 @@
                         <h6 class="title">Follow Us On Social</h6>
                         <ul class="list footer-social-networks ">
                             <li class="item">
-                                <a href="https://twitter.com" target="_blank" aria-label="Twitter">
+                                <a href="<%= facebookpage %>" target="_blank" aria-label="Facebook">
                                     <i class="social social_facebook"></i>
                                 </a>
                             </li>
                             <li class="item">
-                                <a href="https://facebook.com" target="_blank" aria-label="Facebook">
+                                <a href="<%= xpage %>" target="_blank" aria-label="Twitter">
                                     <i class="social social_twitter"></i>
                                 </a>
                             </li>
                             <li class="item">
-                                <a href="https://instagram.com" target="_blank" aria-label="Instagram">
-                                    <i class="social social_tumblr"></i>
+                                <a href="<%= instagrampage %>" target="_blank" aria-label="Instagram">
+                                    <i class="social social_instagram"></i>
+                                </a>
+                            </li>
+                            <li class="item">
+                                <a href="<%= linkedinpage %>" target="_blank" aria-label="LinkedIn">
+                                    <i class="social social_linkedin"></i>
                                 </a>
                             </li>
                         </ul>
