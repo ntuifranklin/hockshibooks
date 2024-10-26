@@ -874,7 +874,7 @@ const processGeustUser=async (req,res)=>{
 
 const viewBooks = async(req,res)=>{
 
-    return res.render("pages/shop")
+    return res.render("pages/books")
 }
 
 const allBooks=async(req,res)=>{
