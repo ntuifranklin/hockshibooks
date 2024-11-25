@@ -1,12 +1,7 @@
-<%- include('../partials/pagehead') %>
-
-<%- include('../layout/customerNavBar') %>
-
-
-<%- include('../partials/breadcrumbs') %>
-
-
-
+<%- include('../../partials/pagehead') %>
+<%  if (user) { %>
+  <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
+<% } %>
 
 <section class="m-auto d-flex justify-content-center align-items-center vw-100 vh-100" style="background-color: hsl(0, 0%, 96%)">
     <div class="px-4 py-5 px-md-5 text-center text-lg-start" >
@@ -67,9 +62,7 @@
     </div>
 </section>
     
-<%- include('../partials/jslibs') %>
-
-<%- include('../partials/pagelistsort') %>
+<%- include('../../partials/admin_jslibs') %>
 
 
 </body>

@@ -1,10 +1,8 @@
-<%- include('../partials/pagehead') %>
-<%- include('../layout/customerNavBar') %>
-<%- include('../partials/breadcrumbs') %>
-
+<%- include('../../partials/pagehead') %>
 <%  if (user) { %>
-<%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
+  <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
 <% } %>
+
 <div class="container">
     
     
@@ -112,9 +110,7 @@
     </div>
 </div>
 
-<%- include('../partials/jslibs') %>
-
-<%- include('../partials/pagelistsort') %>
+<%- include('../../partials/admin_jslibs') %>
 
 
 </body>

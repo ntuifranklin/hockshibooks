@@ -1,204 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>insert book</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<%- include('../partials/pagehead') %>
 
-    <style>
-        body {
-            background-color: #f8f5f0;
-        }
-        .container {
-            max-width: 90vw;
-            margin-top: 50px;
-        }
-        .form-container {
-            margin: auto;
-
-            border: 1px solid #e0e0e0;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .form-content {
-            padding: 40px;
-            align-self: center;
-            justify-self: center;
-            width: 80vw;
-        }
-        .form-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-header h2 {
-            font-size: 24px;
-            letter-spacing: 2px;
-            color: #1e0b52;
-            font-weight: bold;
-        }
-        
-     
-        .form-header .dots span {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #e0d3ba;
-            margin: 0 5px;
-        }
-        .form-header .dots .active {
-            background-color: #8fb476;
-        }
-        .form-content h5 {
-            color: #8fb476;
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            color: #737373;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .form-control {
-            border: none;
-            border-bottom: 1px solid #e0e0e0;
-            border-radius: 0;
-            padding-left: 0;
-        }
-        .form-check-label {
-            color: #737373;
-        }
-        .form-card{
-            width: 80vw;
-        }
-        .errors{
-            width:80vw;
-            display: grid;
-            grid-template-rows:  auto  ;
-            column-gap: 40px;
-            grid-template-columns: auto 400px auto;
-        }
-        .btn-primary {
-            background-color: #bad1e0;
-            border: none;
-            color: #737373;
-            width: 100%;
-            padding: 10px;
-            font-weight: bold;
-        }
-        .checkbox-label {
-            font-size: 12px;
-            color: #737373;
-        }
-    </style>
-</head>
-<body>
    
-  <%  if (user) { %>
+<%  if (user) { %>
     <%- include('navBar',{email:user.email,role:user.role,host:host}) %>
-    <% } %>
+<% } %>
 
    
 
-    <div class="container">
-        <div class="form-container row no-gutters">
-           
-            <div class="col-md-7">
-                <div class="form-content">
-                    <div class="form-header">
-                        <h2>INSERT A  BOOK</h2>
-                      
-                    </div>
-                    <h5>Please fill in every label</h5>
-
-              <div class="col-lg-6 mb-5 mb-lg-0">
-                <div class="errors">
-                    <% if (msg) { %>
-                        <% for(let i=0; i < msg.length; i++) { %>
-                                                
-                            
-                            <div class="alert alert-danger" role="alert">
-                                <p><%= msg[i].msg %>!</p>
-                            </div>
-                            <% } %>
-                    <% } %>
-
+<div class="container">
+    <div class="form-container row no-gutters">
+        
+        <div class="col-md-7">
+            <div class="form-content">
+                <div class="form-header">
+                    <h2>INSERT A  BOOK</h2>
+                    
                 </div>
-                    <form class="form-card" id="formdata"  enctype="multipart/form-data" action="/admin/books/insert-book?_csrf=<%= csrfToken%>"  method="post">
+                <h5>Please fill in every label</h5>
+
+            <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="errors">
+                <% if (msg) { %>
+                    <% for(let i=0; i < msg.length; i++) { %>
+                                            
                         
-                            <div class="form-row">
-    
-                                <div class="form-group col-md-6">
-                                    <label for="Book_Title">Title</label>
-                                    <input type="text" class="form-control" id="Book_Title" placeholder="Book Title"  name="title" value="<%= formdata.title %>">  
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="autho">Author</label>
-                                    <input type="text" class="form-control" id="autho" placeholder="Book Author"  name="author" value="<%= formdata.author %>">
-                                </div>
-    
-                            </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="ISBN">ISBN</label>
-                                <input type="text" class="form-control" id="ISBN" placeholder="ISBN" name="ISBN"  name="ISBN" value="<%= formdata.ISBN %>">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="phone">language</label>
-                                <input type="text" class="form-control" id="phone" placeholder="language" name="language" value="<%= formdata.language %>">
-                            </div>
+                        <div class="alert alert-danger" role="alert">
+                            <p><%= msg[i].msg %>!</p>
                         </div>
+                        <% } %>
+                <% } %>
+
+            </div>
+                <form class="form-card" id="formdata"  enctype="multipart/form-data" action="/admin/books/insert-book?_csrf=<%= csrfToken%>"  method="post">
+                    
                         <div class="form-row">
+
                             <div class="form-group col-md-6">
-                                <label for="price">price</label>
-                                <input type="number" class="form-control" id="price" placeholder="Price" name="price" value="<%= formdata.price%>">
+                                <label for="Book_Title">Title</label>
+                                <input type="text" class="form-control" id="Book_Title" placeholder="Book Title"  name="title" value="<%= formdata.title %>">  
                             </div>
                             <div class="form-group col-md-6">
-                                <label>Quantity available</label>
-                                <input type="number" class="form-control" placeholder="Quantity" name="quantity" value="<%= formdata.quantity%>">
+                                <label for="autho">Author</label>
+                                <input type="text" class="form-control" id="autho" placeholder="Book Author"  name="author" value="<%= formdata.author %>">
                             </div>
+
                         </div>
-                        <div class="form-row">
-    
-                            <div class="form-group col-md-6">
-                                <label for="location">Location</label>
-                                <input type="text" class="form-control" id="location" placeholder="Location" name="location" value="<%= formdata.location %>">
-                            </div>
-                           
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="ISBN">ISBN</label>
+                            <input type="text" class="form-control" id="ISBN" placeholder="ISBN" name="ISBN"  name="ISBN" value="<%= formdata.ISBN %>">
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="date">release date</label>
-                                <input type="date" class="form-control" id="date" name="date" value="<%= formdata.date %>">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="form-label" for="customFile">image</label>
-                                <input type="file" class="form-control" id="customFile"  name="coverImage"/>
-                                
-                            </div>
-    
-    
+                        <div class="form-group col-md-6">
+                            <label for="phone">language</label>
+                            <input type="text" class="form-control" id="phone" placeholder="language" name="language" value="<%= formdata.language %>">
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="description">Describtion</label>
-                                <textarea type="date" class="form-control" id="description" name="description"  rows="3" cols="100" resize="none" width="200px"><%= formdata.description %></textarea>
-                            </div>
-    
-    
-                        </div>
-                        <button type="submit" class="btn btn-primary">Insert</button>
-                    </form>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="price">price</label>
+                            <input type="number" class="form-control" id="price" placeholder="Price" name="price" value="<%= formdata.price%>">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Quantity available</label>
+                            <input type="number" class="form-control" placeholder="Quantity" name="quantity" value="<%= formdata.quantity%>">
+                        </div>
+                    </div>
+                    <div class="form-row">
+
+                        <div class="form-group col-md-6">
+                            <label for="location">Location</label>
+                            <input type="text" class="form-control" id="location" placeholder="Location" name="location" value="<%= formdata.location %>">
+                        </div>
+                        
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="date">release date</label>
+                            <input type="date" class="form-control" id="date" name="date" value="<%= formdata.date %>">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="customFile">image</label>
+                            <input type="file" class="form-control" id="customFile"  name="coverImage"/>
+                            
+                        </div>
+
+
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="description">Describtion</label>
+                            <textarea type="date" class="form-control" id="description" name="description"  rows="3" cols="100" resize="none" width="200px"><%= formdata.description %></textarea>
+                        </div>
+
+
+                    </div>
+                    <button type="submit" class="btn btn-primary">Insert</button>
+                </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <%- include('../partials/admin_jslibs'); %>
     
+
 </body>
+
 </html>

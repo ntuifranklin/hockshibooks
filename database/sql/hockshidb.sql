@@ -117,7 +117,7 @@ CREATE TABLE Customers (
     last_name VARCHAR(64)  NULL,
     email VARCHAR(64) UNIQUE NOT NULL ,
     password VARCHAR(256)  NULL,
-    geust boolean default (0),
+    guest boolean default (0),
     street_address VARCHAR(256)  NULL,
     city VARCHAR(128)  NULL,
     state_province VARCHAR(128)  NULL,

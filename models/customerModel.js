@@ -30,7 +30,7 @@ const Customer = sequelize.define('Customer', {
         type: DataTypes.STRING(256),
         allowNull: true,
     },
-    geust: {
+    guest: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false, 

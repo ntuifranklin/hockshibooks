@@ -1,22 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTP verification </title>
+<%- include('../../partials/pagehead') %>
 
-    <!-- bootstrap 5 stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- fontawesome 6 stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <link  rel="styleshee" href="../../assets/css/style.css"/>
-    <style>
-  
-    </style>
-</head>
-<body>
+<%  if (user) { %>
+    <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
+<% } %>
+
     <section class="m-auto d-flex justify-content-center align-items-center vw-100 vh-100" style="background-color: hsl(0, 0%, 96%)">
         <div class="px-4 py-5 px-md-5 text-center text-lg-start" >
           <div class="container">
@@ -69,6 +57,13 @@
             </div>
           </div>
         </div>
-      </section>
+    </section>
+
+
+    
+<%- include('../../partials/admin_jslibs') %>
+
+
 </body>
+
 </html>

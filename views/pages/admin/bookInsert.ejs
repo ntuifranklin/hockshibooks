@@ -1,18 +1,10 @@
-<%- include('../partials/pagehead') %>
-
-<%- include('../layout/customerNavBar') %>
+<%- include('../../partials/pagehead') %>
 
 
-<%- include('../partials/breadcrumbs') %>
+<%  if (user) { %>
+    <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
+<% } %>
 
-
-   
-
-    <%  if (user) { %>
-        <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
-        <% } %>
-
-   
 
     <div class="container">
      
@@ -178,8 +170,10 @@
         </div>
     </div>
 
+
     
-    <%- include('../partials/jslibs') %>
+<%- include('../../partials/admin_jslibs') %>
+
 
 
 </body>
