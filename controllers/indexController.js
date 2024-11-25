@@ -25,7 +25,7 @@ let username;
 let shippingInfo;
 let items;
 let session;
-let geust;
+let guest;
 
 
 const showHomePage = async (req,res)=>{
@@ -163,8 +163,16 @@ const loginPage= async (req,res)=>{
  * @param {Object} res - The response object used to render the customer login page.
  * @return {Object} The rendered customer login page with a success status code and a message indicating whether the login was successful or not.
  */
-    const states=await provinceStateModel.findAll()
-    const country=await CountryModel.findAll()
+    const states=await provinceStateModel.findAll({
+        order: [
+            ['province_state_name', 'ASC'],
+        ],
+    });
+    const country=await CountryModel.findAll({
+        order: [
+            ['country_name', 'DESC'],
+        ],
+    });
     return res.render("pages/customerLogin",{
         msg:req.query.msg?req.query.msg:false,
         errors:req.body.errors?req.body.errors:false,
@@ -182,14 +190,22 @@ const loginPagePost = async (req,res)=>{
  * @param {Object} res - The response object used to render the customer login page or redirect to the customer OTP verification page.
  * @return {Promise<void>} - Returns a Promise that resolves with the rendered customer login page or redirects to the customer OTP verification page.
  */
-    const states=await provinceStateModel.findAll()
-    const country=await CountryModel.findAll()
+    const states=await provinceStateModel.findAll({
+        order: [
+            ['province_state_name', 'ASC'],
+        ],
+    });
+    const country=await CountryModel.findAll({
+        order: [
+            ['country_name', 'DESC'],
+        ],
+    });
     const email=req.body.email
     try {
             const user = await customerModel.findOne({
                     where: {
                             email: email,
-                            geust:false
+                            guest:false
                           }
                         });                                                   
                     if(!user){
@@ -311,11 +327,11 @@ If there are errors, render the otpVerification page with an error message.
     Redirect the user to the dashboard.
                      */
                     req.session.customer={
-                        geust:geust||0,
+                        guest:guest||0,
                             email:user_email,
 
                     }
-                    geust=0
+                    guest=0
                     await customerOtpModel.destroy({
                             where:{
                                     customerId:userId
@@ -336,8 +352,16 @@ const signupPage= async(req,res)=>{
  * @return {Promise<void>} - A promise that resolves when the view is rendered.
  */
 
-    const states=await provinceStateModel.findAll()
-    const country=await CountryModel.findAll()
+    const states=await provinceStateModel.findAll({
+        order: [
+            ['province_state_name', 'ASC'],
+        ],
+    });
+    const country=await CountryModel.findAll({
+        order: [
+            ['country_name', 'DESC'],
+        ],
+    });
 
     return res.render("pages/customerSignup",{
         errors:req.body.errors?req.body.errors:false,
@@ -479,6 +503,7 @@ const Profile=async(req,res)=>{
         
         )
     
+        
         const states=await provinceStateModel.findAll()
         const current_state=await provinceStateModel.findOne({
             where:{
@@ -782,29 +807,29 @@ const logout=(req,res)=>{
 }
 }
 
-const showGeustPage=(req,res)=>{
+const showGuestPage=(req,res)=>{
     /**
- * Renders the showGeustPage view.
+ * Renders the showGuestPage view.
  *
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  * @return {void}
  */
-    res.render("pages/showGeustPage")
+    res.render("pages/showGuestPage")
 }
 const showForm=(req,res)=>{
     /**
- * Renders the "pages/geustEmailForm" view and passes an optional message to it.
+ * Renders the "pages/guestEmailForm" view and passes an optional message to it.
  *
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  * @return {void}
  */
-    res.render("pages/geustEmailForm",{
+    res.render("pages/guestEmailForm",{
         msg:req.body.msg?req.body.msg:false
     })
 }
-const processGeustUser=async (req,res)=>{
+const processGuestUser=async (req,res)=>{
     /**
  * Processes a guest user.
  *
@@ -829,7 +854,7 @@ const processGeustUser=async (req,res)=>{
     }
     else
     {
-        const { email,is_geust } = req.body;
+        const { email,is_guest } = req.body;
 
         try {
             // Check if email already exists
@@ -837,11 +862,11 @@ const processGeustUser=async (req,res)=>{
       
             if (!user) {
               // Create a guest user
-              user = await customerModel.create({ email:email, geust: true });
+              user = await customerModel.create({ email:email, guest: true });
               // Generate and store OTP
               userId=user.customer_id
               user_email=user.email
-              geust=user.geust
+              guest=user.guest
              
              await generateAndSendOTP(user.customer_id,user.email,customerOtpModel)
 
@@ -1016,10 +1041,10 @@ module.exports={
     Profile,
     logout,
     showForm,
-    showGeustPage,
+    showGuestPage,
     viewBooks,
     allBooks,
-    processGeustUser,
+    processGuestUser,
     updateProfile,
     oderDetail
 }
