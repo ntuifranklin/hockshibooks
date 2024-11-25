@@ -193,7 +193,7 @@ const loginPagePost = async (req,res)=>{
                           }
                         });                                                   
                     if(!user){
-                            
+                            console.log(`user non existent`);
                             res.status(401).render("pages/customerLogin",{
                                     msg:"please check your email and password again",
                                     errors:false,
@@ -218,6 +218,7 @@ const loginPagePost = async (req,res)=>{
                             })
                     }
                             else{
+                                console.log(`user existent but wrong password`);
                                     res.status(401).render("pages/customerLogin",{
                                             msg:"please check your email and password again",
                                             errors:false,

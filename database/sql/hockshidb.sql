@@ -201,6 +201,7 @@ INSERT INTO Provinces_States (province_state_id, country_code, province_state_na
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Vermont'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Virginia'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Washington'),
+(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'District of Columbia'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'West Virginia'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Wisconsin'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Wyoming');
