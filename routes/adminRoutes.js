@@ -11,18 +11,19 @@ const {login,formSubmit,verifyOTP,dashboard,logout} = require("../controllers/ad
 const validateOTP=require("../middleware/OTPmiddleware")
 const verifyLogin=require("../middleware/verifyLogin")
 
+module.exports = () => {
+        
+    //routes
+    router.get("/",login); 
+    router.post("/",formSubmit) ;
+    router.post("/verifyOtp",validateOTP,verifyOTP) ;
+    router.get("/dashboard",verifyLogin,dashboard) ;
+    // router.get("/dashboard",dashboard)
 
-//routes
-router.get("/",login)
-router.post("/",formSubmit)
-router.post("/verifyOtp",validateOTP,verifyOTP)
-router.get("/dashboard",verifyLogin,dashboard)
-// router.get("/dashboard",dashboard)
+    router.get("/logout",logout) ;
 
-router.get("/logout",logout)
 
+    return router  ;
+}
 //routes end    
 
-
-
-module.exports=router

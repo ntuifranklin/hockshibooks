@@ -4,7 +4,7 @@ const router = express.Router();
 require('dotenv').config();
 const csrf = require('csurf');
 let csrfProtection = csrf({ cookie: true });
-
+const allAdminRoutes = require('./adminRoutes');
 const {
   showHomePage,
   bookDetail,
@@ -26,7 +26,8 @@ const {
   viewBooks,
   updateProfile,
   oderDetail,
-logout
+  showError404,
+  logout
 }= require("../controllers/indexController");
 const customerSignupValidation = require('../middleware/customerSignupValidation');
 const verifyUser= require("../middleware/verifyUser")
@@ -88,5 +89,13 @@ router.get("/profile",Profile)
 router.post("/updateProfile",updateProfileValidation,updateProfile)
 
 router.get("/orderDetail/:id",oderDetail)
+
+router.use('/admin',allAdminRoutes());
+
+router.get("*",showError404)
+
+router.post("*",showError404)
+
+
 
 module.exports = router

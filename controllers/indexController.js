@@ -1024,6 +1024,14 @@ const oderDetail= async(req,res)=>{
 
 }
 
+const showError404 = async(req, res) => {
+    
+    return res.status(200).render("pages/404",{
+        "pagetitle":"Error 404 Page not found"
+    })
+
+}
+
 
 module.exports={
     showHomePage,
@@ -1046,5 +1054,6 @@ module.exports={
     allBooks,
     processGuestUser,
     updateProfile,
-    oderDetail
+    oderDetail,
+    showError404
 }

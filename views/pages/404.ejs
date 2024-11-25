@@ -1,79 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Error Page</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #fff;
-}
+<%- include('../partials/pagehead') %>
+<%- include('../layout/customerNavBar') %>
+<%- include('../partials/breadcrumbs') %>
 
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center;
-}
 
-.paypal-header img {
-    margin-top: 20px;
-}
+<div id="main-wrapper">
+    <div class="site-wrapper-reveal border-bottom">
+        <div class="error-page-area section-space--ptb_90">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-10 m-auto">
+                        <div class="error-page-content text-center section-space--ptb_90">
+                            <i class="icon icon-confused"></i>
+                            <h1 class="mb-20">ohh! page not found</h1>
+                            <p class="description">It seems we can't find what you're looking for. Perhaps searching can help or go back to <a href="/">Homepage</a></p>
 
-.error-message {
-    margin-top: 50px;
-}
+                            <div class="search-page-box mt-40">
+                                <form action="#" class="pages-search">
+                                    <input class="input-box" type="text" placeholder="Search …">
+                                    <button class="submit-btn"><i class="icon-magnifier"></i></button>
+                                </form>
+                            </div>
 
-.error-message h1 {
-    font-size: 36px;
-    color: #555;
-}
-
-.error-message p {
-    font-size: 18px;
-    color: #555;
-}
-
-.cookie-consent {
-    background-color: #003087;
-    color: #fff;
-    padding: 20px;
-    margin-top: 30px;
-}
-
-.cookie-consent p {
-    margin: 10px 0;
-    font-size: 14px;
-}
-
-.cookie-consent a {
-    color: #fff;
-    text-decoration: underline;
-}
-
-.cookie-consent .btn-primary {
-    background-color: #0070ba;
-    border-color: #0070ba;
-    margin-top: 10px;
-}
-
-    </style>
-
-</head>
-<body>
-    <div class="container text-center">
-        <div class="paypal-header">
-
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="error-message">
-            <h1>Sorry.</h1>
-            <p>It looks like nothing was found at this location. </p>
-        </div>
-       
     </div>
+    
+        
+    <%- include('../partials/footerarea') %>
+
+</div>
+
+<!-- Modal -->    
+
+    <%- include('../partials/commonjslibs'); %>
+
+
 </body>
+
 </html>
