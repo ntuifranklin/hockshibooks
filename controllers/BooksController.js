@@ -272,7 +272,7 @@ const getaddBookWithISBNForm=(req,res)=>{
  * @param {Object} res - The response object.
  * @return {Promise<void>} A promise that resolves when the template is rendered.
  */
-    res.status(200).render("pages/addBookWithISBNForm",{
+    res.status(200).render("pages/admin/addBookWithISBNForm",{
         msg:false,
     })
 }
@@ -302,7 +302,7 @@ const addBookWithISBN= async(req,res)=>{
     
     if(!errors.isEmpty()){
         const err=errors.array()[0]
-        res.render("pages/addBookWithISBNForm",{
+        res.render("pages/admin/addBookWithISBNForm",{
             msg:err,
         })
 
@@ -345,7 +345,7 @@ const addBookWithISBN= async(req,res)=>{
                 }
                 else{
 
-                    res.status(500).render("pages/addBookWithISBNForm",{
+                    res.status(500).render("pages/admin/addBookWithISBNForm",{
                         msg:{
                             msg:"a book with this title already exists"
                         },

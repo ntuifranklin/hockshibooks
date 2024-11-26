@@ -5,298 +5,158 @@
     <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
 <% } %>
 
-  <div class=" container-fluid mb-5 mx-auto w-75">
-    
-    
-    <section id="stats-subtitle">
-    <div class="row">
-      <div class="col-12 mt-3 mb-1">
-        <h4 class="text-uppercase">Statistics </h4>
-      </div>
-    </div>
-  
-    <div class="row">
-      <div class="col-xl-6 col-md-12">
-        <div class="card overflow-hidden">
-          <div class="card-content">
-            <div class="card-body cleartfix">
-              <div class="media align-items-stretch">
-                <div class="align-self-center">
-                  <i class="fas fa-book"></i>
-                </div>
-                <div class="media-body">
-                  <h4>Total Books</h4>
-                </div>
-                <div class="align-self-center">
-                      <% //meta variable is defined in client side js sent to client browser adminDashboard.js %>
-                  <h1><%=meta.totalBooks %></h1>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-  
-      <div class="col-xl-6 col-md-12">
-        <div class="card">
-          <div class="card-content">
-            <div class="card-body cleartfix">
-              <div class="media align-items-stretch">
-                <div class="align-self-center">
-                  <i class="fas fa-shopping-cart"></i>
-                </div>
-                <div class="media-body">
-                  <h4>Orders</h4>
-                </div>
-                <div class="align-self-center"> 
-                  <h1><%=meta.totalOrders %></h1>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  
 
-    <div class="container mx-auto">
-      <div class="row">
-          <div class="col-md-4 col-xl-3">
-              <div class="card bg-c-blue order-card">
-                  <div class="card-block">
-                      <h6 class="m-b-20">Processing </h6>
-                      <h2 class="text-right"><i class="fa fa-cart-plus f-left"></i><span><%=meta.ProcessingOrders %></span></h2>
-                  </div>
-              </div>
-          </div>
+
+  <div id="main-wrapper
+      <div class="mb-4">
+
+          <a href="<%= `${host}/admin/insert-book` %>"  class="btn btn-primary new p-10 w-25 h-50 "><i class="fa fa-plus"></i> new book</a>
           
-          <div class="col-md-4 col-xl-3">
-              <div class="card bg-c-green order-card">
-                  <div class="card-block">
-                      <h6 class="m-b-20">Shipped  </h6>
-                      <h2 class="text-right"><i class="fa fa-rocket f-left"></i><span><%=meta.ShippedOrders %></span></h2>
-                  </div>
-              </div>
-          </div>
-          
-          <div class="col-md-4 col-xl-3">
-              <div class="card bg-c-yellow order-card">
-                  <div class="card-block">
-                      <h6 class="m-b-20">Delivered  </h6>
-                      <h2 class="text-right"><i class="fa fa-refresh f-left"></i><span><%=meta.DeliveredOrders %></span></h2>
-                  </div>
-              </div>
-          </div>
-          
+      </div>
+              
+    <% if (msg) { %>
+      <div class="alert alert-<%=type %>" role="alert">
+            <p><%= msg %>!</p>
+      </div>
+    <% } %>  
         
-    </div>
-  </div>
-   
-  </section>
-  </div>
-
-
-    <section class="intro"> 
+    <div class="flex">
       
-        <div class="bg-image h-100" >
-          <div class="mask d-flex align-items-center h-100" >
-            
-            <div class="container">
-                <div class="mb-4">
+      <div class="col-12 table-info">
+        <div class="card bg-dark shadow-2-strong">
+          <div class="card-body">
+            <h1>Books Info</h1>
+            <div class="table-responsive">
+              <table class="table table-dark table-borderless mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Qty</th>
+                    <th scope="col">Actions</th>
 
-                    <a href="<%= `${host}${admin_route}/insert-book` %>"  class="btn btn-primary new p-10 w-25 h-50 "><i class="fa fa-plus"></i> new book</a>
-                    
-                  </div>
-                  
-         <% if (msg) { %>
-          <div class="alert alert-<%=type %> alert-dismissible fade show" role="alert">
-                <p><%= msg %>!</p>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 
+
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for(let i=0; i < books.length; i++) { %>
+                  <tr>
+                    <th scope="row"><%= books[i].title %></th>
+                    <td><%= books[i].author %></td>
+                    <td><%= books[i].ISBN %></td>
+                    <td>$<%= books[i].price %></td>
+                    <td><%= books[i].Inventory.quantity_available %></td>
+
+                    <td><div class="actions d-flex justify-content-between align-items-center">
+                      <a href="<%= `/admin/update/${books[i].book_id}` %>"><i class="fa-solid fa-pen-to-square"></i></a>
+                      <a href="<%= `/admin/delete/${books[i].book_id}` %>"><i class="fa-solid fa-trash"></i></a>
+                      
+                      <% } %>
+                    </div></td>
+
+
+                  </tr>
+        
+                </tbody>
+              </table>
+            </div>
           </div>
-        <% } %>  
-                  
-              <div class="flex">
+        </div>
+      </div>
+
+
+      <div class="col-12 table-info">
+        <div class="card bg-dark shadow-2-strong">
+          <div class="card-body">
+            <h1>Orders</h1>
+
+            <div class="table-responsive">
+              <table class="table table-dark table-borderless mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">order-id</th>
+                    <th scope="col">customer name</th>
+                    <th scope="col">customer email</th>
+                    <th scope="col">amount</th>
+                    <th scope="col">status</th>
+                    <th scope="col"> order_date</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for(let i=0; i < orders.length; i++) { %>
+
+                  <tr>
+                    <th scope="row"><%= orders[i].order_id %></th>
+                    <td><%= orders[i].Customer.first_name ||"geust" %> <%= orders[i].Customer.last_name|| "" %></td>
+                    <td><%= orders[i].Customer.email %></td>
+                    <td>$<%= orders[i].total_amount %></td>
+                    <td><%= orders[i].delivery_status %></td>
+                    <td><%= orders[i].order_date %></td>
+                    <td><a href="<%= `/order/viewOrder/${orders[i].order_id}` %>"><i class="fa-solid fa-pen-to-square"></i></a></td>
+
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 table-info">
+        <div class="card bg-dark shadow-2-strong">
+          <div class="card-body">
+            <h1>Payments</h1>
+
+            <div class="table-responsive">
+              <table class="table table-dark table-borderless mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Transaction_ID</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Order_ID</th>
+                    <th scope="col">Payment_method</th>
+                    <th scope="col">Payment_date</th>
                 
-                <div class="col-12 " >
-                  <div class=" ">
-                    <div class="card-body">
-                      <h1>Books Info</h1>
-                      <div class="row booksContainer" id="booksContainer">
-                        <table class=" mb-0">
-                          <thead>
-                            <tr>
-                              <th scope="col">Title</th>
-                              <th scope="col">Author</th>
-                              <th scope="col">ISBN</th>
-                              <th scope="col">Price</th>
-                              <th scope="col">Qty</th>
-                              <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for(let i=0; i < payments.length; i++) { %>
+                  <tr>
+                    <th scope="row"><%= payments[i].transaction_id %></th>
+                    <td>$<%= payments[i].amount %></td>
+                    <td><%= payments[i].order_id %></td>
+                    <td><%= payments[i].payment_method %></td>
+                    <td><%= payments[i].payment_date %></td>
+
+                    
 
 
-
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <% for(let i=0; i < books.length; i++) { %>
-                            <tr>
-                              <th scope="row"><%= books[i].title %></th>
-                              <td><%= books[i].author %></td>
-                              <td><%= books[i].ISBN %></td>
-                              <td>$<%= books[i].price %></td>
-                              <td><%= books[i].Inventory.quantity_available %></td>
-
-                              <td><div class="actions d-flex justify-content-between align-items-center">
-                                <a href="<%= `${admin_route}/update/${books[i].book_id}` %>"><i class="fa-solid fa-pen-to-square"></i></a>
-                                <a href="<%= `${admin_route}/delete/${books[i].book_id}` %>"><i class="fa-solid fa-trash"></i></a>
-                                
-                                <% } %>
-                              </div></td>
-
-
-                            </tr>
+                  </tr>
+                  <% } %>
                   
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="paginatoin-area">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <ul class="pagination-box">
-                                <li>
-                                    <button class="Previous btn btn--full btn--black" id="prevPage" ><i class="icon-chevron-left"></i>prev</button>
-                                </li>
-                                
-                                <li>
-                                    <button class="Next btn btn--full btn--black" id="nextPage"><i class="icon-chevron-right"></i>next</button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                </div>
-
-
-              
-              </div>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      </section>
-      
-      <div id="main-wrapper">
-        <div class="site-wrapper-reveal border-bottom">
-
-            <!-- cart start -->
-            <div class="cart-main-area  section-space--ptb_90">
-                <div class="container">
-                    <div class="row">
-                      <div class="flex w-50 mx-auto mb-3">
-                        <h1>Orders</h1>
-
-                        <div class="header-left-search">
-                          <form role="search"  method="get" class="header-search-box" id="OrderSearchBox">
-                              <input class="search-field form-control" type="text" placeholder="Enter Order id"  name="query" id="order">
-  
-                              <input type="hidden" name="_csrf"
-                                  value="<%= csrfToken %>">
-                              
-                              <button class="search-icon" type="submit">
-                                  <i class="icon-magnifier"></i>
-                              </button>
-                          </form>
-                      </div>
-                      </div>
-                        <div class="col-lg-12">
-                          
-                                <div class="table-content table-responsive cart-table-content header-color-gray">
-                                    <table>
-                                        <thead>
-                                            <tr class="bg-gray">
-                                        
-                                                <th scope="col">order-id</th>
-                               <th scope="col">customer name</th>
-                                <th scope="col">customer email</th>
-                              <th scope="col">amount</th>
-                              <th scope="col">status</th>
-                              <th scope="col"> order_date</th>
-                              <th scope="col">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="OrdersTable">
-
-                                       
-                                           
-                                          
-                                        </tbody>
-                                    </table>
-                                </div>
-                            
-                           
-                            
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- cart end -->
-            <div class="cart-main-area  section-space--ptb_90">
-              <div class="container">
-                  <div class="row">
-                      <div class="col-lg-12">
-                         
-                              <div class="table-content table-responsive cart-table-content header-color-gray">
-                                  <table>
-                                      <thead>
-                                          <tr class="bg-gray">
-                                            <th scope="col">Transaction_ID</th>
-                                            <th scope="col">Amount</th>
-                                            <th scope="col">Order_ID</th>
-                                            <th scope="col">Payment_method</th>
-                                            <th scope="col">Payment_date</th>
-                                          </tr>
-                                      </thead>
-                                      <tbody>
-                                        <% for(let i=0; i < payments.length; i++) { %>
-                                          <tr>
-                                            <th scope="row"><%= payments[i].transaction_id %></th>
-                                            <td>$<%= payments[i].amount %></td>
-                                            <td><%= payments[i].order_id %></td>
-                                            <td><%= payments[i].payment_method %></td>
-                                            <td><%= payments[i].payment_date %></td>
-              
-                                            
-              
-              
-                                          </tr>
-                                          <% } %>
-                                         
-                                          
-                                      </tbody>
-                                  </table>
-                              </div>
-                        
-                        
-
-                      </div>
-                  </div>
-              </div>
-          </div>
-        </div>
+      </div>
     </div>
+  </div>
+    
 
     
-    <%- include('../../partials/admin_jslibs') %>
+<%- include('../../partials/admin_jslibs') %>
 
 
 
-  </body>
-  
-  </html>
+</body>
+
+</html>
 
 
 

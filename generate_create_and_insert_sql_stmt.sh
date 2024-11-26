@@ -1,0 +1,2 @@
+mysqldump -h 172.17.0.2 -u root -p --column-statistics=0 --compact -d hockshi > database/sql/create.sql
+mysqldump -h 172.17.0.2 -u root -p --column-statistics=0 --no-create-info -d hockshi > database/sql/insert.sql
