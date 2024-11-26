@@ -25,7 +25,7 @@ const {
   Profile,
   viewBooks,
   updateProfile,
-  oderDetail,
+  orderDetail,
   showError404,
   logout
 }= require("../controllers/indexController");
@@ -35,6 +35,11 @@ const shippingInfoValidation=require("../middleware/shipping-infoValidation")
 const updateProfileValidation=require("../middleware/updateProfileValidation")
 
 // const {stripe} = require('../utilities/stripe') ;
+
+
+const adminRoute=require("./adminRoutes")
+
+const OrdersRouter=require("./OrdersRoute")
 
 
 const calculateOrderAmount = (items) => { 
@@ -49,53 +54,53 @@ return 50;
 
 exports.calculateOrderAmount = calculateOrderAmount ;
 
-router.get("/",showHomePage)
+module.exports = () => {
+  
+  router.use ("/admin",allAdminRoutes())
+  router.get("/",showHomePage)
 
-router.get("/productDetails/:id",bookDetail)
+  router.get("/productDetails/:id",bookDetail)
 
-router.route("/cart").get(viewCart).post(getCartItems)
-
-
-router.route("/login").get(loginPage).post(loginPagePost)
-
-
-router.get("/askGuest",showGuestPage)
-
-router.route("/showForm").get(showForm).post(processGuestUser)
+  router.route("/cart").get(viewCart).post(getCartItems)
 
 
-router.post("/search",searchBook)
+  router.route("/login").get(loginPage).post(loginPagePost)
 
 
-router.post("/verifyOTP",verifyOTP)
+  router.get("/askGuest",showGuestPage)
 
-router.get("/signup",signupPage)
+  router.route("/showForm").get(showForm).post(processGuestUser)
 
-router.post("/signup",customerSignupValidation,signupPost)
 
-router.post( '/checkout',verifyUser,shippingInfoValidation,checkout)
+  router.post("/search",searchBook)
 
-router.get("/books",viewBooks)
+
+  router.post("/verifyOTP",verifyOTP)
+
+  router.get("/signup",signupPage)
+
+  router.post("/signup",customerSignupValidation,signupPost)
+
+  router.post( '/checkout',verifyUser,shippingInfoValidation,checkout)
+
+  router.get("/books",viewBooks)
 
   router.get("/allBooks",allBooks)
 
 
-router.get("/success",successPayment)
+  router.get("/success",successPayment)
 
-router.get("/logout",logout)
+  router.get("/logout",logout)
 
-router.get("/profile",Profile)
+  router.get("/profile",Profile)
 
-router.post("/updateProfile",updateProfileValidation,updateProfile)
+  router.post("/updateProfile",updateProfileValidation,updateProfile)
 
-router.get("/orderDetail/:id",oderDetail)
+  router.get("/orderDetail/:id",orderDetail)
 
-router.use('/admin',allAdminRoutes());
+  router.get("*",showError404)
 
-router.get("*",showError404)
+  router.post("*",showError404)
 
-router.post("*",showError404)
-
-
-
-module.exports = router
+  return router ;
+}

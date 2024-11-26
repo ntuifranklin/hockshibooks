@@ -16,11 +16,6 @@ const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
 
 //controllers
-const booksRouter=require("./routes/booksRoute")
-const adminRoute=require("./routes/adminRoutes")
-const index=require("./routes/index")
-const OrdersRouter=require("./routes/OrdersRoute")
-
 require("dotenv").config()
 
 let parseForm = bodyParser.urlencoded({ extended: false });
@@ -55,16 +50,12 @@ const inventoryModel=require("./models/inventory")
 
 const validateOTP=require("./middleware/OTPmiddleware")
 
-
 //multer config
-
-
 
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, './views')));
 app.set('views', path.join(__dirname, './views'));
 app.use(express.json());
-
 
 
 const site_secret = faker.internet.password({ length:64 });
@@ -82,8 +73,6 @@ let dynamicCookie =  {
 };
 
 // csrf protection
-
-
 
 /* Prevent attackes from guessing passwords with rate limiting per IP address */
 const { rateLimit } = require('express-rate-limit');
@@ -168,14 +157,8 @@ app.use((req, res, next) => {
 });
 
 
-app.use('/',index);
-app.use ("/admin",adminRoute)
-app.use("/admin/books",booksRouter)
-app.use("/admin/order",OrdersRouter)
+app.use('/',routes());
 
-app.use((req,res)=>{
-	res.render("pages/404")
-})
 
 app.listen(port, () => {
     console.log(`Express server listening on port ${port}`);

@@ -940,7 +940,7 @@ const allBooks=async(req,res)=>{
 
 }
 
-const oderDetail= async(req,res)=>{
+const orderDetail= async(req,res)=>{
     if(!res.locals.customer){
 
         return res.redirect(`${process.env.HOST}/login?msg=Please+login+first`)
@@ -1054,6 +1054,6 @@ module.exports={
     allBooks,
     processGuestUser,
     updateProfile,
-    oderDetail,
+    orderDetail,
     showError404
 }

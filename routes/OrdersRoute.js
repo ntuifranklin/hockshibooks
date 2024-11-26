@@ -4,9 +4,14 @@ const {changeToDelivered,changeToProcessing,changeToShipped,viewOrder}=require("
 
 const verifyLogin=require("../middleware/verifyLogin")
 
+module.exports = () => {
+    
 router.get("/viewOrder/:id",verifyLogin,viewOrder)
 router.get("/changeToProcessing/:id",verifyLogin,changeToProcessing)
 router.get("/changeToShipped/:id",verifyLogin,changeToShipped)
-router.get("/chnageToDelivered/:id",verifyLogin,changeToDelivered)
+router.get("/changeToDelivered/:id",verifyLogin,changeToDelivered)
 
-module.exports = router 
+return router ;
+
+}
+

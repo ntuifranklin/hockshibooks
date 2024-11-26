@@ -31,7 +31,7 @@ const login=(req,res,next)=>{
         
         //the login function renders the login page that will request the email and password of the users who wishes to login
         res.status(200)
-        res.render("pages/admin_login",{
+        res.render("pages/admin/admin_login",{
                 msg:false,
                 host:process.env.HOST
         })
@@ -60,7 +60,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                             });                                                   
                         if(!user){
                                 
-                                res.status(401).render("pages/admin_login",{
+                                res.status(401).render("pages/admin/admin_login",{
                                         csrfToken: req.csrfToken(),
                                         msg:"please check your email and password again",
                                            host:process.env.HOST
@@ -72,7 +72,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                         userId=user.id
                                         authUser=user.dataValues
                                         generateAndSendOTP(user.id,user_email,otpModel)
-                                res.status(200).render(`pages/otpVerification`,{
+                                res.status(200).render(`pages/admin/otpVerification`,{
                                         userId:userId,
                                         email:user_email,
                                         msg:false,
@@ -80,7 +80,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                 })
                         }
                                 else{
-                                        res.status(401).render("pages/admin_login",{
+                                        res.status(401).render("pages/admin/admin_login",{
                                                 csrfToken: req.csrfToken(),
                                                 msg:"please check your email and password again",
                                                 host:process.env.HOST
@@ -211,7 +211,7 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
         res.locals.user=req.session.user
 
 
-        res.status(200).render("pages/dashboard",{
+        res.status(200).render("pages/admin/dashboard",{
                 books:books,
                 payments:payments,
                 orders:orders,
