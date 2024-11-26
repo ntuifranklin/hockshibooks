@@ -255,11 +255,11 @@ const deleteBook=async (req,res)=>{
         })
         
         await book.destroy()
-    res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+deleted&type=success`);
+        return res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+deleted&type=success`);
         
     }
     catch(e){
-    res.redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+record&type=danger`);
+        return res.redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+record&type=danger`);
 
     }
 }
@@ -313,6 +313,8 @@ const addBookWithISBN= async(req,res)=>{
         try{
             const response= await axios.get(url)
 
+            console.log(`${JSON.stringify(response.data, null,2)}`);
+
             const data= response.data[`ISBN:${isbn}`] 
 
             if(data){
@@ -323,15 +325,25 @@ const addBookWithISBN= async(req,res)=>{
                             title:data.title
                         }
                     })
-
+                    /* ISBN coul return a valid 13 o a valid 10 isbn numbers */
+                    var isbn10_or_13 = isbn;
+                    if (typeof data.identifiers.isbn_13 != "undefined")
+                        isbn10_or_13 = data.identifiers.isbn_13[0];
+                    else if (typeof data.identifiers.isbn_10 != "undefined")
+                        isbn10_or_13 = data.identifiers.isbn_10[0];
+                    
+                        
+                    var cover_image_url = "";
+                    if (typeof data.cover != "undefined" && typeof data.cover.medium != "undefined")
+                        cover_image_url = data.cover.medium;
                     if(!tmp){
                         let createdBook=await bookModel.create({
                         title:data.title,
                         author:data.authors[0].name,
-                        ISBN:data.identifiers.isbn_13[0],
+                        ISBN:isbn10_or_13,
                         description: desc,
                         publication_date:data.publication_date,
-                        cover_image_url:data.cover.medium,
+                        cover_image_url:cover_image_url,
                         price:price
                     })
     
@@ -352,19 +364,19 @@ const addBookWithISBN= async(req,res)=>{
                     })
                 }
                 } catch (error) {
-
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+creating+book&type=danger`);
+                    console.log(`${error.message}`);
+                    return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+creating+book&type=danger`);
                 }
                 
             }
             else{
 
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
+                return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn ${isbn}&type=danger`);
             }
         }
         catch(e){
-
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
+            console.log(`${e.message}`);
+            return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
 
         }
     }

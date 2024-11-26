@@ -56,6 +56,27 @@ CREATE TABLE Books (
 );
 
 
+
+LOCK TABLES `Books` WRITE;
+/*!40000 ALTER TABLE `Books` DISABLE KEYS */;
+INSERT INTO `Books` VALUES 
+('00e0f6a58952dcc1ffa8b24e70d05e89','LLC or Corporation?','Anthony Mancuso','9781413328004','No description available',35.00,NULL,NULL,''),
+('2cebacb6ebead74e807d2f738081ffcb','Oh, the places you\'ll go!','Dr. Seuss','0679805273','Advice in rhyme for proceeding in life; weathering fear, loneliness, and confusion; and being in charge of your actions.',12.00,NULL,NULL,'https://covers.openlibrary.org/b/id/423771-M.jpg'),
+('42f21078fe73c24641aff796e8c03323','Transforming professional development into student results','Douglas B. Reeves','9781416609490','No description available',19.00,NULL,NULL,'https://covers.openlibrary.org/b/id/6721304-M.jpg'),
+('6216d3a41653d3f969f5dbab6dbd75be','Lunch Money (Rise and Shine)','Andrew Clements','9780689866852','No description available',5.00,NULL,NULL,'https://covers.openlibrary.org/b/id/8741740-M.jpg'),
+('65c2b47a70ebfcf5433620a29e4c9d04','How to break up with your phone','Catherine Price','9780399581120','\"Award-winning journalist Catherine Price presents a practical, hands-on plan to break up -- and then make up -- with your phone. The goal? A long-term relationship that actually feels good. You\'ll discover how phones and apps are designed to be addictive and how the time we spend on them damages our abilities to focus, think deeply, and form new memories. You\'ll then make customized changes to your settings, apps, environment, and mindset that will enable you to take back control of your life -- both on your phone and off.\"--Back cover.',8.00,NULL,NULL,'https://covers.openlibrary.org/b/id/13160188-M.jpg'),
+('697bed51542154d3627d3111df750fa6','Enhancing the Postdoctoral Experience','National Academy of Sciences U.S.','9780309069960','No description available',66.00,NULL,NULL,'https://covers.openlibrary.org/b/id/2362604-M.jpg'),
+('86ef4d77cfa6e7cea4afff9a5ca66f3b','Growing Great Employees','Erika Andersen','9781591841906','No description available',35.00,NULL,NULL,'https://covers.openlibrary.org/b/id/1977235-M.jpg'),
+('916e645416b4f0103e1d56ee09a4c39e','Adviser, Teacher, Role Model, Friend','National Academy of Sciences U.S.','9780309063630','No description available',45.00,NULL,NULL,'https://covers.openlibrary.org/b/id/2362262-M.jpg'),
+('9fae2b168156306e50d3062db27cc82e','Last Woman Standing','Amy Gentry','9780358108535','No description available',6.00,NULL,NULL,''),
+('b20fcc7b3ae1319cdadd96e39059b4a9','Christmas Comes to Morning Star','Charlotte Hubbard','9781420151831','No description available',9.00,NULL,NULL,'https://covers.openlibrary.org/b/id/12397403-M.jpg'),
+('ce29c94d7cf1f075614d6a58a6088e4f','Whole','T. Colin Campbell','9781937856243','\"The China Study\" revealed what we should eat and provided the powerful empirical support for this answer. \"Whole\" answers the question of why. Why does a whole-food, plant-based diet provide optimal nutrition? \"Whole\" demonstrates how far the scientific reductionism of the nutrition orthodoxy has gotten offtrack and reveals the elegant wonders of the true holistic workings of nutrition, from the cellular level to the operation of the entire organism.',5.00,NULL,NULL,'https://covers.openlibrary.org/b/id/12647639-M.jpg'),
+('db3a1093221dfe60d86ba08f4ea4bb58','Serious Cryptography','Jean-Philippe Aumasson','9781593278267','No description available',25.00,NULL,NULL,'https://covers.openlibrary.org/b/id/8232506-M.jpg'),
+('ea48a2e9581949fb9813f2c83b07521d','Good Girl\'s Guide to Rakes','Eva Leigh','9780063086272','No description available',7.00,NULL,NULL,'https://covers.openlibrary.org/b/id/12723049-M.jpg');
+/*!40000 ALTER TABLE `Books` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 -- Promotions Table
 CREATE TABLE Promotions (
     promo_id VARCHAR(64) PRIMARY KEY,
