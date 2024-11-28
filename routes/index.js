@@ -5,6 +5,8 @@ require('dotenv').config();
 const csrf = require('csurf');
 let csrfProtection = csrf({ cookie: true });
 const allAdminRoutes = require('./adminRoutes');
+const booksRoute = require('../books/route');
+const {booksRouteName} = require('../books/utilities');
 const {
   showHomePage,
   bookDetail,
@@ -83,9 +85,8 @@ module.exports = () => {
 
   router.post( '/checkout',verifyUser,shippingInfoValidation,checkout)
 
-  router.get("/books",viewBooks)
+  router.use(`/${booksRouteName()}`,booksRoute())
 
-  router.get("/allBooks",allBooks)
 
 
   router.get("/success",successPayment)

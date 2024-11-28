@@ -42,7 +42,8 @@ const showHomePage = async (req,res)=>{
         include:[
             {model:inventoryModel}
         ], 
-    })
+    });
+    //console.log(`${JSON.stringify(books, null, 2)}`);
     return res.status(200).render("pages/home",{
         "books":books,
         "pagetitle":"Books Available"

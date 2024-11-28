@@ -1,27 +1,7 @@
     <%- include('../partials/cartpagehead') %>
     <%- include('../layout/customerNavBar') %>
+    <%- include('../partials/breadcrumbs') %>
  
-  <div class="breadcrumb-area">
-    <div class="container"> 
-        <div class="row">
-            <div class="col-12">
-                <div class="row breadcrumb_box  align-items-center">
-                    <div class="col-lg-6 col-md-6 col-sm-6 text-center text-sm-start">
-                        <h2 class="breadcrumb-title">cart</h2>
-                    </div>
-                    <div class="col-lg-6  col-md-6 col-sm-6">
-                        <!-- breadcrumb-list start -->
-                        <ul class="breadcrumb-list text-center text-sm-end">
-                            <li class="breadcrumb-item"><a href="/">Home</a></li>
-                            <li class="breadcrumb-item active">Your Cart</li>
-                        </ul>
-                        <!-- breadcrumb-list end -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-  </div>
 
 <div id="main-wrapper">
     <div class="site-wrapper-reveal border-bottom">
@@ -87,7 +67,7 @@
     </div>
 
   
-
+    <%- include('../partials/footerarea') %>
 </div>
 
 <div id="main-wrapper">
@@ -97,30 +77,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-7">
-                        <!-- <div class="customer-zone mb-30">
-                            <p class="cart-page-title">Returning customer? <a class="checkout-click-login" href="#"> Click here to login</a></p>
-                            <div class="checkout-login-info">
-                                <p>If you have shopped with us before, please enter your details in the boxes below. If you are a new customer, please proceed to the Billing & Shipping section.</p>
-                                <form action="#" class="account-form-box">
-                                    <div class="single-input mt-20">
-                                        <label>Username or email <span class="required">*</span></label>
-                                        <input type="email">
-                                    </div>
-                                    <div class="single-input mt-20">
-                                        <label>Password <span class="required">*</span></label>
-                                        <input type="password" placeholder="Password">
-                                    </div>
-                                    <div class="checkbox-wrap mt-10">
-                                        <label class="label-for-checkbox inline mt-15">
-                                            <input class="input-checkbox" name="rememberme" type="checkbox" id="rememberme" value="forever"> <span>Remember me</span>
-                                        </label>
-                                    </div>
-                                    <div class="button-box mt-15">
-                                        <a href="#" class="btn btn--lg btn--black">Login</a>
-                                    </div>
-                                </form>
-                            </div>
-                        </div> -->
+
                     </div>
                    
                 </div>
@@ -227,78 +184,9 @@
         <!-- checkout end -->
     </div>
 
-    <%- include('../partials/footerarea') %>
+   
 
 </div>
-
-
-  <!-- <div class="container-container hidden">
-
-      <div class="container my-5">
-          <h1 class="mb-4">Shopping Cart</h1>
-          <div class="row">
-              <div class="col-md-8">
-                 
-                  
-              </div>
-              <div class="col-md-4">
-                  <div class="order-summary">
-                      <h4 class="mb-4">Order summary</h4>
-                      <div class="cartI">
-      
-                      </div>
-                      <div class="d-flex justify-content-between mb-4 ">
-                         
-                      </div>
-                  </div>
-                  <button class=" btn-checkout  " >enter shipping info</button>
-              </div>
-          </div>
-      </div>
-      
-      <div class="container1 ">
-          <div class="left-section">
-              <h2>Enter your shipping details</h2>
-              <form id="checkout">
-                  <div class="form-group">
-                      <label for="address">shipping address</label>
-                      <input type="text" class="form-control" id="address"  name="address">
-                      <p id="addressError" class="error"></p>
-      
-                  </div>
-                  <div class="form-group">
-                      <label for="city">shipping city</label>
-                      <input type="text" class="form-control" id="city"  name="city">
-                      <p id="cityError" class="error"></p>
-      
-                  </div>
-                  <div class="form-row">
-                      <div class="form-group col-md-8">
-                          <label for="cardNumber">shipping state/ province</label>
-                          <input type="text" class="form-control" id="state" name="state">
-                          <p id="stateError" class="error"></p>
-      
-                      </div>
-                      <div class="form-group col-md-2">
-                          <label for="cvv">shipping country</label>
-                          <input type="text" class="form-control" id="country"  name="country">
-                          <p id="countryError" class="error"></p>
-      
-                      </div>
-                      <div class="form-group col-md-2">
-                          <label for="expiry">shipping postal code</label>
-                          <input type="text" class="form-control" id="postalCode" name="postal code">
-                          <p id="postalCodeError" class="error"></p>
-      
-                      </div>
-                  </div>
-                  <button type="submit" class="btn btn-success btn-block" id="checkout">continue to checkout</button>
-              </form>
-          </div>
-        
-      </div>
-  </div> -->
-
 
 
   <div class="animation  hidden ">

@@ -27,55 +27,11 @@ async function addToCart (productId) {
 
 }
 
-
-
-// Event listener for the add to cart button
-
-
-
-// function addToCart(productId) {
-  //     // Adds a product to the user's shopping cart.
-  // // 
-  // // Parameters:
-  // // - productId (number): The ID of the product to be added.
-  // //
-  // // Returns: None
-  // let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-  
-  
-  // let product = cartItems.find(item => item.id == productId);
-  
-  //    if (product) {
-    //       alert("product already exists in your shopping cart")
-    
-    //   } else { 
-      
-//       cartItems.push({ id: productId, qty: 1 });
-//       const cartCountElement = document.querySelector('#cart-count');
-//       const cartCount = localStorage.getItem('cartItems') || 0;
-//       const items=JSON.parse(cartCount)
-//        cartCountElement.textContent = items.length;
-//        alert("Product successfully added to your cart")
-//   }
-
-// localStorage.setItem('cartItems', JSON.stringify(cartItems));
-
-// }
-
-// Event listener for the add to cart button
-
-  // Attaches an event listener to all HTML elements with the class 'add-to-cart'.
-  // When any of these elements are clicked, the event listener is triggered.
-  // 
-  // The event listener retrieves the 'data-product-id' attribute from the clicked element,
-  // and then calls the addToCart function with this ID as an argument.
-  //
-  // Returns: None
-  window.addEventListener('DOMContentLoaded', () => {
-             
-    // Select the element with the ID "cart-count"
-   changeCartValue()
-  });
+window.addEventListener('DOMContentLoaded', () => {
+            
+  // Select the element with the ID "cart-count"
+  changeCartValue()
+});
 
 window.addEventListener('load', () => {
   document.querySelectorAll('.add-to-cart').forEach(button => {
@@ -86,19 +42,19 @@ window.addEventListener('load', () => {
     });
   }); 
 })
-  const changeCartValue=()=>{
-    const cartCountElement = document.querySelector('#cart-count');
+const changeCartValue=()=>{
+  const cartCountElement = document.querySelector('#cart-count');
 
-                  const cartCount = localStorage.getItem('cartItems');
-                    if(cartCount && JSON.parse(cartCount).length>0){   
+                const cartCount = localStorage.getItem('cartItems');
+                  if(cartCount && JSON.parse(cartCount).length>0){   
 
-                      cartCountElement.style.display = "block"
-                      const items=JSON.parse(cartCount)
+                    cartCountElement.style.display = "block"
+                    const items=JSON.parse(cartCount)
 
-                     cartCountElement.textContent = items.length;
-                    }
-                    else{
-                      cartCountElement.style.display = "none"
-                    }
+                    cartCountElement.textContent = items.length;
+                  }
+                  else{
+                    cartCountElement.style.display = "none"
+                  }
 
 }
