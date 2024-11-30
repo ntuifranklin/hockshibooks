@@ -89,6 +89,7 @@ const bookDetail= async (req,res)=>{
 
     res.render("pages/productDetail",{
         book:book,
+        pagetitle:book.title,
         relatedBooks:relatedBooks,
         release_date:""
     })

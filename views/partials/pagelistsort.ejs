@@ -4,7 +4,7 @@
     const limit = 5; // Number of items per page
 
     async function fetchBooks(page = 1) {
-        const response = await fetch(`/allBooks?page=${page}&limit=${limit}`,);
+        const response = await fetch(`/books/api?page=${page}&limit=${limit}`,);
         const result = await response.json();
         console.log(result)
         const bookList = document.getElementById('booksContainer');

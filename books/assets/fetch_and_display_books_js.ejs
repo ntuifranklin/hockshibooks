@@ -1,11 +1,14 @@
+<script>
+
     let currentPage = 1;
     const limit = 6; // Number of items per page
     let result
     let data
     let currentSort = 'latest';  // Default sort value
-
+    let base_url = `/${base_route_name}`;
+    let api_get_books_url = `/${base_route_name}/${api_route_name}`;
         async function fetchBooks(page = 1,bookName="",sort="latest") {
-            const response = await fetch(`/books/api?page=${page}&limit=${limit}&bookName=${bookName}&sort=${sort}`);
+            const response = await fetch(`${api_get_books_url}?page=${page}&limit=${limit}&bookName=${bookName}&sort=${sort}`);
              result = await response.json();
              data= result.data
             console.log(result)
@@ -32,7 +35,7 @@
             bookItem.innerHTML = `
             <div class="single-product-item text-center">
              <div class="products-images">
-                        <a href="/productDetails/${book.book_id}" class="product-thumbnail">
+                        <a href="/${base_route_name}/${book.book_id}" class="product-thumbnail">
 
                           
                             <img  src="${bookimage}" class="img-fluid bookCoverImage1" alt="Product Images" width="300px" height="300px" >
@@ -45,14 +48,14 @@
                         </a>
                         
                         <div class="product-actions">
-                          <a href="/productDetails/${book.book_id} "  data-bs-target="#prodect-modal"><i class="p-icon icon-plus"></i><span class="tool-tip">Quick View</span></a>
+                          <a href="/${base_route_name}/${book.book_id}"  data-bs-target="#prodect-modal"><i class="p-icon icon-plus"></i><span class="tool-tip">Quick View</span></a>
                           ${book.Inventory.quantity_available > 0? `<a class="add-to-cart"><i class="p-icon icon-bag2" data-product-id="${book.book_id}"></i> <span class="tool-tip">Add to cart</span></a>`:""}
                           
                          
                         </div>
                     </div>
                     <div class="product-content">
-                        <h6 class="prodect-title"><a href="/productDetails/${book.book_id}">${book.title}</a></h6>
+                        <h6 class="prodect-title"><a href="/${base_route_name}/${book.book_id}">${book.title}</a></h6>
                         <div class="prodect-price">
                             <span class="new-price">$ ${book.price} </span>
                         </div>
@@ -110,4 +113,4 @@
         });
 
 
-        
+</script>
