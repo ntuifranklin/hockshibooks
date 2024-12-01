@@ -1,12 +1,7 @@
 const { createClient } = require("redis");
 const hash = require("object-hash");
 
-const {
-   CATEGORIES_TABLE
-} = require('../utilities/web_page_variables');
-const {getCategories} = require('../database/controllers/database');
 let redisClient = undefined;
-
 
 /*
 const REDIS_CACHING_OPTIONS = 
@@ -112,6 +107,46 @@ if (isRedisWorking()) {
     }
 }
 }  ;
+
+
+/* Function below takes a json object then stringifies
+and stores it as a string in the redis cache
+*/
+async function saveJSONObjectToRedisCache(key, jsonObject, options=REDIS_DEFAULT_CACHING_OPTIONS) {
+    if (isRedisWorking()) {
+        const stringifiedJsonObject = JSON.stringify(jsonObject) ;
+        try {
+            // write data to the Redis cache
+            //var d = JSON.stringify(data);
+            await redisClient.set(key, stringifiedJsonObject, options);
+            //console.log(`Logging [${__filename}] : on Writing data : ${data} to Redis`);
+        } catch (e) {
+            console.error(`Failed to cache data for key=${key}`, e);
+        }
+    }
+} ;
+exports.saveJSONObjectToRedisCache = saveJSONObjectToRedisCache ;
+
+/* Function below takes a json object then stringifies
+and stores it as a string in the redis cache
+*/
+async function retrieveJSONObjectToRedisCache(key) {
+    if (isRedisWorking()) {
+        const stringifiedJsonObject = JSON.stringify(jsonObject) ;
+        try {
+            // write data to the Redis cache
+            //var d = JSON.stringify(data);
+            
+            const stringData = await readDataFromRedisCache(key);
+            const jsonObject = await JSON.parse(stringData);
+            return jsonObject ;
+            //console.log(`Logging [${__filename}] : on Writing data : ${data} to Redis`);
+        } catch (e) {
+            console.error(`Failed to read stringed data for key=${key}`, e);
+        }
+    }
+} ;
+exports.retrieveJSONObjectToRedisCache = retrieveJSONObjectToRedisCache ;
 
 exports.writeDataToRedisCache = writeDataToRedisCache ;
 

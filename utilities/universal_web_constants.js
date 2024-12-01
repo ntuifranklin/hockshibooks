@@ -1,0 +1,7 @@
+
+
+const LOGGED_IN_USER_VARIABLE_NAME = "CURRENT_LOGGED_IN_USER" ;
+
+module.exports = {
+    LOGGED_IN_USER_VARIABLE_NAME
+}

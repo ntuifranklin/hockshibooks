@@ -2,7 +2,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const bcrypt = require('bcrypt');
-const {Md5Rand}=require("../utilities/functions")
 const crypto = require('crypto');
 
 const Order= require("./ordersModel")

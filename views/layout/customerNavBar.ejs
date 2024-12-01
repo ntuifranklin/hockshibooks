@@ -11,8 +11,7 @@
                             <form role="search" action="/search" method="POST" class="header-search-box">
                                 <input class="search-field form-control" type="text" placeholder="Search Anything..."  name="query">
 
-                                <input type="hidden" name="_csrf"
-                                    value="<%= csrfToken %>">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                 
                                 <button class="search-icon" type="submit">
                                     <i class="icon-magnifier"></i>
@@ -31,15 +30,6 @@
                                 <a href="/profile" >
                                     <i class="icon-user"></i>
                                 </a>
-                                <!-- <% if(customer){ %>
-                                <a href="/profile" >
-                                    <i class="icon-user"></i>
-                                </a>
-                                <% }else {%>
-                                    <a href="/login?msg=Please+login+first" >
-                                        <i class="icon-user"></i>
-                                    </a>
-                                <% } %> -->
                             </div>
                           
 

@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const sequelize = require('../config/database');
 const {generateAndSendOTP}=require("../utilities/functions");
 const { validationResult } = require('express-validator');
-
+const {saveJSONObjectToRedisCache, retrieveJSONObjectToRedisCache} = require('../middleware/redis');
 const { json } = require('body-parser');
 require("dotenv").config()      
 
@@ -23,26 +23,37 @@ const orderModel= require("../models/ordersModel")
 const OTPvalidation= require("../middleware/OTPmiddleware");
 const validateOTP = require('../middleware/OTPmiddleware');
 const { adminRouteName } = require('./utilities');
+const { LOGGED_IN_USER_VARIABLE_NAME } = require('../utilities/universal_web_constants');
 let user_email,authUser;
 let userId
 
 
-const login=(req,res,next)=>{
+const login=async (req,res,next)=>{        
+        try{
+                //the login function renders the login page that will request the email and password of the users who wishes to login
+                let loggedInUser = await retrieveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME);
+                let loggedInUnixEpoch = loggedInUser.unixEpoch ;
+                let currentUnixEpoch = Math.ceil((new Date())/1000)
+                let f15teenMinutes = 900 ; //15 mins = 900 seconds
 
-        
-        //the login function renders the login page that will request the email and password of the users who wishes to login
-        if (req.session && req.session.user){
-            res.status(200)
-            res.redirect(`/${adminRouteName()}/dashboard`)  
+                /* if admin user ahs been in cache for 15 minutes or
+                 more then they have to log back in */
+                if (loggedInUser && (currentUnixEpoch - parseInt(loggedInUnixEpoch)) < f15teenMinutes){
+                        res.status(200)
+                        res.redirect(`/${adminRouteName()}/dashboard`)  
 
-        } else {
-            res.status(200)
-            res.render("../admin/pages/admin_login",{
-                    pagetitle:"Admin Login",
-                    msg:false,
-                    host:process.env.HOST,
-                    admin_route_name:adminRouteName(),
-            })  
+                } else {
+                        res.status(200)
+                        res.render("../admin/pages/admin_login",{
+                                pagetitle:"Admin Login",
+                                msg:false,
+                                host:process.env.HOST,
+                                admin_route_name:adminRouteName(),
+                        })  
+
+                }
+
+        } catch(e) {
 
         }
         
@@ -184,10 +195,13 @@ If there are errors, render the otpVerification page with an error message.
         Destroy the OTP record from the database to prevent reuse.
         Redirect the user to the dashboard.
         */
-        req.session.user={
+        let unixEpoch = Math.floor((new Date())/1000) ;
+        let loggedInUser ={
                 email:authUser.email,
-                role:authUser.role
+                role:authUser.role,
+                loggedInTime:unixEpoch
         }
+        await saveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME, loggedInUser);
         await otpModel.destroy({
                 where:{
                         powerUserId:userId
