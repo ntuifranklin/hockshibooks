@@ -1,0 +1,117 @@
+<script>
+
+    let currentPage = 1;
+    const limit = 6; // Number of items per page
+    let result
+    let data
+    let currentSort = 'latest';  // Default sort value
+    let base_url = "/<%= base_route_name %>";
+    let api_get_books_url = `/<%= base_route_name %>/<%= api_route_name %>`;
+    let bookID_url = `/<%= base_route_name %>`;
+        async function fetchBooks(page = 1,bookName="",sort="latest") {
+            const response = await fetch(`${api_get_books_url}?page=${page}&limit=${limit}&bookName=${bookName}&sort=${sort}`);
+             result = await response.json();
+             data= result.data
+            console.log(result)
+            renderBooks(data)
+        }
+
+       const renderBooks=(data)=>{
+        const bookList = document.getElementById('booksContainer');
+        bookList.innerHTML = '';
+
+        data.forEach(book => {
+                let bookimage=""
+                if(book.cover_image_url.split(":")[0]=="https") {   
+                    bookimage=book.cover_image_url
+                }
+                else{
+                    bookimage=`/uploads/${book.cover_image_url}`
+                }
+            const bookItem = document.createElement('div');
+            bookItem.classList.add('col-lg-4');
+            bookItem.classList.add('col-sm-6');
+            bookItem.classList.add('col-md-4');
+
+            bookItem.innerHTML = `
+            <div class="single-product-item text-center">
+             <div class="products-images">
+                        <a href="${bookID_url}/${book.seo_friendly_title}" class="product-thumbnail">
+
+                          
+                            <img  src="${bookimage}" class="img-fluid bookCoverImage1" alt="Product Images" width="300px" height="300px" >
+                            
+                             
+          
+                             ${book.Inventory.quantity_available <= 0? `<span class="ribbon out-of-stock">Out Of Stock</span>`:""}
+
+                             
+                        </a>
+                        
+                        <div class="product-actions">
+                          <a href="${bookID_url}/${book.seo_friendly_title}"  data-bs-target="#prodect-modal"><i class="p-icon icon-plus"></i><span class="tool-tip">Quick View</span></a>
+                          ${book.Inventory.quantity_available > 0? `<a class="add-to-cart"><i class="p-icon icon-bag2" data-product-id="${book.seo_friendly_title}"></i> <span class="tool-tip">Add to cart</span></a>`:""}
+                          
+                         
+                        </div>
+                    </div>
+                    <div class="product-content">
+                        <h6 class="prodect-title"><a href="${bookID_url}/${book.seo_friendly_title}">${book.title}</a></h6>
+                        <div class="prodect-price">
+                            <span class="new-price">$ ${book.price} </span>
+                        </div>
+                    </div>
+
+                    </div>
+            `;
+            document.querySelector(".result-count").innerHTML = `Showing  page ${result.meta.currentPage} of ${result.meta.totalPages} results.`
+            bookList.appendChild(bookItem);
+        });
+
+        // Update pagination controls
+        currentPage = result.meta.currentPage;
+        document.getElementById('prevPage').disabled = !result.meta.prevPage;
+        document.getElementById('nextPage').disabled = !result.meta.nextPage;
+       }
+
+       const findAddCartButton=()=>{
+            console.log("found")
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const productId = event.target.getAttribute('data-product-id');
+                    // updateCartCount();
+                    addToCart(productId);
+                });
+            }); 
+        }
+        // Returns: None
+        fetchBooks()
+        
+        document.getElementById("filter").addEventListener("change", (e) => {
+            currentSort = e.target.value;
+
+            fetchBooks(currentPage,"", currentSort);
+
+            // Re-render the sorted result.data
+        })
+
+
+        window.addEventListener("load",async()=>{
+            console.log("finished loading")
+            document.getElementById('prevPage').addEventListener('click', async() => {
+                if (currentPage > 1) {
+                    await fetchBooks(currentPage - 1,"", currentSort);
+                    findAddCartButton()
+                }
+            });
+      
+            document.getElementById('nextPage').addEventListener('click', async() => {
+                  await fetchBooks(currentPage + 1,"", currentSort);
+                  findAddCartButton()
+
+            });      
+                      
+        });
+
+
+</script>

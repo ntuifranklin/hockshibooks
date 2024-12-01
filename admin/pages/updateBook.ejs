@@ -1,0 +1,178 @@
+<%- include('./partials/pagehead') %>
+
+
+<%  if (user) { %>
+    <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
+<% } %>
+
+
+<div id="main-wrapper">
+    <div class="site-wrapper-reveal border-bottom">
+
+        <div class="my-account-page-warpper section-space--ptb_120">
+            <div class="container">
+                <div class="errors">
+                    <% if (msg.length!=0) { %>
+                        <% for(let i=0; i < msg.length; i++) { %>
+                                                
+                            
+                            <div class="alert alert-danger" role="alert">
+                                <p><%= msg[i].msg %>!</p>
+                            </div>
+                            <% } %>
+                    <% } %>
+            
+                </div>
+                    <div class="col-md-5 mx-auto w-100 d-flex justify-content-center align-items-center ">
+                        <% if(book.cover_image_url.split(":")[0]=="https") { %>
+                            <img  src="<%=`${book.cover_image_url}`%>" class="img-fluid mx-auto w-30 h-20">
+                            <% } else { %>
+                              <img  src="/uploads/<%=`${book.cover_image_url}`%>" class="img-fluid mx-auto w-30 h-20">
+            
+                              <% } %>
+                    </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-7 m-auto">
+                        <div class="myaccount-box-wrapper">
+                         
+                            <div class="tab-content content-modal-box">
+                              
+                                <div class="tab-pane fade show active"  >
+
+                                    <form enctype="multipart/form-data" action="/admin/books/update?_csrf=<%= csrfToken%>"  method="post" class="account-form-box">
+                                        <h1>Update : <%= book.title %></h1>
+                                        <div class="form-row">
+                                            <input type="hidden"   value="<%= book.book_id %>"  name="bookId">
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group single-input">
+                                                <label  class="w-100">Title:
+
+                                                    <input type="text"  id="Book_Title" placeholder="Book Title" value="<%= book.title %>" name="title">
+
+                                                </label>
+                                            </div>
+                                            <div class="form-group single-input">
+                                                <label for="" class="w-100">Author Name:
+
+                                                    <input type="text"  id="autho" placeholder="Book Author" value="<%= book.author %>" name="author">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">ISBN:
+
+                                                <input type="text"  id="ISBN" placeholder="ISBN" name="ISBN" value="<%= book.ISBN %>" name="ISBN">
+                                            </label>
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Language:
+
+                                                <input type="text"  id="phone" placeholder="language" name="language" value="<%= book.language %>">
+                                            </label>
+
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Unit Price:
+
+
+                                                <input type="number"  id="price" placeholder="Price" name="price" value="<%= book.price %>">
+                                            </label>
+
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Quantity Available:
+
+                                                <input type="number"  id="location" placeholder="Location" name="quantity" value="<%= book.Inventory.quantity_available %>">
+
+                                            </label>
+
+                                        </div>
+                                        
+                                        <div class="single-input">
+                                            <label for="" class="w-100">
+                                                Location:
+
+                                                <input type="text"  id="location" placeholder="Location" name="location" value="<%= book.Inventory.location %>">
+                                            </label>
+
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Release Date:
+
+                                                <input type="date" class="form-control" id="date" name="date" >
+
+                                            </label>
+                                        </div>
+                                        <div class="single-input">
+                                            <label for="" class="w-100">Cover Image:
+
+                                                <input type="file"  id="customFile"  name="coverImage">
+
+                                            </label>
+                                        </div>
+                                        <div class="single-input">
+
+                                            <label for="" class="w-100">Description:
+
+                                                <textarea type="date" class="w-100" id="description" name="description" value="<%= book.description %>"  resize=false rows="10"  width="1000px"><%= book.description %></textarea>
+                                            </label>
+
+                                        </div>
+                                    
+
+                                        <input type="hidden" name="_csrf"
+                                        value="<%= csrfToken %>">
+                                        <div class="button-box mt-25">
+                                            <button type="submit" class="btn btn--full btn--black">Save updates</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    
+    <!--====================  End of footer area  ====================-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+    
+<%- include('../../partials/admin_jslibs') %>
+
+
+</body>
+
+</html>

@@ -119,16 +119,11 @@
 
                                             <% if (Sucessmsg) { %>
                                                 <div class="errors">
-                                                        
-                                                                                
-                                                            
-                                                            <div class="alert alert-success" role="alert">
-                                                                <p><%= Sucessmsg %></p>
-                                                            </div>
-                                                        
-                                                            
-                                                        </div>
-                                                        <% } %>
+                                                    <div class="alert alert-success" role="alert">
+                                                        <p><%= Sucessmsg %></p>
+                                                    </div>  
+                                                </div>
+                                            <% } %>
                                 <div class="tab-content content-modal-box">
                                     <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
                                         
@@ -147,8 +142,7 @@
                                                 <a href="#" class=" mt-10">Lost your password?</a>
                                             </div> -->
 
-                                            <input type="hidden" name="_csrf"
-                value="<%= csrfToken %>">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                             <div class="button-box mt-25">
                                                 <button type="submit" class="btn btn--full btn--black">Log in</button>
                                             </div>

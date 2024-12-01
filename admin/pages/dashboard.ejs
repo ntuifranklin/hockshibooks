@@ -1,0 +1,179 @@
+<%- include('./partials/pagehead') %>
+
+
+<%  if (user) { %>
+    <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
+<% } %>
+
+
+
+  <div id="main-wrapper
+      <div class="mb-4">
+
+          <a href="<%= `${host}/admin/insert-book` %>"  class="btn btn-primary new p-10 w-25 h-50 "><i class="fa fa-plus"></i> new book</a>
+          
+      </div>
+              
+    <% if (msg) { %>
+      <div class="alert alert-<%=type %>" role="alert">
+            <p><%= msg %>!</p>
+      </div>
+    <% } %>  
+        
+    <div class="flex">
+      
+      <div class="col-12 table-info">
+        <div class="card bg-dark shadow-2-strong">
+          <div class="card-body">
+            <h1>Books Info</h1>
+            <div class="table-responsive">
+              <table class="table table-dark table-borderless mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Qty</th>
+                    <th scope="col">Actions</th>
+
+
+
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for(let i=0; i < books.length; i++) { %>
+                  <tr>
+                    <th scope="row"><%= books[i].title %></th>
+                    <td><%= books[i].author %></td>
+                    <td><%= books[i].ISBN %></td>
+                    <td>$<%= books[i].price %></td>
+                    <td><%= books[i].Inventory.quantity_available %></td>
+
+                    <td><div class="actions d-flex justify-content-between align-items-center">
+                      <a href="<%= `/admin/update/${books[i].book_id}` %>"><i class="fa-solid fa-pen-to-square"></i></a>
+                      <a href="<%= `/admin/delete/${books[i].book_id}` %>"><i class="fa-solid fa-trash"></i></a>
+                      
+                      <% } %>
+                    </div></td>
+
+
+                  </tr>
+        
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-12 table-info">
+        <div class="card bg-dark shadow-2-strong">
+          <div class="card-body">
+            <h1>Orders</h1>
+
+            <div class="table-responsive">
+              <table class="table table-dark table-borderless mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">order-id</th>
+                    <th scope="col">customer name</th>
+                    <th scope="col">customer email</th>
+                    <th scope="col">amount</th>
+                    <th scope="col">status</th>
+                    <th scope="col"> order_date</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for(let i=0; i < orders.length; i++) { %>
+
+                  <tr>
+                    <th scope="row"><%= orders[i].order_id %></th>
+                    <td><%= orders[i].Customer.first_name ||"geust" %> <%= orders[i].Customer.last_name|| "" %></td>
+                    <td><%= orders[i].Customer.email %></td>
+                    <td>$<%= orders[i].total_amount %></td>
+                    <td><%= orders[i].delivery_status %></td>
+                    <td><%= orders[i].order_date %></td>
+                    <td><a href="<%= `/order/viewOrder/${orders[i].order_id}` %>"><i class="fa-solid fa-pen-to-square"></i></a></td>
+
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 table-info">
+        <div class="card bg-dark shadow-2-strong">
+          <div class="card-body">
+            <h1>Payments</h1>
+
+            <div class="table-responsive">
+              <table class="table table-dark table-borderless mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Transaction_ID</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Order_ID</th>
+                    <th scope="col">Payment_method</th>
+                    <th scope="col">Payment_date</th>
+                
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for(let i=0; i < payments.length; i++) { %>
+                  <tr>
+                    <th scope="row"><%= payments[i].transaction_id %></th>
+                    <td>$<%= payments[i].amount %></td>
+                    <td><%= payments[i].order_id %></td>
+                    <td><%= payments[i].payment_method %></td>
+                    <td><%= payments[i].payment_date %></td>
+
+                    
+
+
+                  </tr>
+                  <% } %>
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+    
+<%- include('./partials/admin_jslibs') %>
+
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

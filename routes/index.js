@@ -4,12 +4,15 @@ const router = express.Router();
 require('dotenv').config();
 const csrf = require('csurf');
 let csrfProtection = csrf({ cookie: true });
-const allAdminRoutes = require('./adminRoutes');
+//admin module
+const adminRoute = require('../admin/route');
+const {adminRouteName} = require('../admin/utilities');
+
+//books module
 const booksRoute = require('../books/route');
 const {booksRouteName} = require('../books/utilities');
 const {
   showHomePage,
-  bookDetail,
   viewCart,
   getCartItems,
   searchBook,
@@ -23,9 +26,7 @@ const {
   processGuestUser,
   showGuestPage,
   showForm,
-  allBooks,
   Profile,
-  viewBooks,
   updateProfile,
   orderDetail,
   showError404,
@@ -39,9 +40,6 @@ const updateProfileValidation=require("../middleware/updateProfileValidation")
 // const {stripe} = require('../utilities/stripe') ;
 
 
-const adminRoute=require("./adminRoutes")
-
-const OrdersRouter=require("./OrdersRoute")
 
 
 const calculateOrderAmount = (items) => { 
@@ -57,12 +55,11 @@ return 50;
 exports.calculateOrderAmount = calculateOrderAmount ;
 
 module.exports = () => {
-  
-  router.use ("/admin",allAdminRoutes())
-  
-
-  router.use(`/${booksRouteName()}`,booksRoute())
   router.get("/",showHomePage)
+
+  router.use (`/${adminRouteName()}`,adminRoute())
+  router.use(`/${booksRouteName()}`,booksRoute())
+  
 
   /* 
    router.get("/productDetails/:id",bookDetail)

@@ -1,0 +1,77 @@
+<%- include('./partials/pagehead') %>
+<%  if (user) { %>
+  <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
+<% } %>
+
+<div class="container">
+    
+    
+    <div class="errors">
+        <% if (msg) { %>
+                                    
+                
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <p><%= msg.msg %>!</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+        </div>
+        <% } %>
+
+    </div>
+
+    <div id="main-wrapper">
+        <div class="site-wrapper-reveal border-bottom">
+
+            <div class="my-account-page-warpper section-space--ptb_120">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-7 m-auto w-50">
+                            <div class="myaccount-box-wrapper">
+                                
+                                <div class="tab-content content-modal-box">
+                                    <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
+                                        <form method="post" action="/<%= admin_route_name %>/addBookWithISBN">
+                                            <h1>Add Book With ISBN</h1>
+                                            <div class="single-input">
+                                                <label for="isbn" class="w-100">ISBN: 
+
+                                                <input type="text"  class="form-control" id="isbn" placeholder="The ISBN can be 10 or 13 caracters long" name="isbn">
+
+                                                </label>
+                                            </div>
+                                            <div class="single-input">
+                                                
+                                                    <label for="displayName" class="w-100">price: 
+
+                                                    <input type="number" step=".01" class="form-control" id="displayName" placeholder="$25 is the default price" name="price">
+
+                                                    </label>
+                                                
+                                            </div>
+                                            <input type="hidden" name="_csrf"
+                                            value="<%= csrfToken %>">
+                                            
+                                            <div class="button-box mt-25">
+                                                <button type="submit" class="btn btn--full btn--black">Save updates</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/admin_jslibs') %>
+
+
+</body>
+
+</html>
