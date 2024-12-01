@@ -43,7 +43,20 @@ const verifyLogin=(req,res,next)=>{
 
 }
 
+const redirectToAdminDashboardIfLoggedIn=
+[(req,res,next)=>{
+    if (req.session.user!=undefined){
+        res.status(200).redirect(`/${adminRouteName()}/dashboard`);
+    }else{
+
+        res.status(200)
+        next()
+    }
+
+}]
+
 module.exports={
     verifyLogin,
-    validateOTP
+    validateOTP,
+    redirectToAdminDashboardIfLoggedIn
 }

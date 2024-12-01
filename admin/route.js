@@ -7,6 +7,8 @@ const express = require('express');
 const router = express.Router();
 const {login,formSubmit,verifyOTP,dashboard,logout} = require("./controller")
 
+const {redirectToAdminDashboardIfLoggedIn} = require('./utilities');
+
 
 //middleware
 const {validateOTP,verifyLogin}=require("./middleware")

@@ -31,13 +31,21 @@ const login=(req,res,next)=>{
 
         
         //the login function renders the login page that will request the email and password of the users who wishes to login
-        res.status(200)
-        res.render("../admin/pages/admin_login",{
-                pagetitle:"Admin Login",
-                msg:false,
-                host:process.env.HOST,
-                admin_route_name:adminRouteName(),
-        })
+        if (req.session && req.session.user){
+            res.status(200)
+            res.redirect(`/${adminRouteName()}/dashboard`)  
+
+        } else {
+            res.status(200)
+            res.render("../admin/pages/admin_login",{
+                    pagetitle:"Admin Login",
+                    msg:false,
+                    host:process.env.HOST,
+                    admin_route_name:adminRouteName(),
+            })  
+
+        }
+        
 }
 const formSubmit= async(req,res,next)=>{
         /*
@@ -239,12 +247,12 @@ const logout=(req,res)=>{
         
         */ 
         if(!req.session.user){
-                res.status(404).res.redirect(`/${adminRouteName()}`) 
+                res.status(404).redirect(`/${adminRouteName()}`) 
                 
         }
         else{
                 delete req.session.user
-                res.redirect(`/${adminRouteName()}`) 
+                res.status(200).redirect(`/${adminRouteName()}`) 
 
         }
 }
