@@ -15,6 +15,10 @@ Books.init({
         type: DataTypes.STRING(64),
         primaryKey: true
     },
+    seo_friendly_title: {
+        type: DataTypes.STRING(1024),
+        allowNull: false
+    },
     title: {
         type: DataTypes.STRING(512),
         allowNull: false

@@ -59,9 +59,14 @@ exports.calculateOrderAmount = calculateOrderAmount ;
 module.exports = () => {
   
   router.use ("/admin",allAdminRoutes())
+  
+
+  router.use(`/${booksRouteName()}`,booksRoute())
   router.get("/",showHomePage)
 
-  router.get("/productDetails/:id",bookDetail)
+  /* 
+   router.get("/productDetails/:id",bookDetail)
+  */
 
   router.route("/cart").get(viewCart).post(getCartItems)
 
@@ -84,8 +89,6 @@ module.exports = () => {
   router.post("/signup",customerSignupValidation,signupPost)
 
   router.post( '/checkout',verifyUser,shippingInfoValidation,checkout)
-
-  router.use(`/${booksRouteName()}`,booksRoute())
 
 
 

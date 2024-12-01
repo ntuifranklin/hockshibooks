@@ -6,8 +6,12 @@ const inventoryModel=require("../models/inventory");
 const {booksRouteName,booksApiRouteName} = require('./utilities');
 const booksHtmlView = async(req,res)=>{
 
-    return res.render("pages/books", {
-        "pagetitle":"Books Available"
+    //dir_where_node_started/books_folder/pages_folder
+
+    return res.render("../books/pages/books", {
+        "pagetitle":"Books Available",
+        base_route_name:booksRouteName(),
+        api_route_name:booksApiRouteName()
     })
 }
 
@@ -53,11 +57,11 @@ const oneBookDetailsHtmlView= async (req,res)=>{
  * @param {Object} res - The response object used to render the "pages/productDetail" view.
  * @return {Promise<void>} - Returns a Promise that resolves with the rendered "pages/productDetail" view.
  */
-    const param=req.params.bookID ;
+    const param=req.params.seo_friendly_title ;
 
     const book= await bookModel.findOne({
         where:{
-            book_id:param
+            seo_friendly_title:param
         },
         include:[
             {model:inventoryModel}
@@ -80,15 +84,33 @@ const oneBookDetailsHtmlView= async (req,res)=>{
     ]}
      )
 
+    
+
+
     //  const newDate= convertDateFormat(book.publication_date)
 
-    res.render("pages/oneBookDetails",{
+    //dir_where_node_started/books_folder/pages_folder
+    const bookTitle = book.title ;
+    const author = book.author ;
+    const  fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+    const customBookSeo = {
+        seoTitle: `${bookTitle} | ${author}`,
+        fullUrl: `${fullUrl}`,
+        image_url:`${book.cover_image_url}`,
+        type:`book`,
+        author: author,
+        description:`${book.description}`, 
+        keywords: `${bookTitle}, ${author}, ${book.description}` 
+    };
+    //console.log(`${JSON.stringify(customBookSeo, null, 2)}`);
+    res.render("../books/pages/oneBookDetails",{
         book:book,
-        pagetitle:book.title,
+        pagetitle:`${bookTitle} | ${author} | Book Details `,
         relatedBooks:relatedBooks,
         release_date:"",
         base_route_name:booksRouteName(),
-        api_route_name:booksApiRouteName()
+        api_route_name:booksApiRouteName(),
+        customBookSeo: customBookSeo
     })
 };
 

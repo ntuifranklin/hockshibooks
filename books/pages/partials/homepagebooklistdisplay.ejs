@@ -1,0 +1,40 @@
+<div class="product-slider-active">
+
+    <!-- Single Product Item Start -->
+    <% if(books && books.length>0) { %>
+        <% for(let i=0; i < books.length; i++) { %>        
+
+            <div class="single-product-item text-center">
+                <div class="products-images">
+                    <a href="/<%= base_route_name %>/<%= books[i].seo_friendly_title %>" class="product-thumbnail">
+
+                    <% if(books[i].cover_image_url.split(":")[0]=="https") { %>
+                        <img  src="<%= books[i].cover_image_url %>" class="img-fluid bookCoverImage" alt="Product Images"  >
+                    <% } else { %>
+                        <img  src="/uploads/<%= books[i].cover_image_url %>" class="img-fluid bookCoverImage" alt="Product Images"  >
+
+                    <% } %>
+
+                    <% if (books[i].Inventory == null || !("quantity_available" in books[i].Inventory) ||  books[i].Inventory.quantity_available <= 0) { %>
+                        <span class="ribbon out-of-stock">
+                        Out Of Stock
+                    </span>
+                    <% } %>
+                    </a>
+                    <div class="product-actions">
+                    <a href="/<%= base_route_name %>/<%= books[i].seo_friendly_title %>"  data-bs-target="#prodect-modal"><i class="p-icon icon-plus"></i><span class="tool-tip">Quick View</span></a>
+                    <% if (books[i].Inventory != null && "quantity_available" in books[i].Inventory && books[i].Inventory.quantity_available>0) { %>
+                        <a class="add-to-cart"><i class="p-icon icon-bag2 " data-product-id="<%= books[i].book_id %>"></i> <span class="tool-tip">Add to cart</span></a>
+                    <% } %>
+                    </div>
+                </div>
+                <div class="product-content">
+                    <h6 class="prodect-title"><a href="/<%= base_route_name %>/<%= books[i].seo_friendly_title %>"><%=books[i].title %></a></h6>
+                    <div class="prodect-price">
+                        <span class="new-price">$<%=books[i].price %></span>
+                    </div>
+                </div>
+            </div><!-- Single Product Item End -->
+        <% } %>
+    <% } %>
+</div>

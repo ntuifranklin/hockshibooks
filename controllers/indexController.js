@@ -27,6 +27,7 @@ let items;
 let session;
 let guest;
 
+const {booksRouteName,booksApiRouteName} = require('../books/utilities');
 
 const showHomePage = async (req,res)=>{
     /**
@@ -46,7 +47,9 @@ const showHomePage = async (req,res)=>{
     //console.log(`${JSON.stringify(books, null, 2)}`);
     return res.status(200).render("pages/home",{
         "books":books,
-        "pagetitle":"Books Available"
+        "pagetitle":"Books Available",
+        base_route_name:booksRouteName(),
+        api_route_name:booksApiRouteName()
     })
 
 

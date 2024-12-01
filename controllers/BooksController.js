@@ -277,6 +277,7 @@ const getaddBookWithISBNForm=(req,res)=>{
     })
 }
 
+const {generateSeoFriendlyTitle} = require('../books/utilities');
 const addBookWithISBN= async(req,res)=>{
     /**
  * Adds a book to the database using its ISBN number.
@@ -313,7 +314,7 @@ const addBookWithISBN= async(req,res)=>{
         try{
             const response= await axios.get(url)
 
-            console.log(`${JSON.stringify(response.data, null,2)}`);
+           // console.log(`${JSON.stringify(response.data, null,2)}`);
 
             const data= response.data[`ISBN:${isbn}`] 
 
@@ -336,8 +337,14 @@ const addBookWithISBN= async(req,res)=>{
                     var cover_image_url = "";
                     if (typeof data.cover != "undefined" && typeof data.cover.medium != "undefined")
                         cover_image_url = data.cover.medium;
+                    const seo_friendly_title = generateSeoFriendlyTitle(
+                        bookTitle=data.title, 
+                        authorName=data.authors[0].name,
+                        publicationYear=data.publication_date
+                    );
                     if(!tmp){
                         let createdBook=await bookModel.create({
+                        seo_friendly_title:seo_friendly_title,
                         title:data.title,
                         author:data.authors[0].name,
                         ISBN:isbn10_or_13,
