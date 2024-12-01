@@ -5,6 +5,8 @@ var path = require('path');
 require('dotenv').config();
 const csrf = require('csurf');
 
+const {deleteBook,GetinsertBook,CreateBook,updateBook,saveUpdate,addBookWithISBN,getaddBookWithISBNForm} = require("../controllers/BooksController")
+
 const {booksHtmlView,allBooksDumpApi,oneBookDetailsHtmlView} = require('./controller');
 const {booksApiRouteName} = require('./utilities') ;
 module.exports = () => {
