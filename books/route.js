@@ -5,19 +5,18 @@ var path = require('path');
 require('dotenv').config();
 const csrf = require('csurf');
 
-const {deleteBook,GetinsertBook,CreateBook,updateBook,saveUpdate,addBookWithISBN,getaddBookWithISBNForm} = require("../controllers/BooksController")
-
-const {booksHtmlView,allBooksDumpApi,oneBookDetailsHtmlView} = require('./controller');
-const {booksApiRouteName} = require('./utilities') ;
+const {booksHtmlView,allBooksDumpApi,oneBookDetailsHtmlView,addBookWithISBN,getAddBookWithISBNForm} = require('./controller');
+const {booksApiRouteName, addBooksWithISBNOnlyRouteName} = require('./utilities') ;
+const { verifyLogin } = require('../admin/middleware') ;
+const validateISBN = require('./middleware');
 module.exports = () => {
   
-    
-
     router.get("/",booksHtmlView)
-    
-    router.get(`/${booksApiRouteName()}`, allBooksDumpApi)
-    
+    router.get(`/${addBooksWithISBNOnlyRouteName()}`,verifyLogin,  getAddBookWithISBNForm)
+    router.post(`/${addBooksWithISBNOnlyRouteName()}`,verifyLogin,validateISBN, addBookWithISBN);
+        
     router.get("/:seo_friendly_title",oneBookDetailsHtmlView)
+    router.get(`/${booksApiRouteName()}`, allBooksDumpApi)
     //send this to the api section
     /*
     router.get("/allBooks",allBooks)

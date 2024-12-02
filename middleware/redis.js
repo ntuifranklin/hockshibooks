@@ -96,17 +96,20 @@ return !!redisClient?.isOpen;
 exports.isRedisWorking = isRedisWorking ;
 
 async function writeDataToRedisCache(key, data, options=REDIS_DEFAULT_CACHING_OPTIONS) {
-if (isRedisWorking()) {
-    try {
-    // write data to the Redis cache
-    //var d = JSON.stringify(data);
-    await redisClient.set(key, data, options);
-    //console.log(`Logging [${__filename}] : on Writing data : ${data} to Redis`);
-    } catch (e) {
-        console.error(`Failed to cache data for key=${key}`, e);
+    if (isRedisWorking()) {
+        try {
+        // write data to the Redis cache
+        //var d = JSON.stringify(data);
+        await redisClient.set(key, data, options);
+        //console.log(`Logging [${__filename}] : on Writing data : ${data} to Redis`);
+        } catch (e) {
+            console.error(`Failed to cache data for key=${key}`, e);
+        }
     }
-}
 }  ;
+
+exports.writeDataToRedisCache = writeDataToRedisCache ;
+
 
 
 /* Function below takes a json object then stringifies
@@ -132,7 +135,7 @@ and stores it as a string in the redis cache
 */
 async function retrieveJSONObjectToRedisCache(key) {
     if (isRedisWorking()) {
-        const stringifiedJsonObject = JSON.stringify(jsonObject) ;
+        
         try {
             // write data to the Redis cache
             //var d = JSON.stringify(data);
@@ -147,8 +150,6 @@ async function retrieveJSONObjectToRedisCache(key) {
     }
 } ;
 exports.retrieveJSONObjectToRedisCache = retrieveJSONObjectToRedisCache ;
-
-exports.writeDataToRedisCache = writeDataToRedisCache ;
 
 async function readDataFromRedisCache(key) {
 let cachedValue = undefined;

@@ -1,7 +1,4 @@
 <%- include('./partials/pagehead') %>
-<%  if (user) { %>
-  <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
-<% } %>
 
 <div class="container">
     
@@ -30,7 +27,8 @@
                                 
                                 <div class="tab-content content-modal-box">
                                     <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
-                                        <form method="post" action="/<%= admin_route_name %>/addBookWithISBN">
+                                        <% let post_add_book_with_isbn_route = books_route_name + '/' + add_books_route_name %>
+                                        <form method="post" action="/<%= post_add_book_with_isbn_route %>">
                                             <h1>Add Book With ISBN</h1>
                                             <div class="single-input">
                                                 <label for="isbn" class="w-100">ISBN: 
@@ -69,7 +67,6 @@
     </div>
 </div>
 
-<%- include('./partials/admin_jslibs') %>
 
 
 </body>

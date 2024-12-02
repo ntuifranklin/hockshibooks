@@ -143,7 +143,7 @@ async function startNewHockshiServer(){
 
 
 	app.listen(port, () => {
-		console.log(`one hockshi worker server listening on port ${port}`);
+		console.log(`One hockshi worker server listening on port ${port}`);
 	
 	}) ;
 

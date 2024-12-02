@@ -2,7 +2,8 @@
 
 const { check,validationResult } = require('express-validator');
 
-const { adminRouteName } = require('./utilities');
+
+const { adminRouteName, isAdminUserIsLoggedInAndSavedInCache } = require('./utilities');
 require("dotenv").config()  
 const validateOTP = [
       // Check that 'userId' is an integer
@@ -26,26 +27,17 @@ const validateOTP = [
  *
 
  */
-const verifyLogin=(req,res,next)=>{
-    if (req.session.user==undefined){
-        res.status(403).render('../admin/pages/notAllowedPage',
-            {
-                csrfToken: req.csrfToken(),
-                msg:"Page not allowed",
-                host:process.env.HOST,
-                admin_route_name:adminRouteName()
-        });
-    }else{
-
-        res.status(200)
-        next()
-    }
-
-}
+const verifyLogin=[
+    (req,res,next)=>{
+    if (!isAdminUserIsLoggedInAndSavedInCache()){
+        return res.status(200).redirect(`/${adminRouteName()}`);
+    };
+    next();
+}] ;
 
 const redirectToAdminDashboardIfLoggedIn=
 [(req,res,next)=>{
-    if (req.session.user!=undefined){
+    if (isAdminUserIsLoggedInAndSavedInCache()){
         res.status(200).redirect(`/${adminRouteName()}/dashboard`);
     }else{
 

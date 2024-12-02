@@ -27,9 +27,8 @@ if (cluster.isMaster) {
       cluster.fork();
     });
 } else {     
-        
     
-    const server = startNewHockshiServer() ;
-    
-  
+  console.log(`Child process ID ${process.pid}`);
+    let _ = startNewHockshiServer() ;
+      
 } ;

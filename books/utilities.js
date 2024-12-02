@@ -11,6 +11,12 @@ function booksApiRouteName() {
     return API_INDEX_ROUTE_NAME ;
 } ;
 
+const ADD_BOOK_USING_OPEN_LIBRARY_API = "addWithISBNOnly";
+
+function addBooksWithISBNOnlyRouteName() {
+  return ADD_BOOK_USING_OPEN_LIBRARY_API ;
+} ;
+
 function generateSeoFriendlyTitle(bookTitle, authorName = '', publicationYear = '') {
     // Helper function to remove special characters and replace spaces with hyphens
     const formatString = (str) => {
@@ -52,5 +58,6 @@ function generateSeoFriendlyTitle(bookTitle, authorName = '', publicationYear = 
 module.exports = {
     booksRouteName,
     booksApiRouteName,
-    generateSeoFriendlyTitle
+    generateSeoFriendlyTitle,
+    addBooksWithISBNOnlyRouteName
 }

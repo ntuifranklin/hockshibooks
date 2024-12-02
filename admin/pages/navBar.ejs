@@ -11,8 +11,7 @@
                             <form role="search"  method="get" class="header-search-box" id="searchBox">
                                 <input class="search-field form-control" type="text" placeholder="Enter book name,ISBN or Author"  name="query" id="book">
 
-                                <input type="hidden" name="_csrf"
-                                    value="<%= csrfToken %>">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                 
                                 <button class="search-icon" type="submit">
                                     <i class="icon-magnifier"></i>
@@ -22,24 +21,15 @@
                     </div>
                     <div class="col-lg-4 col-md-4 col-6">
                         <div class="logo text-md-center">
-                            <a href="/admin/dashboard"><img src="../assets/images/logo/hockshi.svg" alt=""></a>
+                            <a href="/<% admin_route_name %>/dashboard"><img src="/assets/images/logo/hockshi.svg" alt=""></a>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4 col-6">
                         <div class="header-right-side text-end">
                             <div class="header-right-items  d-none d-md-block">
-                                <a href="/admin/adminProfile " >
+                                <a href="/<% admin_route_name %>/adminProfile " >
                                     <i class="icon-user"></i>
                                 </a>
-                                <!-- <% if(customer){ %>
-                                <a href="/profile" >
-                                    <i class="icon-user"></i>
-                                </a>
-                                <% }else {%>
-                                    <a href="/login?msg=Please+login+first" >
-                                        <i class="icon-user"></i>
-                                    </a>
-                                <% } %> -->
                             </div>
                           
 
@@ -70,26 +60,7 @@
                 <span class="mobile-navigation-close-icon" id="mobile-menu-close-trigger"> <i class="icon-cross2"></i></span>
             </div>
             <div class="mobile-menu-overlay__body">
-                <div class="offcanvas-menu-header d-md-block d-none">
-                    <!-- <div class="helendo-language-currency row-flex row section-space--mb_60 ">
-                        <div class="widget-language col-md-6">
-                            <h6> Language</h6>
-                            <ul>
-                                <li class="actived"> <a href="#">English</a></li>
-                                <li><a href="#">French</a></li>
-                                <li><a href="#">Arabric</a></li>
-                            </ul>
-                        </div>
-                        <div class="widget-currency col-md-6">
-                            <h6> Currencies</h6>
-                            <ul>
-                                <li class="actived"><a href="#">USD - US Dollar</a></li>
-                                <li><a href="#">Euro</a></li>
-                                <li><a href="#">Pround</a></li>
-                            </ul>
-                        </div>
-                    </div> -->
-                </div>
+                
                 <nav class="offcanvas-navigation">
                     <ul>
                       
@@ -100,22 +71,19 @@
                             
                         </li>
                         <li class="has-children">
-                            <a href="/admin/dashboard">dashboard</a>
+                            <a href="/<%= admin_route_name %>/dashboard">dashboard</a>
 
                             
                         </li>
+                        
                         <li class="has-children">
-                            <a href="/admin/insert-book">insert a book</a>
-                            
-                        </li>
-                        <li class="has-children">
-                            <a href="/admin/addBookWithISBN">add book with isbn</a>
+                            <a href="/<%= books_route_name %>/<%= addBooksWithISBNRouteName %>">add book with isbn</a>
                             
                             
                         </li>
 
                         <li class="has-children">
-                            <a href="/admin/logout">Logout</a>
+                            <a href="/<%= admin_route_name %>/logout">Logout</a>
                             
                             
                         </li>
@@ -123,22 +91,6 @@
 
                     </ul>
                 </nav>
-
-                <!-- <div class="mobile-menu-contact-info section-space--mt_60">
-                    <h6>Contact Us</h6>
-                    <p>69 Halsey St, Ny 10002, New York, United States <br>support.center@unero.co <br>(0091) 8547 632521</p>
-                </div>
-
-                <div class="mobile-menu-social-share section-space--mt_60">
-                    <h6>Follow US On Socials</h6>
-                    <ul class="social-share">
-                        <li><a href="#"><i class="social social_facebook"></i></a></li>
-                        <li><a href="#"><i class="social social_twitter"></i></a></li>
-                        <li><a href="#"><i class="social social_googleplus"></i></a></li>
-                        <li><a href="#"><i class="social social_linkedin"></i></a></li>
-                        <li><a href="#"><i class="social social_pinterest"></i></a></li>
-                    </ul>
-                </div> -->
 
 
             </div>

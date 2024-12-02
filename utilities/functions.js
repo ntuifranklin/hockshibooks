@@ -65,7 +65,7 @@ const generateAndSendOTP=async (userId,mail,otpmodel)=>{
  * @returns {Promise<void>} A Promise that resolves when the OTP is successfully sent.
  */
   const otpCode = crypto.randomInt(100000, 999999).toString();
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // OTP valid for 15 minutes
+  const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // OTP valid for 15 minutes
   let Transporter;
   
   console.log(otpCode)

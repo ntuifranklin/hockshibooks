@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const sequelize = require('../config/database');
 const {generateAndSendOTP}=require("../utilities/functions");
 const { validationResult } = require('express-validator');
-const {saveJSONObjectToRedisCache, retrieveJSONObjectToRedisCache} = require('../middleware/redis');
+const {saveJSONObjectToRedisCache, retrieveJSONObjectToRedisCache, deleteDataFromRedisCache} = require('../middleware/redis');
 const { json } = require('body-parser');
 require("dotenv").config()      
 
@@ -22,40 +22,35 @@ const orderModel= require("../models/ordersModel")
 //middleware
 const OTPvalidation= require("../middleware/OTPmiddleware");
 const validateOTP = require('../middleware/OTPmiddleware');
-const { adminRouteName } = require('./utilities');
+const { adminRouteName, isAdminUserIsLoggedInAndSavedInCache } = require('./utilities');
 const { LOGGED_IN_USER_VARIABLE_NAME } = require('../utilities/universal_web_constants');
+const { addBooksWithISBNOnlyRouteName, booksRouteName } = require('../books/utilities');
 let user_email,authUser;
 let userId
 
 
 const login=async (req,res,next)=>{        
-        try{
-                //the login function renders the login page that will request the email and password of the users who wishes to login
-                let loggedInUser = await retrieveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME);
-                let loggedInUnixEpoch = loggedInUser.unixEpoch ;
-                let currentUnixEpoch = Math.ceil((new Date())/1000)
-                let f15teenMinutes = 900 ; //15 mins = 900 seconds
-
-                /* if admin user ahs been in cache for 15 minutes or
-                 more then they have to log back in */
-                if (loggedInUser && (currentUnixEpoch - parseInt(loggedInUnixEpoch)) < f15teenMinutes){
-                        res.status(200)
-                        res.redirect(`/${adminRouteName()}/dashboard`)  
-
-                } else {
-                        res.status(200)
-                        res.render("../admin/pages/admin_login",{
-                                pagetitle:"Admin Login",
-                                msg:false,
-                                host:process.env.HOST,
-                                admin_route_name:adminRouteName(),
-                        })  
-
-                }
-
-        } catch(e) {
-
+        
+              
+        /* if admin user ahs been in cache for 15 minutes or
+                more then they have to log back in */
+        let yesIsLoggedIn = await isAdminUserIsLoggedInAndSavedInCache() ;
+        if (yesIsLoggedIn){
+                res.status(200)
+                return res.redirect(`/${adminRouteName()}/dashboard`)
         }
+
+        //if not loggedin then display login page
+        res.status(200)
+        return res.render("../admin/pages/admin_login",{
+                pagetitle:"Admin Login",
+                msg:false,
+                host:process.env.HOST,
+                admin_route_name:adminRouteName(),
+                user:false,
+        }) 
+
+       
         
 }
 const formSubmit= async(req,res,next)=>{
@@ -78,8 +73,8 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                 const user = await powerUSer.findOne({
                         where: {
                                 email: email,     
-                              }
-                            });                                                   
+                        }
+                        });                                                   
                         if(!user){
                                 
                             res.status(401).render("../admin/pages/admin_login",{
@@ -87,6 +82,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                 msg:"please check your email and password again",
                                 host:process.env.HOST,
                                 admin_route_name:adminRouteName(),
+                                user:false
                             })
                         }
                         else{
@@ -101,6 +97,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                     msg:false,
                                     host:process.env.HOST,
                                     admin_route_name:adminRouteName(),
+                                    user:false,
                                 })
                             }
                             else{
@@ -109,6 +106,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                     msg:"please check your email and password again",
                                     host:process.env.HOST,
                                     admin_route_name:adminRouteName(),
+                                    user:false,
                                 })
                             }
                         }
@@ -149,9 +147,9 @@ If there are errors, render the otpVerification page with an error message.
                 const {msg}=errors.array()[0]
                 res.render(`../admin/pages/otpVerification`,{
                         userId:userId,
-                        email:user_email,
                         admin_route_name:adminRouteName(),
                         msg:msg,
+                        user:false
 
                 })
                 return //stops futher execution if there is an error
@@ -167,9 +165,9 @@ If there are errors, render the otpVerification page with an error message.
                 
                 res.status(401).render(`../admin/pages/otpVerification`,{
                         userId:userId,
-                        email:user_email,
                         msg:"invalid OTP record",
                         admin_route_name:adminRouteName(),
+                        user:false
 
                 })
         }
@@ -177,14 +175,13 @@ If there are errors, render the otpVerification page with an error message.
          * If the OTP record is found but expired, render the otpVerification page with an "OTP expired" message.
          */
         else if(otpRecord.expiration_time < new Date()){
-                authUser="";
-                
+                authUser="";               
 
-                res.status(401).render(`../admin/pages/otpVerification`,{
+                res.status(200).render(`../admin/pages/admin_login`,{
                         userId:userId,
-                        email:user_email,
                         admin_route_name:adminRouteName(),
                         msg:"OTP expired",
+                        user:false
 
                 })
         }else{
@@ -195,11 +192,17 @@ If there are errors, render the otpVerification page with an error message.
         Destroy the OTP record from the database to prevent reuse.
         Redirect the user to the dashboard.
         */
+        let authUser = await powerUSer.findOne({
+                where: {
+                        id: userId,     
+                }
+        }); 
         let unixEpoch = Math.floor((new Date())/1000) ;
         let loggedInUser ={
-                email:authUser.email,
+                userId:authUser.id,
                 role:authUser.role,
-                loggedInTime:unixEpoch
+                loggedInTime:unixEpoch,
+                email: authUser.email
         }
         await saveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME, loggedInUser);
         await otpModel.destroy({
@@ -237,8 +240,8 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
                 ]
         })
      
-        // res.send(user)
-        res.locals.user=req.session.user
+        const loggedInUser = await retrieveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME) ;
+        res.locals.user=loggedInUser
 
 
         res.status(200).render("../admin/pages/dashboard",{
@@ -248,27 +251,29 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
                 type:type,
                 msg:msg,
                 host:process.env.HOST,
-                admin_route_name:adminRouteName()
+                admin_route_name:adminRouteName(),
+                books_route_name:booksRouteName(),
+                addBooksWithISBNRouteName:addBooksWithISBNOnlyRouteName(),
+                user: loggedInUser
                 
 
         })
 }
-const logout=(req,res)=>{
+const logout=async(req,res)=>{
         /*
         the logout function is used to logout signed in users.
 
         It checks if the user is signed in by looking for the user property in the req.session object. If the user is not signed in, it responds with a status code of 404 and a message saying "user not signed in". If the user is signed in, it deletes the user property from the req.session object and redirects the user to the root URL of the admin section of the application (${process.env.HOST}/admin/).
         
         */ 
-        if(!req.session.user){
-                res.status(404).redirect(`/${adminRouteName()}`) 
-                
-        }
-        else{
-                delete req.session.user
-                res.status(200).redirect(`/${adminRouteName()}`) 
+        const loggedInUser = await retrieveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME) ;
+        if(!loggedInUser)
+                return res.status(404).redirect(`/${adminRouteName()}`)   
+        
+        
+        await deleteDataFromRedisCache(LOGGED_IN_USER_VARIABLE_NAME) ;
+        return res.status(200).redirect(`/${adminRouteName()}`) 
 
-        }
 }
 module.exports={
         login,formSubmit,verifyOTP,dashboard,logout
