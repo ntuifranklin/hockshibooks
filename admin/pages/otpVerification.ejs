@@ -1,64 +1,64 @@
 <%- include('./partials/pagehead') %>
-
-
-<%  if (user) { %>
-    <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
-<% } %>
-
 <div id="main-wrapper">
   <div class="site-wrapper-reveal border-bottom">
 
-    <div class="my-account-page-warpper section-space--ptb_120">
-        <div class="container">
+      <div class="my-account-page-warpper section-space--ptb_120">
+          <div class="container">
+              <div class="row">
+                  <div class="col-lg-6 col-md-7 m-auto">
+                      <div class="myaccount-box-wrapper">
+                          <div class="helendo-tabs">
+                              <ul class="nav" role="tablist">
+                                  <li class="tab__item nav-item active">
+                                      <a class="nav-link active" data-bs-toggle="tab" href="#tab_list_06" role="tab">One Time Passcode Verification Form</a>
+                                  </li>
 
-            <div class="row gx-lg-5 align-items-center">
-              <div class="col-sm-12 mb-5 mb-lg-12">
-                <h1 class="my-5 display-3 fw-bold ls-tight">
-                  OTP sent to <br />
-                  <span class="text-primary fs-2"><%= email %> </span>
-                </h1>
-                <p style="color: hsl(217, 10%, 50.8%)">
-                 
-                </p>
-              </div>
-            </div>
-            <div class="row gx-5 align-items-center">
-              <div class="col-md-12 mb-5 mb-lg-12">
-                <% if (msg) { %>
-                  <div class="alert alert-danger" role="alert">
-                        <p><%= msg %>!</p>
+                              </ul>
+                          </div>
+                          <% if (msg) { %>
+                          <div class="alert alert-danger" role="alert">
+                              <p><%= msg %>!</p>
+                          </div>
+                          <% } %>
+
+                         
+                          <div class="tab-content content-modal-box">
+                              <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
+                                  
+                                  <form method="post" action="/admin/verifyOtp" class="account-form-box">
+                                      <h6>One Time Passcode Sent To Your Email </h6>
+                                      
+                                      <div class="single-input">
+                                          <input type="number" placeholder="Enter One Time Passcode" name="OTP">
+                                      </div>
+                                      
+                                      <div class="single-input">
+                                        <input type="hidden" name="userId" value="<%= userId %>">
+                                      </div>
+                                      
+                                      <div class="single-input">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                      </div>
+                                
+                                      <div class="button-box mt-25">
+                                          <button type="submit" class="btn btn--full btn--black">Check OTP Code</button>
+                                      </div>
+                                  </form>
+                              </div>
+                           
+
+                          </div>
+                      </div>
                   </div>
-                <% } %>
-                
               </div>
-            </div>
-            <div class="row gx-lg-5 align-items-center">
-              <div class="col-md-12 mb-5 mb-lg-12">
-                <form method="post" action="/<%= admin_route_name %>/verifyOtp" class="account-form-box">
-                  <h6>OTP Verification Form</h6>
-                  <div class="single-input">
-                      <input type="number" placeholder="enter Your OTP" name="OTP">
-                  </div>
-                  
-                  
-                  <input type="hidden" name="userId" value="<%= userId %>">
-                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-
-                  
-                  <div class="button-box mt-25">
-                      <button type="submit" class="btn btn--full btn--black">Verify OTP Code</button>
-                  </div>
-                </form>
-
-
-              </div>
-            </div>
           </div>
-        </div>
       </div>
-    </div>
+
   </div>
 
+
+</div>
+    
 
     
 <%- include('./partials/admin_jslibs') %>
@@ -67,3 +67,7 @@
 </body>
 
 </html>
+
+
+
+

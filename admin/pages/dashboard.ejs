@@ -1,150 +1,285 @@
 <%- include('./partials/pagehead') %>
+<%- include('./navBar') %>
+<%- include('./partials/breadcrumb') %>
 
+<!--===================== Start main wrapper ==========-->
 
-<%  if (user) { %>
-    <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
-<% } %>
+<div id="main-wrapper">
+    <div class="site-wrapper-reveal border-bottom">
 
+        <div class="my-account-page-warpper section-space--ptb_120">
+            <div class="container">
+                <div class="row">
+                    <% if (msg) { %>
+                    <div class="alert alert-<%=type %>" role="alert">
+                        <p><%= msg %>!</p>
+                    </div>
+                    <% } %>  
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <!-- My Account Page Start -->
+                        <div class="myaccount-page-wrapper">
+                            <div class="row">
 
+                                <!-- My Account Tab Menu Start -->
+                                <div class="col-lg-3 col-md-4">
+                                    <div class="myaccount-tab-menu nav" role="tablist">
+                                        <a href="#dashboad" class="active" data-bs-toggle="tab"><i class="fa fa-dashboard"></i>
+                                            Dashboard</a>
+                                        <a href="#orders" data-bs-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Orders</a>
+                                        <a href="#payments" data-bs-toggle="tab"><i class="fa-solid fa-money-bill"></i> Payments</a>
+                                        <a href="#books" data-bs-toggle="tab"><i class="fa-solid fa-book"></i>Books In Inventory</a>
+                                        <a href="#account-info" data-bs-toggle="tab"><i class="fa fa-user"></i> Account Details</a>
+                                        <a href="/admin/logout"><i class="fa fa-sign-out"></i> Logout</a>
+                                    </div>
+                                </div>
+                                <!-- My Account Tab Menu End -->
 
-  <div id="main-wrapper">
-      
-              
-    <% if (msg) { %>
-      <div class="alert alert-<%=type %>" role="alert">
-            <p><%= msg %>!</p>
-      </div>
-    <% } %>  
-        
-    <div class="flex">
-      
-      <div class="col-12 table-info">
-        <div class="card bg-dark shadow-2-strong">
-          <div class="card-body">
-            <h1>Books Info</h1>
-            <div class="table-responsive">
-              <table class="table table-dark table-borderless mb-0">
-                <thead>
-                  <tr>
-                    <th scope="col">Title</th>
-                    <th scope="col">Author</th>
-                    <th scope="col">ISBN</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Qty</th>
-                    <th scope="col">Actions</th>
+                                <!-- My Account Tab Content Start -->
+                                <div class="col-lg-9 col-md-8">
+                                    <div class="tab-content" id="myaccountContent">
 
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade show active" id="dashboad" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <h3 class="title">Dashboard</h3>
+                                                <div class="welcome">
+                                                    <p>Hello, <strong><%= user.email %></strong> (If Not <strong><%= user.email %> !</strong><a href="/admin/logout" class="logout"> Logout</a>)</p>
+                                                </div>
+                                                <p class="mb-0">From your account dashboard. you can easily check & view your recent orders, manage your shipping and billing addresses and edit your password and account details.</p>
+                                            </div>
+                                        </div>
+                                        <!-- Single Tab Content End -->
 
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade" id="orders" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <h3 class="title">Orders</h3>
+                                                <div class="myaccount-table table-responsive text-center">
+                                                    <table class="table table-bordered">
+                                                        <thead class="thead-light">
+                                                            <tr>
+                                                              <th scope="col">order-id</th>
+                                                              <th scope="col">customer name</th>
+                                                              <th scope="col">customer email</th>
+                                                              <th scope="col">amount</th>
+                                                              <th scope="col">status</th>
+                                                              <th scope="col"> order_date</th>
+                                                              <th scope="col">Actions</th>
+                                                            </tr>
+                                                          
+                                                        </thead>
+                                                        <tbody>
+                                                          
+                                                          <% for(let i=0; i < orders.length; i++) { %>
 
-                  </tr>
-                </thead>
-                <tbody>
-                  <% for(let i=0; i < books.length; i++) { %>
-                  <tr>
-                    <th scope="row"><%= books[i].title %></th>
-                    <td><%= books[i].author %></td>
-                    <td><%= books[i].ISBN %></td>
-                    <td>$<%= books[i].price %></td>
-                    <td><%= books[i].Inventory.quantity_available %></td>
+                                                            <tr>
+                                                              <th scope="row"><%= orders[i].order_id %></th>
+                                                              <td><%= orders[i].Customer.first_name ||"geust" %> <%= orders[i].Customer.last_name|| "" %></td>
+                                                              <td><%= orders[i].Customer.email %></td>
+                                                              <td>$<%= orders[i].total_amount %></td>
+                                                              <td><%= orders[i].delivery_status %></td>
+                                                              <td><%= orders[i].order_date %></td>
+                                                              <td><a href="<%= `/order/viewOrder/${orders[i].order_id}` %>" class="btn btn btn-dark btn-hover-primary btn-sm rounded-0"><i class="fa-solid fa-pen-to-square"></i></a></td>
 
-                    <td><div class="actions d-flex justify-content-between align-items-center">
-                      <a href="<%= `/admin/update/${books[i].book_id}` %>"><i class="fa-solid fa-pen-to-square"></i></a>
-                      <a href="<%= `/admin/delete/${books[i].book_id}` %>"><i class="fa-solid fa-trash"></i></a>
-                      
-                      <% } %>
-                    </div></td>
+                                                            </tr>
+                                                          <% } %>
+                                                            
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Single Tab Content End -->
 
+                                        
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade" id="payments" role="tabpanel">
+                                          <div class="myaccount-content">
+                                              <h3 class="title">Payments</h3>
+                                              <div class="myaccount-table table-responsive text-center">
+                                                  <table class="table table-bordered">
+                                                      <thead class="thead-light">
+                                                          
+                                                        <tr>
+                                                          <th scope="col">Transaction_ID</th>
+                                                          <th scope="col">Amount</th>
+                                                          <th scope="col">Order_ID</th>
+                                                          <th scope="col">Payment_method</th>
+                                                          <th scope="col">Payment_date</th>
+                                                      
+                                                        </tr>
+                                                        
+                                                      </thead>
+                                                      <tbody>
+                                                        
+                                                        <% for(let i=0; i < payments.length; i++) { %>
+                                                          <tr>
+                                                            <th scope="row"><%= payments[i].transaction_id %></th>
+                                                            <td>$<%= payments[i].amount %></td>
+                                                            <td><%= payments[i].order_id %></td>
+                                                            <td><%= payments[i].payment_method %></td>
+                                                            <td><%= payments[i].payment_date %></td>                
+                                                          </tr>
+                                                          <% } %>
+                                                          
+                                                      </tbody>
+                                                  </table>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <!-- Single Tab Content End -->
 
-                  </tr>
-        
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade" id="books" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <h3 class="title">Books In Inventory</h3>
+                                                <div class="myaccount-table table-responsive text-center">
+                                                    <table class="table table-bordered">
+                                                        <thead class="thead-light">
+                                                            
+                                                          <tr>
+                                                            <th scope="col">Title</th>
+                                                            <th scope="col">Author</th>
+                                                            <th scope="col">ISBN</th>
+                                                            <th scope="col">Price</th>
+                                                            <th scope="col">Qty</th>
+                                                            <th scope="col">Edit</th>
+                                                            <th scope="col">Delete</th>
+                                                          </tr>
+                                                        </thead>
+                                                        <tbody>                                                                          
+                                                          <% for(let i=0; i < books.length; i++) { %>
+                                                            <tr>
+                                                              <th scope="row"><%= books[i].title %></th>
+                                                              <td><%= books[i].author %></td>
+                                                              <td><%= books[i].ISBN %></td>
+                                                              <td>$<%= books[i].price %></td>
+                                                              <td>
+                                                                <%= books[i].Inventory.quantity_available %>
+                                                              </td>
+                                                              <td>                                                
+                                                                  <a href="<%= `/admin/update/${books[i].book_id}` %>">
+                                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                                  </a>
+                                                                </td>
+                                                                <td>
+                                                                  <a href="<%= `/admin/delete/${books[i].book_id}` %>"><i class="fa-solid fa-trash"></i>
+                                                                </a>                                                            
+                                                              </td>
+                                                            </tr>
+                                                          <% } %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Single Tab Content End -->
 
-
-      <div class="col-12 table-info">
-        <div class="card bg-dark shadow-2-strong">
-          <div class="card-body">
-            <h1>Orders</h1>
-
-            <div class="table-responsive">
-              <table class="table table-dark table-borderless mb-0">
-                <thead>
-                  <tr>
-                    <th scope="col">order-id</th>
-                    <th scope="col">customer name</th>
-                    <th scope="col">customer email</th>
-                    <th scope="col">amount</th>
-                    <th scope="col">status</th>
-                    <th scope="col"> order_date</th>
-                    <th scope="col">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% for(let i=0; i < orders.length; i++) { %>
-
-                  <tr>
-                    <th scope="row"><%= orders[i].order_id %></th>
-                    <td><%= orders[i].Customer.first_name ||"geust" %> <%= orders[i].Customer.last_name|| "" %></td>
-                    <td><%= orders[i].Customer.email %></td>
-                    <td>$<%= orders[i].total_amount %></td>
-                    <td><%= orders[i].delivery_status %></td>
-                    <td><%= orders[i].order_date %></td>
-                    <td><a href="<%= `/order/viewOrder/${orders[i].order_id}` %>"><i class="fa-solid fa-pen-to-square"></i></a></td>
-
-                  </tr>
-                  <% } %>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 table-info">
-        <div class="card bg-dark shadow-2-strong">
-          <div class="card-body">
-            <h1>Payments</h1>
-
-            <div class="table-responsive">
-              <table class="table table-dark table-borderless mb-0">
-                <thead>
-                  <tr>
-                    <th scope="col">Transaction_ID</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Order_ID</th>
-                    <th scope="col">Payment_method</th>
-                    <th scope="col">Payment_date</th>
-                
-                  </tr>
-                </thead>
-                <tbody>
-                  <% for(let i=0; i < payments.length; i++) { %>
-                  <tr>
-                    <th scope="row"><%= payments[i].transaction_id %></th>
-                    <td>$<%= payments[i].amount %></td>
-                    <td><%= payments[i].order_id %></td>
-                    <td><%= payments[i].payment_method %></td>
-                    <td><%= payments[i].payment_date %></td>
-
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade" id="account-info" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <h3 class="title">Account Details</h3>
+                                                <div class="account-details-form">
+                                                    <form action="/admin/adminProfile">
                     
+                                                        <div class="single-input-item mb-3">
+                                                            <label for="display-email" class="required mb-1">Email Address</label>
+                                                            <p id="display-email">
+                                                              <% user.email %>
+                                                            </p>
+                                                        </div>
+                                                        <div class="single-input-item mb-3">
+                                                            <label for="display-role" class="required mb-1">User Role</label>
+                                                            <p id="display-role">
+                                                              <% user.role %>
+                                                            </p>
+                                                        </div>
+                                                        <fieldset>
+                                                            <legend>Password change</legend>
+                                                            <div class="single-input-item mb-3">
+                                                                <label for="current-pwd" class="required mb-1">Current Password</label>
+                                                                <input type="password" id="current-pwd" placeholder="Current Password" />
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-lg-6">
+                                                                    <div class="single-input-item mb-3">
+                                                                        <label for="new-pwd" class="required mb-1">New Password</label>
+                                                                        <input type="password" id="new-pwd" placeholder="New Password" />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-6">
+                                                                    <div class="single-input-item mb-3">
+                                                                        <label for="confirm-pwd" class="required mb-1">Confirm Password</label>
+                                                                        <input type="password" id="confirm-pwd" placeholder="Confirm Password" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </fieldset>
+                                                        <div class="single-input-item single-item-button">
+                                                            <button class="btn btn btn-dark btn-hover-primary rounded-0">Save Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div> <!-- Single Tab Content End -->
 
+                                    </div>
+                                </div>
+                                <!-- My Account Tab Content End -->
 
-                  </tr>
-                  <% } %>
-                  
-                </tbody>
-              </table>
+                            </div>
+                        </div>
+                        <!-- My Account Page End -->
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-    
 
+    </div>
+
+
+</div>
+
+<!--===================== End main wrapper ==========-->   
+
+<!--===================== Start Menu Overlay ========-->
+<div class="mobile-menu-overlay" id="mobile-menu-overlay">
+    <div class="mobile-menu-overlay__inner">
+        <div class="mobile-menu-close-box text-start">
+            <span class="mobile-navigation-close-icon" id="mobile-menu-close-trigger"> <i class="icon-cross2"></i></span>
+        </div>
+        <div class="mobile-menu-overlay__body">
+            
+            <nav class="offcanvas-navigation">
+                <ul>
+                    <li class="has-children">
+                        <a href="#">Books</a>
+                        <ul class="sub-menu">
+                            <li><a href="/books/addBookWithExternalAPI"><span>Add Book With Open Library API</span></a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/admin/logout">
+                            <i class="fa-solid fa-sign-out"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+
+</div>
+<!--====================  End of mobile menu overlay  ====================-->
+
+
+  <!--====================  scroll top ====================-->
+  <a href="#" class="scroll-top" id="scroll-top">
+    <i class="arrow-top icon-arrow-up"></i>
+    <i class="arrow-bottom icon-arrow-up"></i>
+  </a>
     
 <%- include('./partials/admin_jslibs') %>
 

@@ -68,7 +68,8 @@ let dynamicCookie =  {
 /* Prevent attackes from guessing passwords with rate limiting per IP address */
 const { rateLimit } = require('express-rate-limit');
 const { serialize } = require('v8');
-const { initializeRedisClient } = require('./middleware/redis');
+const { initializeRedisClient, setRedisLoggedInUserCacheMiddleware, setRedisUserCartCacheMiddleware, redisCacheMiddleware } = require('./middleware/redis');
+const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME } = require('./utilities/universal_web_constants');
 
 const form_rate_limiter = rateLimit({
 	windowMs: 30 * 60 * 1000, // 30 minutes
@@ -119,7 +120,8 @@ async function startNewHockshiServer(){
 	app.locals.facebookpage = process.env.FACEBOOK_PAGE;
 	app.locals.xpage = process.env.X_PAGE;
 	app.locals.instagrampage = process.env.INSTAGRAM_PAGE;
-	app.locals.linkedinpage = process.env.LINKEDIN_PAGE
+	app.locals.linkedinpage = process.env.LINKEDIN_PAGE;
+	
 
 	app.use(bodyParser.urlencoded({extended: true}));
 
@@ -133,11 +135,24 @@ async function startNewHockshiServer(){
 	app.use((req, res, next) => {
 				
 		res.locals = app.locals ;
+		req.locals = app.locals ;
 		res.locals.csrfToken = req.csrfToken();
-			
+		res.removeHeader("X-Powered-By");
+		const valid_cart_actions = [ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM];
+		req.locals.valid_cart_actions = valid_cart_actions ;
+		req.locals.USER_CART_NAME = USER_CART_NAME;
+		
 		next();
 	});
 
+	app.use(setRedisLoggedInUserCacheMiddleware);
+	app.use(setRedisUserCartCacheMiddleware);
+
+	/*
+		The function below saves any api that returns json in redis cache
+		 then returns it faster instead of requesting it each time.
+	*/
+	
 
 	app.use('/',routes());
 

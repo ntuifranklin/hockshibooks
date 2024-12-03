@@ -16,6 +16,7 @@ const {validateOTP,verifyLogin}=require("./middleware")
 
 const multer=require("multer") ;
 const { addBooksWithISBNOnlyRouteName } = require('../books/utilities');
+const { showError404 } = require('../controllers/indexController');
 const storage=multer.diskStorage({
     destination:(req,file,cb)=>{
         cb(null,"./views/uploads")
@@ -31,11 +32,12 @@ const upload=multer({storage:storage ,
  
 module.exports = () => {
     //routes
-    router.get("/",login); 
+    router.get("/", login); 
     router.post("/",formSubmit) ;
-    router.post("/verifyOtp",validateOTP,verifyOTP) ;
     router.get("/dashboard",verifyLogin,dashboard) ;
+    router.post("/adminProfile",verifyLogin,dashboard) ;
     router.get("/logout",logout) ;
+    router.post("/verifyOtp",validateOTP,verifyOTP) ;
 
     return router  ;
 }

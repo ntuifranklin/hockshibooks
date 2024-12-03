@@ -1,5 +1,6 @@
 const { createClient } = require("redis");
 const hash = require("object-hash");
+const { LOGGED_IN_USER_VARIABLE_NAME, USER_CART_NAME } = require("../utilities/universal_web_constants");
 
 let redisClient = undefined;
 
@@ -122,7 +123,8 @@ async function saveJSONObjectToRedisCache(key, jsonObject, options=REDIS_DEFAULT
             // write data to the Redis cache
             //var d = JSON.stringify(data);
             await redisClient.set(key, stringifiedJsonObject, options);
-            //console.log(`Logging [${__filename}] : on Writing data : ${data} to Redis`);
+            console.log(`saveJSONObjectToRedisCache: [${__filename}]  on writing data : ${stringifiedJsonObject} to Redis`);
+            
         } catch (e) {
             console.error(`Failed to cache data for key=${key}`, e);
         }
@@ -133,7 +135,7 @@ exports.saveJSONObjectToRedisCache = saveJSONObjectToRedisCache ;
 /* Function below takes a json object then stringifies
 and stores it as a string in the redis cache
 */
-async function retrieveJSONObjectToRedisCache(key) {
+async function retrieveJSONObjectFromRedisCache(key) {
     if (isRedisWorking()) {
         
         try {
@@ -142,14 +144,17 @@ async function retrieveJSONObjectToRedisCache(key) {
             
             const stringData = await readDataFromRedisCache(key);
             const jsonObject = await JSON.parse(stringData);
+            console.log(`retrieveJSONObjectFromRedisCache: [${__filename}] retrieving data : ${stringData} to Redis`);
             return jsonObject ;
-            //console.log(`Logging [${__filename}] : on Writing data : ${data} to Redis`);
+            
         } catch (e) {
             console.error(`Failed to read stringed data for key=${key}`, e);
-        }
+            
+        } ;
+        return null ;
     }
 } ;
-exports.retrieveJSONObjectToRedisCache = retrieveJSONObjectToRedisCache ;
+exports.retrieveJSONObjectFromRedisCache = retrieveJSONObjectFromRedisCache ;
 
 async function readDataFromRedisCache(key) {
 let cachedValue = undefined;
@@ -158,7 +163,7 @@ if (isRedisWorking()) {
     // try to get the cached response from redis
     //console.log(`Redis attempting to read key : ${key}`);
     cachedValue = await redisClient.get(key);
-    if (cachedValue) {
+    if (cachedValue != null ) {
         //console.log(`Redis returning value for key : `);
         //console.log(JSON.stringify(cachedValue, null, 2));
         return cachedValue;
@@ -233,25 +238,16 @@ async function setRedisUserCartCacheMiddleware (request, response, next) {
         if (isRedisWorking()) {
 
             // the variable name used to store the user's cart information
-            const key = request.locals.USER_CART_NAME;
+            
+            const key = USER_CART_NAME;
             // if there is some cached data, retrieve it and return it
-            var cachedValue = await readDataFromRedisCache(key);
-            if (cachedValue) {
-                cachedValue = await JSON.parse(cachedValue);
-                //request.locals.USER_CART = cachedValue ;
-            } else {
-                
-                const USER_CART_REDIS_CACHING_OPTIONS = 
-                {
-                    
-                    EX: process.env.ADMIN_USER_EXPIRE_TIME, // 15 minutes. User has to log in every 15 minutes
-                    NX: true, // write the data even if the key already exists
-                } ;
-                cachedValue = JSON.stringify({});
-                await writeDataToRedisCache(key, cachedValue, USER_CART_REDIS_CACHING_OPTIONS);
-                
+            var cachedValue = await  retrieveJSONObjectFromRedisCache(key);
+            if (cachedValue != null) {
+               
+                request.locals.USER_CART = cachedValue ;
             } ;
-            request.locals.USER_CART = cachedValue ;
+            //console.log(`Current Cart content: ${JSON.stringify(cachedValue)}`);
+            
            
         } 
         // proceed with no caching
@@ -263,19 +259,14 @@ exports.setRedisUserCartCacheMiddleware = setRedisUserCartCacheMiddleware ;
 
 
 async function setRedisLoggedInUserCacheMiddleware (request, response, next) {
+    //console.log(`checking keys in request :  ${JSON.stringify(Object.keys(request))}`)
     if (isRedisWorking()) {
 
         // the variable name used to store the user's cart information
-        const key = request.locals.LOGGEDIN_USER_VARIABLE_NAME;
+        const key = LOGGED_IN_USER_VARIABLE_NAME;
         // if there is some cached data, retrieve it and return it
-        var cachedValue = await readDataFromRedisCache(key);
-        if (cachedValue) {
-            
-            //console.log(`Redis returning value for user key : `);
-            //console.log(JSON.stringify(cachedValue, null, 2));
-            cachedValue = await JSON.parse(cachedValue);
-            //request.locals.USER = cachedValue ;
-        } else {
+        var cachedValue = await retrieveJSONObjectFromRedisCache(key);
+        if (cachedValue == null ) {
             
             const USER_REDIS_CACHING_OPTIONS = 
             {
@@ -283,8 +274,8 @@ async function setRedisLoggedInUserCacheMiddleware (request, response, next) {
                 EX: process.env.ADMIN_USER_EXPIRE_TIME, // 15 minutes. User has to log in every 15 minutes
                 NX: true, // write the data even if the key already exists
             } ;
-            cachedValue = JSON.stringify({});
-            await writeDataToRedisCache(key, cachedValue, USER_REDIS_CACHING_OPTIONS);
+            cachedValue = {};
+            await saveJSONObjectToRedisCache(key, cachedValue, USER_REDIS_CACHING_OPTIONS);
             //request.locals.USER = cachedValue ;
         } ;
         request.locals.USER = cachedValue ;

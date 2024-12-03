@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const sequelize = require('../config/database');
 const {generateAndSendOTP}=require("../utilities/functions");
 const { validationResult } = require('express-validator');
-const {saveJSONObjectToRedisCache, retrieveJSONObjectToRedisCache, deleteDataFromRedisCache} = require('../middleware/redis');
+const {saveJSONObjectToRedisCache, retrieveJSONObjectFromRedisCache, deleteDataFromRedisCache} = require('../middleware/redis');
 const { json } = require('body-parser');
 require("dotenv").config()      
 
@@ -30,23 +30,12 @@ let userId
 
 
 const login=async (req,res,next)=>{        
-        
-              
-        /* if admin user ahs been in cache for 15 minutes or
-                more then they have to log back in */
-        let yesIsLoggedIn = await isAdminUserIsLoggedInAndSavedInCache() ;
-        if (yesIsLoggedIn){
-                res.status(200)
-                return res.redirect(`/${adminRouteName()}/dashboard`)
-        }
-
-        //if not loggedin then display login page
-        res.status(200)
+                
         return res.render("../admin/pages/admin_login",{
                 pagetitle:"Admin Login",
                 msg:false,
                 host:process.env.HOST,
-                admin_route_name:adminRouteName(),
+                admin_route_name:"admin",
                 user:false,
         }) 
 
@@ -81,7 +70,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                 csrfToken: req.csrfToken(),
                                 msg:"please check your email and password again",
                                 host:process.env.HOST,
-                                admin_route_name:adminRouteName(),
+                                admin_route_name:"admin",
                                 user:false
                             })
                         }
@@ -96,7 +85,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                     email:user_email,
                                     msg:false,
                                     host:process.env.HOST,
-                                    admin_route_name:adminRouteName(),
+                                    admin_route_name:"admin",
                                     user:false,
                                 })
                             }
@@ -147,7 +136,7 @@ If there are errors, render the otpVerification page with an error message.
                 const {msg}=errors.array()[0]
                 res.render(`../admin/pages/otpVerification`,{
                         userId:userId,
-                        admin_route_name:adminRouteName(),
+                        admin_route_name:"admin",
                         msg:msg,
                         user:false
 
@@ -166,10 +155,11 @@ If there are errors, render the otpVerification page with an error message.
                 res.status(401).render(`../admin/pages/otpVerification`,{
                         userId:userId,
                         msg:"invalid OTP record",
-                        admin_route_name:adminRouteName(),
+                        admin_route_name:"admin",
                         user:false
 
-                })
+                });
+                return ;
         }
         /**
          * If the OTP record is found but expired, render the otpVerification page with an "OTP expired" message.
@@ -179,7 +169,7 @@ If there are errors, render the otpVerification page with an error message.
 
                 res.status(200).render(`../admin/pages/admin_login`,{
                         userId:userId,
-                        admin_route_name:adminRouteName(),
+                        admin_route_name:"admin",
                         msg:"OTP expired",
                         user:false
 
@@ -203,15 +193,23 @@ If there are errors, render the otpVerification page with an error message.
                 role:authUser.role,
                 loggedInTime:unixEpoch,
                 email: authUser.email
-        }
-        await saveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME, loggedInUser);
+        };
+        let writeOptions =
+        {
+            
+            EX: 3600, // 3600 is 1h , while 43200 is 12h
+            NX: true, // write the data even if the key already exists
+        } ;
+        await saveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME, loggedInUser, writeOptions);
+        console.log(`User's OTP was correct`);
+        req.locals.USER = loggedInUser;
         await otpModel.destroy({
                 where:{
                         powerUserId:userId
                 }
         })
         
-        res.status(200).redirect(`/${adminRouteName()}/dashboard`) 
+        res.status(200).redirect(`/admin/dashboard`) 
     }
 }) 
 const dashboard=async(req,res)=>{
@@ -240,9 +238,8 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
                 ]
         })
      
-        const loggedInUser = await retrieveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME) ;
-        res.locals.user=loggedInUser
-
+        let loggedInUser = req.locals.USER ;
+        //console.log(`${JSON.stringify(loggedInUser)}`);
 
         res.status(200).render("../admin/pages/dashboard",{
                 books:books,
@@ -251,11 +248,10 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
                 type:type,
                 msg:msg,
                 host:process.env.HOST,
-                admin_route_name:adminRouteName(),
-                books_route_name:booksRouteName(),
-                addBooksWithISBNRouteName:addBooksWithISBNOnlyRouteName(),
+                admin_route_name:"admin",
+                books_route_name:"books",
+                add_books_route_name: "addBookWithExternalAPI",
                 user: loggedInUser
-                
 
         })
 }
@@ -266,7 +262,7 @@ const logout=async(req,res)=>{
         It checks if the user is signed in by looking for the user property in the req.session object. If the user is not signed in, it responds with a status code of 404 and a message saying "user not signed in". If the user is signed in, it deletes the user property from the req.session object and redirects the user to the root URL of the admin section of the application (${process.env.HOST}/admin/).
         
         */ 
-        const loggedInUser = await retrieveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME) ;
+        const loggedInUser = await retrieveJSONObjectFromRedisCache(LOGGED_IN_USER_VARIABLE_NAME) ;
         if(!loggedInUser)
                 return res.status(404).redirect(`/${adminRouteName()}`)   
         

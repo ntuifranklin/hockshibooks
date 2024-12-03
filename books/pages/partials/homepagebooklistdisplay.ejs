@@ -22,9 +22,14 @@
                     <% } %>
                     </a>
                     <div class="product-actions">
-                    <a href="/<%= base_route_name %>/<%= books[i].seo_friendly_title %>"  data-bs-target="#prodect-modal"><i class="p-icon icon-plus"></i><span class="tool-tip">Quick View</span></a>
+                    <a href="/<%= base_route_name %>/<%= books[i].seo_friendly_title %>"  data-bs-target="#prodect-modal">
+                        <i class="p-icon icon-plus"></i>
+                        <span class="tool-tip">Quick View</span>
+                    </a>
                     <% if (books[i].Inventory != null && "quantity_available" in books[i].Inventory && books[i].Inventory.quantity_available>0) { %>
-                        <a class="add-to-cart"><i class="p-icon icon-bag2 " data-product-id="<%= books[i].book_id %>"></i> <span class="tool-tip">Add to cart</span></a>
+                    <a class="add-to-cart" onclick="sendToCart(category='books',productIDToUpdate='<%= books[i].book_id %>', source='', alertIndex='', action='a')">
+                        <i class="p-icon icon-bag2 " data-product-id="<%= books[i].book_id %>"></i> 
+                        <span class="tool-tip">Add to cart</span></a>
                     <% } %>
                     </div>
                 </div>

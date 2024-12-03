@@ -3,18 +3,19 @@ const router = express.Router();
 
 require('dotenv').config();
 const csrf = require('csurf');
-let csrfProtection = csrf({ cookie: true });
+
 //admin module
 const adminRoute = require('../admin/route');
-const {adminRouteName} = require('../admin/utilities');
 
 //books module
 const booksRoute = require('../books/route');
-const {booksRouteName} = require('../books/utilities');
+
+//cart module
+const cartRoute = require('../cart/route');
+
+
 const {
   showHomePage,
-  viewCart,
-  getCartItems,
   searchBook,
   loginPage,
   signupPage,
@@ -57,15 +58,15 @@ exports.calculateOrderAmount = calculateOrderAmount ;
 module.exports = () => {
   router.get("/",showHomePage)
 
-  router.use (`/${adminRouteName()}`,adminRoute())
-  router.use(`/${booksRouteName()}`,booksRoute())
-  
+  router.use (`/admin`,adminRoute())
+  router.use(`/books`,booksRoute())
 
+  router.use("/cart", cartRoute())
+  
   /* 
    router.get("/productDetails/:id",bookDetail)
   */
 
-  router.route("/cart").get(viewCart).post(getCartItems)
 
 
   router.route("/login").get(loginPage).post(loginPagePost)
@@ -98,10 +99,12 @@ module.exports = () => {
   router.post("/updateProfile",updateProfileValidation,updateProfile)
 
   router.get("/orderDetail/:id",orderDetail)
+  router.get("/f404",showError404)
+  router.get("/*", showError404)
+  router.post("/*", showError404)
 
-  router.get("*",showError404)
 
-  router.post("*",showError404)
+
 
   return router ;
 }

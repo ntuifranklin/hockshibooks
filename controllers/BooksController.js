@@ -150,14 +150,14 @@ const saveUpdate=async(req,res)=>{
 
         // If there are validation errors, it retrieves all genres from the database and adds an error message if no file (cover image) is uploaded.
 
-                if(!errors.isEmpty()){
-                        const genre= await genreModel.findAll()
+if(!errors.isEmpty()){
+        const genre= await genreModel.findAll()
 
-                        const error=errors.array()
-                        req.errors=error
-                        return await updateBook(req,res)
-                    
-                }else{
+        const error=errors.array()
+        req.errors=error
+        return await updateBook(req,res)
+    
+}else{
 
                     
     try{
@@ -168,18 +168,18 @@ const saveUpdate=async(req,res)=>{
         const inventory=await inventoryModel.findByPk(req.body.bookId)
 
         if(!book || !inventory){
-           return res.status(404).redirect(`${process.env.HOST}/admin/dashboard?msg=item+not+found&type=danger`);
+           return res.status(404).redirect(`/admin/dashboard?msg=item+not+found&type=danger`);
         }
         else{
             //The function updates the fields of the book and inventory records with the data from the request body.
         
             book.set({
-        title :req.body.title,
-        author : req.body.author,
-        language : req.body.language,
-        price :req.body.price,
-        description :req.body.description,
-        publication_date:req.body.date,
+                title :req.body.title,
+                author : req.body.author,
+                language : req.body.language,
+                price :req.body.price,
+                description :req.body.description,
+                publication_date:req.body.date,
             })
 
             inventory.set({

@@ -1,18 +1,19 @@
 
 const { Op } = require("sequelize");
 const bookModel=require("../models/bookModel")
-
+const { validationResult } = require('express-validator');
 const inventoryModel=require("../models/inventory");
-const {booksRouteName,booksApiRouteName, addBooksWithISBNOnlyRouteName} = require('./utilities');
-const { adminRouteName } = require("../admin/utilities");
+const axios = require('axios');
+const { getBookDescription } = require("../utilities/functions");
+const { generateSeoFriendlyTitle } = require("./utilities");
 const booksHtmlView = async(req,res)=>{
 
     //dir_where_node_started/books_folder/pages_folder
 
     return res.render("../books/pages/books", {
         "pagetitle":"Books Available",
-        base_route_name:booksRouteName(),
-        api_route_name:booksApiRouteName()
+        books_route_name:"books",
+        add_books_route_name: "addBookWithExternalAPI",
     })
 }
 
@@ -68,6 +69,9 @@ const oneBookDetailsHtmlView= async (req,res)=>{
             {model:inventoryModel}
         ]
     })
+    if (!book){
+        return res.status(404).redirect("/f404");
+    }
 
     //console.log(`book found: ${JSON.stringify(book,null, 2)}`);
 
@@ -109,8 +113,8 @@ const oneBookDetailsHtmlView= async (req,res)=>{
         pagetitle:`${bookTitle} | ${author} | Book Details `,
         relatedBooks:relatedBooks,
         release_date:"",
-        base_route_name:booksRouteName(),
-        api_route_name:booksApiRouteName(),
+        books_route_name:"books",
+        add_books_route_name: "addBookWithExternalAPI",
         customBookSeo: customBookSeo
     })
 };
@@ -142,8 +146,8 @@ const addBookWithISBN= async(req,res)=>{
         const err=errors.array()[0]
         res.render("../books/pages/addBookWithISBNForm",{
             msg:err,
-            books_route_name:booksRouteName(),
-            add_books_route_name: addBooksWithISBNOnlyRouteName(),
+            books_route_name:"books",
+            add_books_route_name: "addBookWithExternalAPI",
         })
 
     }
@@ -199,7 +203,7 @@ const addBookWithISBN= async(req,res)=>{
                         location:"warehouse"
                     })
 
-                    return res.status(302).redirect(`/${adminRouteName()}/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
+                    return res.status(201).redirect(`/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
                 }
                 else{
 
@@ -207,24 +211,24 @@ const addBookWithISBN= async(req,res)=>{
                         msg:{
                             msg:"a book with this title already exists"
                         },
-                        books_route_name:booksRouteName(),
-                        add_books_route_name: addBooksWithISBNOnlyRouteName(),
+                        books_route_name:"books",
+                        add_books_route_name: "addBookWithExternalAPI",
                     })
                 }
                 } catch (error) {
                     console.log(`${error.message}`);
-                    return res.status(500).redirect(`/${adminRouteName()}/dashboard?msg=error+when+creating+book&type=danger`);
+                    return res.status(500).redirect(`/books/addBookWithExternalAPI?msg=error+when+creating+book&type=danger`);
                 }
                 
             }
             else{
 
-                return res.status(500).redirect(`/${adminRouteName()}/dashboard?msg=error+when+fetching+book+Isbn ${isbn}&type=danger`);
+                return res.status(500).redirect(`/books/addBookWithExternalAPI?msg=error+when+fetching+book+Isbn ${isbn}&type=danger`);
             }
         }
         catch(e){
             console.log(`${e.message}`);
-            return res.status(500).redirect(`/${adminRouteName()}/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
+            return res.status(500).redirect(`/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
 
         }
     }
@@ -240,8 +244,8 @@ const getAddBookWithISBNForm=(req,res)=>{
  */
     res.status(200).render("../books/pages/addBookWithISBNForm",{
         msg:false,
-        books_route_name:booksRouteName(),
-        add_books_route_name: addBooksWithISBNOnlyRouteName(),
+        books_route_name:"books",
+        add_books_route_name: "addBookWithExternalAPI",
 
     })
 }

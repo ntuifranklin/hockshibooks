@@ -9,19 +9,18 @@ const {booksHtmlView,allBooksDumpApi,oneBookDetailsHtmlView,addBookWithISBN,getA
 const {booksApiRouteName, addBooksWithISBNOnlyRouteName} = require('./utilities') ;
 const { verifyLogin } = require('../admin/middleware') ;
 const validateISBN = require('./middleware');
+const { showError404 } = require('../controllers/indexController');
 module.exports = () => {
   
-    router.get("/",booksHtmlView)
-    router.get(`/${addBooksWithISBNOnlyRouteName()}`,verifyLogin,  getAddBookWithISBNForm)
-    router.post(`/${addBooksWithISBNOnlyRouteName()}`,verifyLogin,validateISBN, addBookWithISBN);
-        
-    router.get("/:seo_friendly_title",oneBookDetailsHtmlView)
-    router.get(`/${booksApiRouteName()}`, allBooksDumpApi)
+    router.get("/",booksHtmlView);
+    router.get(`/addBookWithExternalAPI`,verifyLogin,  getAddBookWithISBNForm);
+    router.post(`/addBookWithExternalAPI`,verifyLogin,validateISBN, addBookWithISBN);        
     //send this to the api section
-    /*
-    router.get("/allBooks",allBooks)
-    */
-  
-  
+    router.get(`/api`, allBooksDumpApi)
+
+    router.get("/:seo_friendly_title",oneBookDetailsHtmlView)
+    router.get("/*",showError404)
+    router.post("/*",showError404)
+   
     return router ;
 }

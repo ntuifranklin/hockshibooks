@@ -1,16 +1,12 @@
 <%- include('./partials/pagehead') %>
 
 <div class="container">
-    
-    
+       
     <div class="errors">
         <% if (msg) { %>
-                                    
-                
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade" data-bs-dismiss="alert" role="alert">
             <p><%= msg.msg %>!</p>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-
         </div>
         <% } %>
 
@@ -66,9 +62,6 @@
         </div>
     </div>
 </div>
-
-
-
 </body>
 
 </html>
