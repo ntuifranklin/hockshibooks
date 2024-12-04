@@ -28,7 +28,9 @@ if (cluster.isMaster) {
     });
 } else {     
     
-  console.log(`Child process ID ${process.pid}`);
-    let _ = startNewHockshiServer() ;
+  startNewHockshiServer() ;
+  console.log(`\n\tChild process started : `);
+  console.log(`\tprocessID ${process.pid} `);
+  console.log(`\ttime started: at :${(new Date()).toISOString()}`)
       
 } ;

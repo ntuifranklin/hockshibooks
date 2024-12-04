@@ -20,15 +20,14 @@ const REDIS_CACHING_OPTIONS =
 
 const REDIS_DEFAULT_CACHING_OPTIONS = 
 {
-    
     EX: 3600, // 3600 is 1h , while 43200 is 12h
-    NX: false, // write the data even if the key already exists
+    //NX: 'NX', // write the data even if the key already exists
 } ;
 
 exports.REDIS_DEFAULT_CACHING_OPTIONS = REDIS_DEFAULT_CACHING_OPTIONS;
 
 async function initializeRedisClient() {
-    // read the Redis connection URL from the envs
+    
     let redisURL = process.env.REDIS_URI
     if (redisURL) {
       // create the Redis client object
@@ -41,18 +40,19 @@ async function initializeRedisClient() {
         // connect to the Redis server
         await redisClient.connect();
         console.log(`Connected to Redis successfully!`);
+        
       } catch (e) {
         console.error(`Connection to Redis failed with error:`);
         console.error(e);
-      }
+      } ;
+      
     }
-}
-exports.redisClient = redisClient ;
+} ;
+
 exports.initializeRedisClient = initializeRedisClient ;
 
 async function clearRedisClientDB(){
     if (isRedisWorking()){
-                
         // Clear the current database
         redisClient.flushdb((err, succeeded) => {
             if (err) {
@@ -86,8 +86,36 @@ const reqDataToHash = {
 return `${request.path}@${hash.sha1(reqDataToHash)}`;
 } ;
 
-exports.requestToKey = requestToKey ;
+/* 
+    Takes a request,
+    a category,
+    the product ID within the category and 
+    generates a unique hash for that combination.
+ */
+function cartRequestCategoryToKey(request, category) {
+    // build a custom object to use as part of the Redis key
+    const catProdDataToHash = {
+        category : category
+    };
+    
+    // `${req.path}@...` to make it easier to find
+    // keys on a Redis client
+    return `${request.originalUrl}@${hash.sha1(catProdDataToHash)}`;
+} ;
+exports.cartRequestCategoryToKey = cartRequestCategoryToKey ;
+function userRequestToKey(request, userID) {
+    // build a custom object to use as part of the Redis key
+    const reqDataToHash = {
+        query: request.query,
+        body: request.body,
+        userID: userID
+    };
 
+    // `${req.path}@...` to make it easier to find
+    // keys on a Redis client
+    return `${request.path}@${hash.sha1(reqDataToHash)}`;
+} ;
+exports.userRequestToKey = userRequestToKey ;
 function isRedisWorking() {
 // verify wheter there is an active connection
 // to a Redis server or not
@@ -99,18 +127,47 @@ exports.isRedisWorking = isRedisWorking ;
 async function writeDataToRedisCache(key, data, options=REDIS_DEFAULT_CACHING_OPTIONS) {
     if (isRedisWorking()) {
         try {
-        // write data to the Redis cache
-        //var d = JSON.stringify(data);
-        await redisClient.set(key, data, options);
-        //console.log(`Logging [${__filename}] : on Writing data : ${data} to Redis`);
+        
+            await redisClient.set(key, data, options);
+            //console.log(`Writing at [${__filename}] data : ${data} to Redis`);
         } catch (e) {
             console.error(`Failed to cache data for key=${key}`, e);
-        }
-    }
+        };
+    };
 }  ;
 
 exports.writeDataToRedisCache = writeDataToRedisCache ;
 
+async function readDataFromRedisCache(key) {
+let cachedValue = undefined;
+
+    if (isRedisWorking()) {
+        // try to get the cached response from redis
+        //console.log(`Redis attempting to read key : ${key}`);
+        cachedValue = await redisClient.get(key);
+        if (cachedValue != null ) {
+            //console.log(`Redis returning value for key : `);
+            //console.log(JSON.stringify(cachedValue, null, 2));
+            return cachedValue;
+        }
+    } ;
+    return null;
+};
+exports.readDataFromRedisCache = readDataFromRedisCache;
+
+async function deleteDataFromRedisCache(key) {  
+    
+    if (isRedisWorking()) {
+        // try to get the cached response from redis
+        redisClient.del(key, function (err, reply) {
+            if (!err)
+                console.log(`Redis Deletion of key: ${key} successful with reply: ${reply}`);
+        });
+       
+    }
+}
+    
+exports.deleteDataFromRedisCache = deleteDataFromRedisCache;
 
 
 /* Function below takes a json object then stringifies
@@ -123,7 +180,7 @@ async function saveJSONObjectToRedisCache(key, jsonObject, options=REDIS_DEFAULT
             // write data to the Redis cache
             //var d = JSON.stringify(data);
             await redisClient.set(key, stringifiedJsonObject, options);
-            console.log(`saveJSONObjectToRedisCache: [${__filename}]  on writing data : ${stringifiedJsonObject} to Redis`);
+            //console.log(`saveJSONObjectToRedisCache: [${__filename}]  on writing data : ${stringifiedJsonObject} to Redis`);
             
         } catch (e) {
             console.error(`Failed to cache data for key=${key}`, e);
@@ -142,9 +199,11 @@ async function retrieveJSONObjectFromRedisCache(key) {
             // write data to the Redis cache
             //var d = JSON.stringify(data);
             
-            const stringData = await readDataFromRedisCache(key);
+            const stringData = await redisClient.get(key);
+            if (stringData == null)
+                return null ;
             const jsonObject = await JSON.parse(stringData);
-            console.log(`retrieveJSONObjectFromRedisCache: [${__filename}] retrieving data : ${stringData} to Redis`);
+            //console.log(`retrieveJSONObjectFromRedisCache: [${__filename}] retrieving data : ${stringData} from Redis`);
             return jsonObject ;
             
         } catch (e) {
@@ -155,41 +214,6 @@ async function retrieveJSONObjectFromRedisCache(key) {
     }
 } ;
 exports.retrieveJSONObjectFromRedisCache = retrieveJSONObjectFromRedisCache ;
-
-async function readDataFromRedisCache(key) {
-let cachedValue = undefined;
-
-if (isRedisWorking()) {
-    // try to get the cached response from redis
-    //console.log(`Redis attempting to read key : ${key}`);
-    cachedValue = await redisClient.get(key);
-    if (cachedValue != null ) {
-        //console.log(`Redis returning value for key : `);
-        //console.log(JSON.stringify(cachedValue, null, 2));
-        return cachedValue;
-    }
-    return null ;
-}
-}
-
-exports.readDataFromRedisCache = readDataFromRedisCache;
-
-async function deleteDataFromRedisCache(key) {
-   
-    
-    if (isRedisWorking()) {
-        // try to get the cached response from redis
-        redisClient.del(key, function (err, reply) {
-            if (!err)
-                console.log(`Redis Deletion of key: ${key} successful with reply: ${reply}`);
-            
-        });
-       
-    }
-}
-    
-exports.deleteDataFromRedisCache = deleteDataFromRedisCache;
-
 
 function redisCacheMiddleware( options = REDIS_DEFAULT_CACHING_OPTIONS) {
 return async (request, response, next) => {
@@ -237,26 +261,19 @@ exports.redisCacheMiddleware = redisCacheMiddleware ;
 async function setRedisUserCartCacheMiddleware (request, response, next) {
         if (isRedisWorking()) {
 
-            // the variable name used to store the user's cart information
-            
             const key = USER_CART_NAME;
             // if there is some cached data, retrieve it and return it
             var cachedValue = await  retrieveJSONObjectFromRedisCache(key);
-            if (cachedValue != null) {
-               
+            if (cachedValue != null) {               
                 request.locals.USER_CART = cachedValue ;
             } ;
             //console.log(`Current Cart content: ${JSON.stringify(cachedValue)}`);
             
-           
         } 
         // proceed with no caching
         next();
-        
 };
-
 exports.setRedisUserCartCacheMiddleware = setRedisUserCartCacheMiddleware ;
-
 
 async function setRedisLoggedInUserCacheMiddleware (request, response, next) {
     //console.log(`checking keys in request :  ${JSON.stringify(Object.keys(request))}`)

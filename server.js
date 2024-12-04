@@ -11,9 +11,12 @@ const template_folder = './statictemplate';
 const routes = require('./routes');
 const multer=require("multer")
 const csrf = require('csurf');
-const cookieSession = require('express-session');
+const session = require('express-session');
 const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
+
+const RedisStore = require('connect-redis');
+const { v4: uuidv4 } = require('uuid');
 
 //controllers
 require("dotenv").config()
@@ -36,25 +39,18 @@ process.env.ROOT_PATH=path.join(__dirname, './');
 connect()
 //checks if the uploads dir exists, this dir is where all our cover images will be stored
 checkUploadDir()
-//models
-const powerUser= require("./models/adminModel")
-const otpModel=require("./models/otpModel")
-const bookModel=require("./models/bookModel")
-const genreModel=require("./models/genreModel")
-const inventoryModel=require("./models/inventory")
-
 
 //middleware
 
 const validateOTP=require("./middleware/OTPmiddleware")
 
 
-const site_secret = faker.internet.password({ length:64 });
+const site_secret = faker.internet.password({ length:128 });
 let dynamicCookie =  {
     sameSite: 'none',
 	secret:site_secret,
 	cookie:{
-
+		
 		maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS),
 	},																				
     secure: false,
@@ -122,11 +118,15 @@ async function startNewHockshiServer(){
 	app.locals.instagrampage = process.env.INSTAGRAM_PAGE;
 	app.locals.linkedinpage = process.env.LINKEDIN_PAGE;
 	
-
 	app.use(bodyParser.urlencoded({extended: true}));
 
-
-	app.use(cookieSession(dynamicCookie))	
+	//app.use(dynamicCookie)	
+	app.use(session({
+		secret: site_secret, // Replace with a secure secret key
+		resave: true, // Prevents session from being saved on every request
+		saveUninitialized: false, // Ensures session is saved only when modified
+		cookie: { maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS) }, // 1-day cookie
+	  }));
 
 	app.use(cookieParser())
 
@@ -140,26 +140,27 @@ async function startNewHockshiServer(){
 		res.removeHeader("X-Powered-By");
 		const valid_cart_actions = [ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM];
 		req.locals.valid_cart_actions = valid_cart_actions ;
-		req.locals.USER_CART_NAME = USER_CART_NAME;
-		
+
+
+		//assign unique identifier
+		if (!req.session.userID) {
+			req.session.userID = uuidv4();
+		} ;
+		if (!req.session.cart) {
+			req.session.cart = {} ;
+		} ;
+		req.session.save();
 		next();
 	});
 
-	app.use(setRedisLoggedInUserCacheMiddleware);
-	app.use(setRedisUserCartCacheMiddleware);
 
 	/*
 		The function below saves any api that returns json in redis cache
 		 then returns it faster instead of requesting it each time.
 	*/
-	
-
 	app.use('/',routes());
-
-
 	app.listen(port, () => {
 		console.log(`One hockshi worker server listening on port ${port}`);
-	
 	}) ;
 
 	return app ;

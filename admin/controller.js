@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const sequelize = require('../config/database');
 const {generateAndSendOTP}=require("../utilities/functions");
 const { validationResult } = require('express-validator');
-const {saveJSONObjectToRedisCache, retrieveJSONObjectFromRedisCache, deleteDataFromRedisCache} = require('../middleware/redis');
+const {saveJSONObjectToRedisCache, retrieveJSONObjectFromRedisCache, deleteDataFromRedisCache, userRequestToKey, writeDataToRedisCache} = require('../middleware/redis');
 const { json } = require('body-parser');
 require("dotenv").config()      
 
@@ -189,25 +189,31 @@ If there are errors, render the otpVerification page with an error message.
         }); 
         let unixEpoch = Math.floor((new Date())/1000) ;
         let loggedInUser ={
-                userId:authUser.id,
-                role:authUser.role,
-                loggedInTime:unixEpoch,
-                email: authUser.email
+                'userId':authUser.id,
+                'role':authUser.role,
+                'loggedInTime':unixEpoch,
+                'email': authUser.email
         };
         let writeOptions =
         {
             
-            EX: 3600, // 3600 is 1h , while 43200 is 12h
-            NX: true, // write the data even if the key already exists
+            EX: 900, // 15 minutes, 3600 is 1h , while 43200 is 12h
+            //XX: true, // write the data even if the key already exists
         } ;
-        await saveJSONObjectToRedisCache(LOGGED_IN_USER_VARIABLE_NAME, loggedInUser, writeOptions);
-        console.log(`User's OTP was correct`);
-        req.locals.USER = loggedInUser;
+        //this is a uuv4 assigned at the start of the request
+        let userKey = "USER";
+        await writeDataToRedisCache(userKey, JSON.stringify(loggedInUser), writeOptions);
+        //await saveJSONObjectToRedisCache(userKey, loggedInUser, writeOptions);
+               
         await otpModel.destroy({
                 where:{
                         powerUserId:userId
                 }
-        })
+        }) ;
+        let testUser = await retrieveJSONObjectFromRedisCache(userKey) ;
+        console.log(`User retrieved from cache: ${JSON.stringify(testUser)}`);
+        req.session.user = loggedInUser ;
+        await req.session.save();
         
         res.status(200).redirect(`/admin/dashboard`) 
     }
@@ -238,7 +244,7 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
                 ]
         })
      
-        let loggedInUser = req.locals.USER ;
+        let user = req.session.user; ;
         //console.log(`${JSON.stringify(loggedInUser)}`);
 
         res.status(200).render("../admin/pages/dashboard",{
@@ -251,8 +257,7 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
                 admin_route_name:"admin",
                 books_route_name:"books",
                 add_books_route_name: "addBookWithExternalAPI",
-                user: loggedInUser
-
+                user: user
         })
 }
 const logout=async(req,res)=>{
@@ -262,14 +267,23 @@ const logout=async(req,res)=>{
         It checks if the user is signed in by looking for the user property in the req.session object. If the user is not signed in, it responds with a status code of 404 and a message saying "user not signed in". If the user is signed in, it deletes the user property from the req.session object and redirects the user to the root URL of the admin section of the application (${process.env.HOST}/admin/).
         
         */ 
-        const loggedInUser = await retrieveJSONObjectFromRedisCache(LOGGED_IN_USER_VARIABLE_NAME) ;
-        if(!loggedInUser)
-                return res.status(404).redirect(`/${adminRouteName()}`)   
+       try{
         
-        
-        await deleteDataFromRedisCache(LOGGED_IN_USER_VARIABLE_NAME) ;
-        return res.status(200).redirect(`/${adminRouteName()}`) 
+                if (!req.session.user) {
+                        return res.status(404).redirect(`/admin`);
+                } ;
+                let userKey = "USER";
+                const loggedInUser = await retrieveJSONObjectFromRedisCache(userKey) ;
+                if(!loggedInUser)
+                        return res.status(404).redirect(`/admin`)   
+                
+                
+                await deleteDataFromRedisCache(userKey) ;
+                return res.status(200).redirect(`/admin`) 
 
+        } catch(e){
+                console.error('Error:', e);
+        }
 }
 module.exports={
         login,formSubmit,verifyOTP,dashboard,logout

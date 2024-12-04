@@ -1,6 +1,14 @@
 const { USER_CART_NAME, ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, QUANTITY } = require("../utilities/universal_web_constants");
 
-const {retrieveJSONObjectFromRedisCache, saveJSONObjectToRedisCache, REDIS_DEFAULT_CACHING_OPTIONS} = require('../middleware/redis');
+const { 
+    cartRequestCategoryToKey, 
+    deleteDataFromRedisCache,
+    writeDataToRedisCache, 
+    readDataFromRedisCache, 
+    retrieveJSONObjectFromRedisCache, 
+    saveJSONObjectToRedisCache
+} = require('../middleware/redis');
+
 const viewCart= async(req,res)=>{
     /**
  * Renders the cart page view.
@@ -64,115 +72,87 @@ const getCartItems=async (req,res)=>{
         
     }
 } ;
-
-const updateCartInRedisSessionCache=async(req, res)=>{
-    
-    var userCart = await retrieveJSONObjectFromRedisCache(USER_CART_NAME);
-    
-    userCart = await JSON.parse(JSON.stringify(userCart));
-    console.log(`\n\n\ncart discovered in cart controller: ${JSON.stringify(userCart, null, 2)}`);
-    if (userCart === null)
-        userCart = {} ;
-    console.log(`\n\n\ncart could be null: ${JSON.stringify(userCart, null, 2)}`);
-    
-    const {action,productIDToUpdate, category} = req.body;
-    //console.log(action,productIDToUpdate, category);
-    const addQuantity = ADD_CART_QUANTITY;
-    const subtractQuantity = SUBTRACT_CART_QUANTITY;
-    const removeItem = REMOVE_CART_ITEM;
-    const validActions = [addQuantity, subtractQuantity, removeItem];
-   
-    
-    
-
-    if (!validActions.includes(action)) {
-        return res.status(400).send({ message: 'error', responseText: 'Invalid action' });
-   
-    } ;
-    
-    if (userCart[category] == undefined) {
-        userCart[category] = {}; 
-        console.log(`category: ${category} not found`);
-    } ;
-    
-    if (userCart[category][productIDToUpdate] == undefined) {
-        console.log(`productID: ${productIDToUpdate} not found`);
-        userCart[category][productIDToUpdate] = {
-            
-        } ; 
-       
-    } ;
-    
-    if (userCart[category][productIDToUpdate][QUANTITY] == undefined) {
-        console.log(`quantity: ${QUANTITY} not found`);
-        userCart[category][productIDToUpdate][QUANTITY] = 0;
-        
-    } ;
-    
-    
-    const options = 
-    {
-        
-        EX: 3600, // 3600 is 1h , while 43200 is 12h
-        NX: true, // write the data even if the key already exists
-    } ;
-     ;
-    
-    
-    const key = USER_CART_NAME;
-    
-    var oldQuantity = parseInt(userCart[category][productIDToUpdate][QUANTITY]) ;
-    /* update quantity and save session */
-    if (action == subtractQuantity) {
-        if ( oldQuantity < 1 ) {
-            res.status(400).send({ message: 'error', responseText: 'Item not in wish list' });
-            
-        } else if ( oldQuantity == 1) {
-            delete   userCart[category][productIDToUpdate];
-            
-            userCart = await JSON.parse(JSON.stringify(userCart));
-            //console.log(`Item removed from cart controller: ${JSON.stringify(userCart, null, 2)}`);
-            await saveJSONObjectToRedisCache(key, userCart, options);
-            
-            
-            req.locals.USER_CART = userCart ;
-            res.status(200).send({ message: 'success', responseText: 'Item removed from wish list' });
-          
+const updateCartInRedisSessionCache = async (req, res) => {
+    const { action, productIDToUpdate, category } = req.body;
+    const userID = req.session.userID;
+    /* 
+        Do not add userID to the cartKey below else
+         redis will not save to cache.
+    */
+    //const cartKey = `cart:${category}`;
+    const cartKey = cartRequestCategoryToKey(req, category);
+    console.log(`Cart Key: ${cartKey}`);
+    let cart ;
+    try {
+        const existingCart = await readDataFromRedisCache(cartKey);
+        console.log(`Existing Cart: ${existingCart}`);
+        if (existingCart) {
+            cart = JSON.parse(existingCart);
         } else {
-            let newQuantity = oldQuantity - 1 ;
-            userCart[category][productIDToUpdate][QUANTITY] = newQuantity;
-            userCart = await JSON.parse(JSON.stringify(userCart));
-            //console.log(`Item quantity decreased in cart controller: ${JSON.stringify(userCart, null, 2)}`);
-            await saveJSONObjectToRedisCache(key, userCart, options);
-            
-            req.locals.USER_CART = userCart ;
-            res.status(200).send({ message: 'success', responseText: `Item quantity reduced to ${JSON.parse(JSON.stringify(userCart[productIDToUpdate][QUANTITY]))} in wishlist` });
-        }
-    
-    } else {
-        
-        
-        console.log(`Old quantity : ${oldQuantity}`);
-        var newQuantity = oldQuantity + 1;
-        console.log(`New quantity : ${newQuantity}`);
-        userCart[category][productIDToUpdate][QUANTITY] = newQuantity;
-        
-        console.log(`New value of cart to be updated : addition in : ${JSON.stringify(userCart, null, 2)}`);
-        await saveJSONObjectToRedisCache(key, userCart, options);
-        var responseText = "";
-        if ( userCart[category][productIDToUpdate][QUANTITY] == 1) {
-            //console.log(`Item added to cart in cart controller: ${JSON.stringify(userCart, null, 2)}`);
-            responseText="Item added to wish list" ;
-        } else {
-            //console.log(`Item quantity increased in cart controller: ${JSON.stringify(userCart, null, 2)}`);
-            responseText=`Item quantity increased to ${ userCart[category][productIDToUpdate][QUANTITY]}` ;
+            cart = {};
         } ;
-        
-        req.locals.USER_CART = userCart ;
-        res.status(200).send({ message: 'success', responseText: responseText });
-    };
-}
+        console.log(`Cart: ${JSON.stringify(cart)}`);
+        if (!(productIDToUpdate in cart)) {
+            cart[productIDToUpdate] = 0;
+        } ;
+        const existingQuantity = cart[productIDToUpdate];
 
+        var oldQuantity = existingQuantity ? parseInt(existingQuantity) : 0;
+        var newQuantity;
+
+        const addQuantity = ADD_CART_QUANTITY;
+        const subtractQuantity = SUBTRACT_CART_QUANTITY;
+        const removeItem = REMOVE_CART_ITEM;
+        const validActions = [addQuantity, subtractQuantity, removeItem];
+
+        if (!validActions.includes(action)) {
+            console.log(`Invalid action: ${action}`);
+            return res.status(400).send({ message: 'error', responseText: 'Invalid action' });
+        }
+
+        const options = {
+            EX: 3600, // 3600 is 1h , while 43200 is 12h
+            //XX: true, // write the data even if the key already exists
+        };
+
+        if (action == subtractQuantity) {
+            if (oldQuantity < 1) {
+                console.log('Item not in wish list');
+                return res.status(400).send({ message: 'error', responseText: 'Item not in wish list' });
+            } else if (oldQuantity == 1) {
+                await deleteDataFromRedisCache(cartKey);
+                console.log('Item removed from cart');
+                return res.status(200).send({ message: 'success', responseText: 'Item removed from cart' });
+            } else {
+                newQuantity = oldQuantity - 1;
+                cart[productIDToUpdate] = newQuantity;
+                await writeDataToRedisCache(cartKey, JSON.stringify(cart), options);
+                console.log(`Item quantity decreased: ${newQuantity}`);
+                return res.status(200).send({ message: 'success', responseText: `Item quantity reduced to ${newQuantity} in wishlist` });
+            }
+        } else {
+            newQuantity = oldQuantity + 1;
+            cart[productIDToUpdate] = newQuantity;
+            await writeDataToRedisCache(cartKey, JSON.stringify(cart), options);
+            //await writeDataToRedisCache(cartKey, newQuantity, options);
+            //console.log(`Item quantity increased: ${newQuantity}`);
+
+            var responseText = "";
+            if (newQuantity == 1) {
+                responseText = "Item added to wish list";
+            } else {
+                responseText = `Item quantity increased to ${newQuantity}`;
+            }
+
+            let newUpdate = await readDataFromRedisCache(cartKey);
+            console.log(`Updated saved cart: ${JSON.stringify(newUpdate,null, 2)}`);
+            return res.status(200).send({ message: 'success', responseText: responseText });
+        }
+    } catch (error) {
+        console.error('Error updating cart in Redis:', error);
+        return res.status(500).send({ message: 'error', responseText: 'Internal Server Error' });
+    }
+};
 
 module.exports = {
     getCartItems,

@@ -4,7 +4,7 @@ const { check,validationResult } = require('express-validator');
 
 
 const { adminRouteName, isAdminUserIsLoggedInAndSavedInCache } = require('./utilities');
-const { retrieveJSONObjectFromRedisCache } = require('../middleware/redis');
+const { retrieveJSONObjectFromRedisCache, userRequestToKey, readDataFromRedisCache } = require('../middleware/redis');
 const { USER, LOGGED_IN_USER_VARIABLE_NAME } = require('../utilities/universal_web_constants');
 require("dotenv").config()  
 const validateOTP = [
@@ -30,19 +30,14 @@ const validateOTP = [
 
  */
 const verifyLogin= async(req,res,next)=>{
-    /*
-    let loggedInUser = req.locals.USER ;
-    let sl = JSON.stringify(loggedInUser);
-    */
-    //
-    let u = await retrieveJSONObjectFromRedisCache(LOGGED_IN_USER_VARIABLE_NAME);
-    let su = JSON.stringify(u);
-    console.log(`logged In User: ${JSON.stringify(u)}`);
-    if (u == null || su == "{}"){
-        return res.status(200).redirect(`/admin`);
-    };
-    
-    next();
+    let userKey = "USER";
+    let user = await retrieveJSONObjectFromRedisCache(userKey);
+    if (user) {
+        req.session.user = user;
+        return next();
+    } else {
+        return res.status(403).redirect(`/admin`);
+    }
 } ;
 
 const redirectToAdminDashboardIfLoggedIn= (req,res,next)=>{
