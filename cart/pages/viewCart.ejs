@@ -1,7 +1,7 @@
-    <%- include('../partials/cartpagehead') %>
-    <%- include('../layout/customerNavBar') %>
-    <%- include('../partials/breadcrumbs') %>
- 
+    <%- include('./partials/pagehead') %>
+    <%- include('../../views/layout/customerNavBar') %>
+    <%- include('../../views/partials/breadcrumbs') %>
+        
 
 <div id="main-wrapper">
     <div class="site-wrapper-reveal border-bottom">
@@ -24,7 +24,7 @@
                                             <th></th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="cartItemsList">
                                       
                                     </tbody>
                                 </table>
@@ -61,19 +61,16 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- cart end -->
-
-    </div>
-
-  
-    <%- include('../partials/footerarea') %>
-</div>
-
-<div id="main-wrapper">
-    <div class="site-wrapper-reveal border-bottom">
-        <!-- checkout start -->
-        <div class="checkout-main-area section-space--ptb_90">
+            
+            <div class="animation  hidden ">
+                <div class="containered">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <p>Processing, Please Wait ...</p>
+            </div>
             <div class="container">
                 <div class="row">
                     <div class="col-lg-7">
@@ -183,28 +180,9 @@
         </div>
         <!-- checkout end -->
     </div>
-
-   
-
+    <script src="https://js.stripe.com/v3/"></script>
+    <%- include('../../views/partials/footerarea') %>
 </div>
-
-
-  <div class="animation  hidden ">
-      <div class="containered">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-      </div>
-      <p>Processing, Please Wait ...</p>
-  </div>
-
-  
-  
-  
-<script src="https://js.stripe.com/v3/"></script>
-
-
 <script>
 
     
@@ -227,16 +205,8 @@
         // 
         // Returns:
         // None
-            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-            await fetch('/cart', {
-                method: 'POST',
-                headers: {
-                    "X-CSRF-Token":"<%=csrfToken%>",
-                    'Content-Type': 'application/json',
-                    
-                },
-                body: JSON.stringify({ cartItems })
-            })
+            var cartItems =  [];
+            await fetch('/cart/items')
             .then(response => response.json())
             .then(detailedCartItems => {
                 detailedCartItems=detailedCartItems
@@ -266,79 +236,31 @@
             console.log(cartItemsContainer)
             cartItemsContainer.innerHTML = '';
             detailedCartItems.forEach(item => {
-                 const itemElement = document.createElement('tr');
-                 itemElement.classList.add('itemElement');
-               
-
-                let cart=JSON.parse(localStorage.getItem("cartItems"))||[]
-                let product = cart.find(items=>items.id==item.book_id)
-                
-
-            //     itemElement.innerHTML = `
-            //         <div class="card-body bod">
-            //         <div class="d-flex justify-content-between align-items-center cart-item bod">
-            //             <img src="${item.cover_image}" class="mr-3  space">
-            //             <div class="ml-3 flex-grow-1">
-            //                 <h5 class="mb-1 productName" >${item.title}</h5>
-            //                 <p class="mb-1 text-muted">by ${item.author}</p>
-            //                 <p class="mb-1 productPrice">$${item.price}</p>
-            //                 <p class="mb-1 available_qty">${item.Inventory.quantity_available}</p>
-                            
-            //                 <p class="text-success">In stock</p>
-            //             </div>
-
-            //             <div class="ml-3">
-            //                 <select class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${product.qty}>
-            //                     <option value="1">1</option>
-            //                     <option value="2">2</option>
-            //                     <option value="3">3</option>
-            //                     <option value="4">4</option>
-            //                     <option value="5">5</option>
-
-
-            //                 </select>
-            //             <button class="btn btn-link text-danger ml-3 " ><i class="fa fa-times" id="delete-item" data-product-id="${item.book_id}"></i></button>
-            //             </div>
-            //     </div>
-            //    </div> 
-            //     `;
-                
-
+                const itemElement = document.createElement('tr');
+                itemElement.classList.add('itemElement');  
                 itemElement.innerHTML = `
-                                       <td></td>
-                                            <td class="product-img">
-                                                <a href="#"><img src="${item.cover_image}" alt="" style="width: 80px; height:80px margin-right: 10px"></a>
-                                            </td>
-                                            <td class="product-name"><a href="#" class="productName">${item.title}</a></td>
+                    <td></td>
+                    <td class="product-img">
+                        <a href="#"><img src="${item.cover_image}" alt="" style="width: 80px; height:80px margin-right: 10px"></a>
+                    </td>
+                    <td class="product-name"><a href="#" class="productName">${item.title}</a></td>
 
-                                            <td class="product-price"><span class="amount productPrice">$${item.price}</span></td>
+                    <td class="product-price"><span class="productPrice">$${item.price}</span></td>
 
-                                            <td class="cart-quality">
-                                                <div class="quickview-quality quality-height-dec2">
-                                                    <div class="cart-plus-minus">
-                                                    
-                                                    
-                                                    <select class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${product.qty}>
-                                <option value="1">1</option>
-                               <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                               <option value="5">5</option>
-
-
-                         </select>
-
-
-                                                        </div>
-                                                </div>
-                                            </td>
-                                            
-                                            <td class="product-remove">
-                                                <a href="#"><i class="icon-cross2" id="delete-item" data-product-id="${item.book_id}"></i></a>
-                                            </td>
-                
-                
-                `
+                    <td class="cart-quality">
+                        <div class="quickview-quality quality-height-dec2">
+                            <div class="cart-plus-minus">
+                                <label class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${item.qty}>
+                                ${item.qty}
+                                </label>
+                            </div>
+                        </div>
+                    </td>                    
+                    <td class="product-remove">
+                        <a href="#" onclick="sendToCart(category='books',productIDToUpdate='${item.book_id}', source='', alertIndex='', action='r')">
+                            <i class="icon-cross2" id="delete-item" data-product-id="${item.book_id}"></i>
+                        </a>
+                    </td>`;
                 cartItemsContainer.appendChild(itemElement);
             });
 
@@ -385,21 +307,22 @@
         let productPrice="";
         cartI.innerHTML=""
 
-
+            var subTotalPrice=0;
             detailedCartItems.forEach(item=>{
                 const itemElement = document.createElement('li');
                 
 
                productName=item.querySelector(".productName").innerHTML
-               productQty=item.querySelector(".productQty").value
-               productPrice=item.querySelector(".productPrice").innerHTML
+               productQty=item.querySelector(".productQty").innerHTML
+               productPrice=item.querySelector(".productPrice").innerHTML ;
+               subTotalPrice= Math.round(parseFloat(productPrice.slice(1)) * parseFloat(productQty));
                 itemElement.innerHTML=`
 
 
                         <li>${productName} ${productPrice}(${productQty}) <span> $${productPrice.slice(1) * productQty}</span></li>
                 
                 `
-                totalprice+=productPrice.slice(1) * productQty
+                totalprice+= subTotalPrice ;
                 cartI.appendChild(itemElement)
                
             })
@@ -549,7 +472,7 @@
 // Update the order summary on the UI
 
                 box.addEventListener("change",async(e)=>{
-                    let cartItems =await JSON.parse(localStorage.getItem('cartItems')) || [];
+                    //let cartItems =await JSON.parse(localStorage.getItem('cartItems')) || [];
                      const productId = e.target.getAttribute('data-product-id');
                     const quantity_available=e.target.getAttribute("data-qty-available")
                     let product = cartItems.find(item => item.id == productId);
@@ -563,7 +486,7 @@
                    product.qty=parseInt(e.target.value)
                     }
                 } 
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                //localStorage.setItem('cartItems', JSON.stringify(cartItems));
                     displayOrderSummary()
                 })
             })
@@ -583,14 +506,20 @@
             const products=document.querySelector(".container-container")
 
             animation.classList.add("move")
-            products.classList.remove("hidden")
+            //products.classList.remove("hidden")
         })
 
 </script>
 
+<% //code below contains function that add, substracts or deletes in cart asynchronously %>
+<%- include('./partials/post_product_to_update_cart_js') %>
+<%- include('../../views/partials/commonjslibs'); %>
+<!-- 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+-->
+
 </body>
 </html>

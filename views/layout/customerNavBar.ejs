@@ -27,14 +27,14 @@
                     <div class="col-lg-4 col-md-4 col-6">
                         <div class="header-right-side text-end">
                             <div class="header-right-items  d-none d-md-block">
-                                <a href="/profile" >
+                                <a href="#" >
                                     <i class="icon-user"></i>
                                 </a>
                             </div>
                           
 
                             <div class="header-right-items">
-                                <a href="/cart" class=" header-cart  header-icon">
+                                <a href="/cart/view" class=" header-cart  header-icon">
                                     <i class="icon-bag2"></i>
                                     <span class="item-counter" id="cart-count">0</span>
                                 </a>
@@ -65,24 +65,7 @@
             </div>
             <div class="mobile-menu-overlay__body">
                 <div class="offcanvas-menu-header d-md-block d-none">
-                    <!-- <div class="helendo-language-currency row-flex row section-space--mb_60 ">
-                        <div class="widget-language col-md-6">
-                            <h6> Language</h6>
-                            <ul>
-                                <li class="actived"> <a href="#">English</a></li>
-                                <li><a href="#">French</a></li>
-                                <li><a href="#">Arabric</a></li>
-                            </ul>
-                        </div>
-                        <div class="widget-currency col-md-6">
-                            <h6> Currencies</h6>
-                            <ul>
-                                <li class="actived"><a href="#">USD - US Dollar</a></li>
-                                <li><a href="#">Euro</a></li>
-                                <li><a href="#">Pround</a></li>
-                            </ul>
-                        </div>
-                    </div> -->
+                    
                 </div>
                 <nav class="offcanvas-navigation">
                     <ul>
@@ -101,7 +84,7 @@
                         </li>
 
                         <li class="has-children">
-                            <a href="/cart">Shopping cart</a>
+                            <a href="/cart/view">Shopping cart</a>
                             
                             
                         </li>
@@ -143,24 +126,3 @@
 
     </div>
 
-
-
-    <script>
-
-        // Wait for the DOM to be fully loaded before executing the code
-        document.addEventListener('DOMContentLoaded', () => {
-                    
-            // Select the element with the ID "cart-count"
-            const cartCountElement = document.querySelector('#cart-count');
-            
-            // Retrieve the value of the "cartItems" key from local storage, or 0 if it doesn't exist
-            const cartCount = localStorage.getItem('cartItems') || 0;
-            
-            // Parse the cartCount value as JSON
-            const items = JSON.parse(cartCount)
-            
-            // Set the text content of the cartCountElement to the length of the items array
-            cartCountElement.textContent = items.length;
-        });
-        
-    </script>

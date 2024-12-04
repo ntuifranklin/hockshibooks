@@ -8,7 +8,12 @@ const {
     retrieveJSONObjectFromRedisCache, 
     saveJSONObjectToRedisCache
 } = require('../middleware/redis');
-
+const { Op } = require("sequelize");
+const provinceStateModel = require("../models/provinceStateModel");
+const CountryModel = require("../models/countryModel");
+const bookModel = require("../models/bookModel") ;
+const inventoryModel = require("../models/inventory");
+const e = require("express");
 const viewCart= async(req,res)=>{
     /**
  * Renders the cart page view.
@@ -17,11 +22,12 @@ const viewCart= async(req,res)=>{
  * @param {Object} res - The response object used to render the cart page view.
  * @return {Promise<void>} - Returns a Promise that resolves with the rendered cart page view.
  */
+    
     const states=await provinceStateModel.findAll()
     const country=await CountryModel.findAll()
 
 
-    return res.render("pages/cart",{
+    return res.render("../cart/pages/viewCart",{
         states:states,
         country:country
     })
@@ -35,9 +41,27 @@ const getCartItems=async (req,res)=>{
  * @return {object[]} An array of detailed cart items with book information and quantity.
  */
     try {
-        const cartItems= req.body.cartItems
-    const bookIds= cartItems.map(item=> item.id)
 
+
+    const cartKey = `cart:${USER_CART_NAME}`;
+    const cart = await retrieveJSONObjectFromRedisCache(cartKey);
+    var bookIds= [];
+    var cartItems = [];
+    const category = "books";
+    if(cart == null || !(category in cart)){
+        return res.json({
+            "message":`No items in cart for category ${category}`
+        });
+    }
+
+    for (let bookId in cart[category]) {
+        bookIds.push(bookId);
+        cartItems.push({
+            id: bookId,
+            qty: cart[category][bookId]
+        });
+    }
+    
     const books= await bookModel.findAll({
         where :{
             book_id:{
@@ -79,8 +103,8 @@ const updateCartInRedisSessionCache = async (req, res) => {
         Do not add userID to the cartKey below else
          redis will not save to cache.
     */
-    //const cartKey = `cart:${category}`;
-    const cartKey = cartRequestCategoryToKey(req, category);
+    const cartKey = `cart:${USER_CART_NAME}`;
+    //const cartKey = cartRequestCategoryToKey(req, category);
     console.log(`Cart Key: ${cartKey}`);
     let cart ;
     try {
@@ -92,10 +116,13 @@ const updateCartInRedisSessionCache = async (req, res) => {
             cart = {};
         } ;
         console.log(`Cart: ${JSON.stringify(cart)}`);
-        if (!(productIDToUpdate in cart)) {
-            cart[productIDToUpdate] = 0;
+        if (!(category in cart)) {
+            cart[category] = {};
         } ;
-        const existingQuantity = cart[productIDToUpdate];
+        if (!(productIDToUpdate in cart[category])) {
+            cart[category][productIDToUpdate] = 0;
+        } ;
+        const existingQuantity = cart[category][productIDToUpdate];
 
         var oldQuantity = existingQuantity ? parseInt(existingQuantity) : 0;
         var newQuantity;
@@ -120,19 +147,30 @@ const updateCartInRedisSessionCache = async (req, res) => {
                 console.log('Item not in wish list');
                 return res.status(400).send({ message: 'error', responseText: 'Item not in wish list' });
             } else if (oldQuantity == 1) {
-                await deleteDataFromRedisCache(cartKey);
+                delete cart[category][productIDToUpdate] ;
+                let sc = JSON.stringify(cart);
+                //cart = await JSON.parse(sc);
+                await writeDataToRedisCache(cartKey, sc, options);
                 console.log('Item removed from cart');
                 return res.status(200).send({ message: 'success', responseText: 'Item removed from cart' });
             } else {
                 newQuantity = oldQuantity - 1;
-                cart[productIDToUpdate] = newQuantity;
+                cart[category][productIDToUpdate] = newQuantity;
                 await writeDataToRedisCache(cartKey, JSON.stringify(cart), options);
                 console.log(`Item quantity decreased: ${newQuantity}`);
                 return res.status(200).send({ message: 'success', responseText: `Item quantity reduced to ${newQuantity} in wishlist` });
             }
-        } else {
+        } else if(action == removeItem) {
+            delete cart[category][productIDToUpdate] ;
+            let sc = JSON.stringify(cart);
+            //cart = await JSON.parse(sc);
+            await writeDataToRedisCache(cartKey, sc, options);
+            console.log('Item removed from cart');
+            return res.status(200).send({ message: 'success', responseText: 'Item removed from cart' });
+
+        } else if (action == addQuantity) {
             newQuantity = oldQuantity + 1;
-            cart[productIDToUpdate] = newQuantity;
+            cart[category][productIDToUpdate] = newQuantity;
             await writeDataToRedisCache(cartKey, JSON.stringify(cart), options);
             //await writeDataToRedisCache(cartKey, newQuantity, options);
             //console.log(`Item quantity increased: ${newQuantity}`);
@@ -147,7 +185,10 @@ const updateCartInRedisSessionCache = async (req, res) => {
             let newUpdate = await readDataFromRedisCache(cartKey);
             console.log(`Updated saved cart: ${JSON.stringify(newUpdate,null, 2)}`);
             return res.status(200).send({ message: 'success', responseText: responseText });
-        }
+        } else {
+            console.log('Invalid action');
+            return res.status(400).send({ message: 'error', responseText: 'Invalid action' });
+        };
     } catch (error) {
         console.error('Error updating cart in Redis:', error);
         return res.status(500).send({ message: 'error', responseText: 'Internal Server Error' });
