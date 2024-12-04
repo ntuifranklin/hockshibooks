@@ -43,7 +43,7 @@
                                             await fetch('/cart/items')
                                             .then(response => response.json())
                                             .then(data => {
-                                                console.log(`cart items near cart icon: ${JSON.stringify(data)}`);
+                                                //console.log(`cart items near cart icon: ${JSON.stringify(data)}`);
                                                 document.getElementById('cart-count').innerHTML = data.length;
                                             });
                                         });
