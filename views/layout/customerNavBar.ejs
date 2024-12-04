@@ -36,6 +36,19 @@
                             <div class="header-right-items">
                                 <a href="/cart/view" class=" header-cart  header-icon">
                                     <i class="icon-bag2"></i>
+                                    <script>
+                                       
+                                       
+                                        window.addEventListener('load', async function() {
+                                            await fetch('/cart/items')
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                console.log(`cart items near cart icon: ${JSON.stringify(data)}`);
+                                                document.getElementById('cart-count').innerHTML = data.length;
+                                            });
+                                        });
+                                            
+                                    </script>
                                     <span class="item-counter" id="cart-count">0</span>
                                 </a>
                             </div>
