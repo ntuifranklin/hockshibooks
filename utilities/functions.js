@@ -49,9 +49,9 @@ const connect = () => {
     // Authenticate the connection
 
   sequelize.authenticate().then(() => { 
-    console.log('Connection established successfully.');
+    console.log('Connection established successfully to mariadb.');
   }).catch(err => {
-    console.error('Unable to connect to the database:', err);
+    console.error('Unable to connect to the mariadb database:', err);
   });
   // Return the Sequelize instance
   return sequelize;

@@ -1,8 +1,27 @@
-const { createClient } = require("redis");
+require('dotenv').config();
 const hash = require("object-hash");
-const { LOGGED_IN_USER_VARIABLE_NAME, USER_CART_NAME } = require("../utilities/universal_web_constants");
+const crypto = require('crypto');
+
+const Redis = require('ioredis');
+/*
+const {RedisStore} = require('connect-redis');
+const {createClient} = require('redis');
+*/
+const { LOGGED_IN_USER_VARIABLE_NAME, USER_CART_NAME, WEBSITE_USER } = require("../utilities/universal_web_constants");
+
+
+let REDIS_CONNECTION_OPTIONS = {
+	host: process.env.REDIS_HOST,
+	port: process.env.REDIS_PORT,
+	db: process.env.REDIS_DB_INDEX,
+    prefix: process.env.REDIS_PREFIX,
+    ttl: process.env.REDIS_TTL
+};
+exports.REDIS_CONNECTION_OPTIONS = REDIS_CONNECTION_OPTIONS;
 
 let redisClient = undefined;
+exports.redisClient = redisClient ;
+
 
 /*
 const REDIS_CACHING_OPTIONS = 
@@ -28,25 +47,17 @@ exports.REDIS_DEFAULT_CACHING_OPTIONS = REDIS_DEFAULT_CACHING_OPTIONS;
 
 async function initializeRedisClient() {
     
-    let redisURL = process.env.REDIS_URI
-    if (redisURL) {
-      // create the Redis client object
-      redisClient = createClient({ url: redisURL }).on("error", (e) => {
+    try {
+        redisClient = new Redis(REDIS_CONNECTION_OPTIONS); 
+        // connect to the Redis server
+        //await redisClient.connect();
+        console.log(`Connected to Redis successfully!`);
+        //return redisClient;
+      } catch (e) {
         console.error(`Failed to create the Redis client with error:`);
         console.error(e);
-      });
-  
-      try {
-        // connect to the Redis server
-        await redisClient.connect();
-        console.log(`Connected to Redis successfully!`);
-        
-      } catch (e) {
-        console.error(`Connection to Redis failed with error:`);
-        console.error(e);
+        console.log(`Redis connection options: ${JSON.stringify(REDIS_CONNECTION_OPTIONS)}`);
       } ;
-      
-    }
 } ;
 
 exports.initializeRedisClient = initializeRedisClient ;
@@ -304,3 +315,34 @@ async function setRedisLoggedInUserCacheMiddleware (request, response, next) {
 };
 
 exports.setRedisLoggedInUserCacheMiddleware = setRedisLoggedInUserCacheMiddleware ;
+
+
+async function checkIfKeyExistsInRedisCache(key) {
+    if (isRedisWorking()) {
+        try {
+            const exists = await redisClient.exists(key);
+            if (exists) {
+                return true;
+            };
+        } catch (e) {
+            console.error(`Failed to check if key exists in Redis cache for key=${key}`, e);
+        }
+    }
+    return false;
+} ;
+exports.checkIfKeyExistsInRedisCache = checkIfKeyExistsInRedisCache ;
+
+async function createUniqueUserRedisKey(length=8){
+
+    let unicityAccomplished = false;
+    while (!unicityAccomplished) {
+        let key = crypto.randomBytes(8).toString('hex').slice(0, length);
+        let uniqueUserRedisKey = `${WEBSITE_USER}:${key}`;
+        unicityAccomplished = await checkIfKeyExistsInRedisCache(uniqueUserRedisKey);
+        if (unicityAccomplished) {
+            return uniqueUserRedisKey;
+        }
+    };
+
+} ;
+exports.createUniqueUserRedisKey = createUniqueUserRedisKey ;

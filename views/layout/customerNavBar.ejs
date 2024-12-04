@@ -44,7 +44,8 @@
                                             .then(response => response.json())
                                             .then(data => {
                                                 //console.log(`cart items near cart icon: ${JSON.stringify(data)}`);
-                                                document.getElementById('cart-count').innerHTML = data.length;
+                                                if (data.length && data.length > 0)
+                                                    document.getElementById('cart-count').innerHTML = data.length;
                                             });
                                         });
                                             

@@ -103,7 +103,7 @@ const updateCartInRedisSessionCache = async (req, res) => {
         Do not add userID to the cartKey below else
          redis will not save to cache.
     */
-    const cartKey = `cart:${USER_CART_NAME}`;
+    const cartKey = `cart:${userID}:${USER_CART_NAME}`;
     //const cartKey = cartRequestCategoryToKey(req, category);
     console.log(`Cart Key: ${cartKey}`);
     let cart ;

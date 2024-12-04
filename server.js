@@ -1,4 +1,4 @@
-
+require("dotenv").config()
 const express = require('express');
 const { faker } = require('@faker-js/faker');
 const path = require('path');
@@ -14,25 +14,40 @@ const csrf = require('csurf');
 const session = require('express-session');
 const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
+const Redis = require('ioredis');
+const {RedisStore} = require('connect-redis');
+const {createClient} = require('redis');
 
-const RedisStore = require('connect-redis');
-const { v4: uuidv4 } = require('uuid');
+const { rateLimit } = require('express-rate-limit');
 
-//controllers
-require("dotenv").config()
 
-let parseForm = bodyParser.urlencoded({ extended: false });
+const sequelize = require('./config/database');
+const validateOTP=require("./middleware/OTPmiddleware")
+const { 
+	initializeRedisClient, 
+	setRedisLoggedInUserCacheMiddleware, 
+	setRedisUserCartCacheMiddleware, 
+	redisCacheMiddleware, 
+	createUniqueUserRedisKey,
+	REDIS_CONNECTION_OPTIONS
+} = require('./middleware/redis');
+const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME, USER_KEY_NB_BYTES } = require('./utilities/universal_web_constants');
+
 
 const { stripe,testStripeProductCreation } = require('./utilities/stripe'); 
+
+
+const { v4: uuidv4 } = require('uuid');
+
+let parseForm = bodyParser.urlen
 
 // const DEV_PORT=5445 ;
 
 // let PORT = process.env.NODE_ENV=="test"?4000:3000 ;
-const env = process.env.NODE_ENV||"dev";
+const env = process.env.NODE_ENV||"development";
 const port = env == "test" ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
 
 
-const sequelize = require('./config/database');
 process.env.ROOT_PATH=path.join(__dirname, './');
 
 //connects to the database
@@ -42,31 +57,9 @@ checkUploadDir()
 
 //middleware
 
-const validateOTP=require("./middleware/OTPmiddleware")
-
-
 const site_secret = faker.internet.password({ length:128 });
-let dynamicCookie =  {
-    sameSite: 'none',
-	secret:site_secret,
-	cookie:{
-		
-		maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS),
-	},																				
-    secure: false,
-    httpOnly: false,
-	resave: false,
-  saveUninitialized: false
-};
-
-// csrf protection
 
 /* Prevent attackes from guessing passwords with rate limiting per IP address */
-const { rateLimit } = require('express-rate-limit');
-const { serialize } = require('v8');
-const { initializeRedisClient, setRedisLoggedInUserCacheMiddleware, setRedisUserCartCacheMiddleware, redisCacheMiddleware } = require('./middleware/redis');
-const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME } = require('./utilities/universal_web_constants');
-
 const form_rate_limiter = rateLimit({
 	windowMs: 30 * 60 * 1000, // 30 minutes
 	limit: 10000, // Limit each IP to 1000 requests per `window` (here, per 30 minutes).
@@ -74,35 +67,23 @@ const form_rate_limiter = rateLimit({
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
 	// store: ... , // Use an external store for consistency across multiple server instances.
 });
+ 
 
-
-
+let redisClient ;
 async function startNewHockshiServer(){
 	
 	const app = express();
 
-	//start redis cache
-	await initializeRedisClient();
 	app.set('view engine', 'ejs');
 	app.use(express.static(path.join(__dirname, './views')));
 	app.set('views', path.join(__dirname, './views'));
 	app.use(express.json());
+	app.use(cookieParser())
+
+	app.use(csrfProtection);
+	app.use(bodyParser.urlencoded({extended: true}));
 
 	app.use(form_rate_limiter); 
-
-	if (port == process.env.PRODUCTION_SITE_PORT) {
-			
-		app.set('trust proxy', 1) // trust first proxy
-		dynamicCookie.secure = true; // serve secure cookies
-		dynamicCookie.sameSite = 'strict';
-		dynamicCookie.httpOnly = true;
-	} else {
-		
-		app.set('trust proxy', 0) // trust first proxy
-		dynamicCookie.secure = false; // we do not need to serve secure cookies
-		dynamicCookie.sameSite = 'strict';
-		dynamicCookie.httpOnly = false;
-	} ;
 
 
 	app.locals.companyName = process.env.COMPANY_NAME;
@@ -118,21 +99,26 @@ async function startNewHockshiServer(){
 	app.locals.instagrampage = process.env.INSTAGRAM_PAGE;
 	app.locals.linkedinpage = process.env.LINKEDIN_PAGE;
 	
-	app.use(bodyParser.urlencoded({extended: true}));
 
-	//app.use(dynamicCookie)	
+	
+	//start redis cache
+	await initializeRedisClient();
+	//redisStore = new RedisStore({ client: redisClient });	
 	app.use(session({
-		secret: site_secret, // Replace with a secure secret key
-		resave: true, // Prevents session from being saved on every request
-		saveUninitialized: false, // Ensures session is saved only when modified
-		cookie: { maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS) }, // 1-day cookie
-	  }));
+		secret:site_secret,
+		resave: false,
+		saveUninitialized: false,
+		cookie:{
+			secure: process.env.NODE_ENV === 'production'? "true":"auto",	// serve secure cookies
+			httpOnly: true,
+			maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS),
+			sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'lax',
+		},																				
+		
+	}));
 
-	app.use(cookieParser())
 
-	app.use(csrfProtection);
-
-	app.use((req, res, next) => {
+	app.use(async(req, res, next) => {
 				
 		res.locals = app.locals ;
 		req.locals = app.locals ;
@@ -144,7 +130,10 @@ async function startNewHockshiServer(){
 
 		//assign unique identifier
 		if (!req.session.userID) {
-			req.session.userID = uuidv4();
+			console.log(`current Session ID Generated: ${req.sessionID}`);
+			req.session.userID = await createUniqueUserRedisKey(length=USER_KEY_NB_BYTES);
+			console.log(`Unique User ID Generated: ${req.session.userID}`);
+			req.session.save();
 		} ;
 		if (!req.session.cart) {
 			req.session.cart = {} ;
