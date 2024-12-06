@@ -14,6 +14,7 @@ const CountryModel = require("../models/countryModel");
 const bookModel = require("../models/bookModel") ;
 const inventoryModel = require("../models/inventory");
 const e = require("express");
+const { generateUniqueCartSessionRedisCacheKey } = require("./utilities");
 const viewCart= async(req,res)=>{
     /**
  * Renders the cart page view.
@@ -42,53 +43,70 @@ const getCartItems=async (req,res)=>{
  */
     try {
 
-
-    const cartKey = `cart:${USER_CART_NAME}`;
-    const cart = await retrieveJSONObjectFromRedisCache(cartKey);
-    var bookIds= [];
-    var cartItems = [];
-    const category = "books";
-    if(cart == null || !(category in cart)){
-        return res.json({
-            "message":`No items in cart for category ${category}`
-        });
-    }
-
-    for (let bookId in cart[category]) {
-        bookIds.push(bookId);
-        cartItems.push({
-            id: bookId,
-            qty: cart[category][bookId]
-        });
-    }
     
-    const books= await bookModel.findAll({
-        where :{
-            book_id:{
-                [Op.in]:bookIds
+        const cartKey = generateUniqueCartSessionRedisCacheKey(req.session.userID);
+        const cart = await retrieveJSONObjectFromRedisCache(cartKey);
+        var bookIds= [];
+        var cartItems = [];
+    
+        if(cart == null){
+            return res.json({
+                "message":`No items in cart yet`
+            });
+        }
+        
+
+        for (let category in cart) {
+            if (!cart.hasOwnProperty(category)) {
+                continue;
             }
-        },
-        include:[{
-            model:inventoryModel
-        }]
-    })
+            if (!cart[category]) {
+                continue;
+            }
+            if (Object.keys(cart[category]).length === 0) {
+                continue;
+            };
+                
+            for (let categoryItemID in cart[category]) {
+                let oneCartItem = {
+                    category: category,
+                    id: categoryItemID,
+                    qty: cart[category][categoryItemID]
+                };
+                if (category == "books"){
+                    bookIds.push(categoryItemID);
 
-    const detailedcartItems=books.map(book=>{
-        let imgUrl=""
-        if(book.cover_image_url.split(":")[0]!="https"){
-            imgUrl=`../uploads/${book.cover_image_url}`
-        }else{
-            imgUrl=`${book.cover_image_url}`
+                }
+                cartItems.push(oneCartItem);
+            };
         }
-        const cartItem=cartItems.find(item=>item.id==book.book_id)
-        return{
-            ...book.dataValues,
-            cover_image: imgUrl,
-            qty:cartItem.qty
-        }
-    })
+        
+        const books= await bookModel.findAll({
+            where :{
+                book_id:{
+                    [Op.in]:bookIds
+                }
+            },
+            include:[{
+                model:inventoryModel
+            }]
+        })
 
-    res.json(detailedcartItems);
+        const detailedcartItems=books.map(book=>{
+            let imgUrl=""
+            if(book.cover_image_url.split(":")[0]!="https"){
+                imgUrl=`../uploads/${book.cover_image_url}`
+            }else{
+                imgUrl=`${book.cover_image_url}`
+            }
+            const cartItem=cartItems.find(item=>item.id==book.book_id)
+            return{
+                ...book.dataValues,
+                cover_image: imgUrl,
+                qty:cartItem.qty
+            }
+        }) ;
+        return res.json(detailedcartItems);
         
     } catch (error) {
         console.error('Error fetching cart items:', error);
@@ -103,23 +121,23 @@ const updateCartInRedisSessionCache = async (req, res) => {
         Do not add userID to the cartKey below else
          redis will not save to cache.
     */
-    const cartKey = `cart:${USER_CART_NAME}`;
+    const cartKey = generateUniqueCartSessionRedisCacheKey(userID);
     //const cartKey = cartRequestCategoryToKey(req, category);
     //console.log(`Cart Key: ${cartKey}`);
-    let cart ;
+    let cart = {};
     try {
-        const existingCart = await readDataFromRedisCache(cartKey);
+        const existingCart = await retrieveJSONObjectFromRedisCache(cartKey);
         //console.log(`Existing Cart: ${existingCart}`);
         if (existingCart) {
-            cart = JSON.parse(existingCart);
-        } else {
-            cart = {};
+            cart = await JSON.parse(JSON.stringify(existingCart));
         } ;
-        //console.log(`Cart: ${JSON.stringify(cart)}`);
-        if (!(category in cart)) {
+        console.log(`Exisiting Cart: ${JSON.stringify(cart)}`);
+        
+        if (typeof cart[category] == "undefined") {
             cart[category] = {};
-        } ;
-        if (!(productIDToUpdate in cart[category])) {
+        }
+        
+        if (typeof cart[category][productIDToUpdate] == "undefined") {
             cart[category][productIDToUpdate] = 0;
         } ;
         const existingQuantity = cart[category][productIDToUpdate];

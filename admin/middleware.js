@@ -3,7 +3,7 @@
 const { check,validationResult } = require('express-validator');
 
 
-const { adminRouteName, isAdminUserIsLoggedInAndSavedInCache } = require('./utilities');
+const { adminRouteName, isAdminUserIsLoggedInAndSavedInCache, generateLoggedInUserCacheKey } = require('./utilities');
 const { retrieveJSONObjectFromRedisCache, userRequestToKey, readDataFromRedisCache } = require('../middleware/redis');
 const { USER, LOGGED_IN_USER_VARIABLE_NAME } = require('../utilities/universal_web_constants');
 require("dotenv").config()  
@@ -30,10 +30,12 @@ const validateOTP = [
 
  */
 const verifyLogin= async(req,res,next)=>{
-    let userKey = "USER";
+    
+    let userKey = generateLoggedInUserCacheKey(req.session.userID);
+    
     let user = await retrieveJSONObjectFromRedisCache(userKey);
     if (user) {
-        req.session.user = user;
+        req.session.USER = user;
         return next();
     } else {
         return res.status(403).redirect(`/admin`);

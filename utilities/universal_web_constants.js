@@ -11,6 +11,7 @@ const ADD_CART_QUANTITY = 'a';
 const SUBTRACT_CART_QUANTITY = 's';
 const REMOVE_CART_ITEM = 'r';
 
+
 module.exports = {
     LOGGED_IN_USER_VARIABLE_NAME,
     ITEMS_DETAILS,

@@ -34,10 +34,15 @@ async function isAdminUserIsLoggedInAndSavedInCache() {
     console.log(`Admin user is truthfuly logged in`);
     return true ;   
 
-}
+} ;
+
+function generateLoggedInUserCacheKey(sessionUserID){
+    return `${LOGGED_IN_USER_VARIABLE_NAME}:${sessionUserID}`;
+};
 
 module.exports = {
     adminRouteName,
-    isAdminUserIsLoggedInAndSavedInCache
+    isAdminUserIsLoggedInAndSavedInCache,
+    generateLoggedInUserCacheKey
 
 }

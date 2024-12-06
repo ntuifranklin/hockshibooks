@@ -1,5 +1,6 @@
 const { createClient } = require("redis");
 const hash = require("object-hash");
+const crypto = require('crypto');
 const { LOGGED_IN_USER_VARIABLE_NAME, USER_CART_NAME } = require("../utilities/universal_web_constants");
 
 let redisClient = undefined;
@@ -261,7 +262,7 @@ exports.redisCacheMiddleware = redisCacheMiddleware ;
 async function setRedisUserCartCacheMiddleware (request, response, next) {
         if (isRedisWorking()) {
 
-            const key = USER_CART_NAME;
+            const key = `${request.session.userID}:@:${USER_CART_NAME}`;
             // if there is some cached data, retrieve it and return it
             var cachedValue = await  retrieveJSONObjectFromRedisCache(key);
             if (cachedValue != null) {               
@@ -280,20 +281,13 @@ async function setRedisLoggedInUserCacheMiddleware (request, response, next) {
     if (isRedisWorking()) {
 
         // the variable name used to store the user's cart information
-        const key = LOGGED_IN_USER_VARIABLE_NAME;
+        const key = await generateLoggedInUserCacheKey(request.session.userID);
         // if there is some cached data, retrieve it and return it
         var cachedValue = await retrieveJSONObjectFromRedisCache(key);
-        if (cachedValue == null ) {
-            
-            const USER_REDIS_CACHING_OPTIONS = 
-            {
-                
-                EX: process.env.ADMIN_USER_EXPIRE_TIME, // 15 minutes. User has to log in every 15 minutes
-                NX: true, // write the data even if the key already exists
-            } ;
-            cachedValue = {};
-            await saveJSONObjectToRedisCache(key, cachedValue, USER_REDIS_CACHING_OPTIONS);
-            //request.locals.USER = cachedValue ;
+        if (cachedValue != null ) {
+            request.session.USER = cachedValue ;
+            request.locals.USER = cachedValue ;
+            request.session.save();
         } ;
         request.locals.USER = cachedValue ;
         
@@ -304,3 +298,28 @@ async function setRedisLoggedInUserCacheMiddleware (request, response, next) {
 };
 
 exports.setRedisLoggedInUserCacheMiddleware = setRedisLoggedInUserCacheMiddleware ;
+
+
+
+async function generateShortUUID(length = 8) {
+  let uuid8bytes = crypto.randomBytes(Math.ceil(length * 3 / 4))
+    .toString('base64')
+    .slice(0, length)
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+
+    return uuid8bytes;
+}
+
+exports.generateShortUUID = generateShortUUID ;
+
+async function setUniqueUserID(request, response, next) {
+    if (!request.session.userID) {
+        let userID = await generateShortUUID(length=8);
+        request.session.userID = userID;
+        console.log(`Generated new user ID: ${request.session.userID}`);
+    }
+    next();
+};
+
+exports.setUniqueUserID = setUniqueUserID ;

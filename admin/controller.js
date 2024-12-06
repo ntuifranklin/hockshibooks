@@ -22,7 +22,7 @@ const orderModel= require("../models/ordersModel")
 //middleware
 const OTPvalidation= require("../middleware/OTPmiddleware");
 const validateOTP = require('../middleware/OTPmiddleware');
-const { adminRouteName, isAdminUserIsLoggedInAndSavedInCache } = require('./utilities');
+const { adminRouteName, isAdminUserIsLoggedInAndSavedInCache, generateLoggedInUserCacheKey } = require('./utilities');
 const { LOGGED_IN_USER_VARIABLE_NAME } = require('../utilities/universal_web_constants');
 const { addBooksWithISBNOnlyRouteName, booksRouteName } = require('../books/utilities');
 let user_email,authUser;
@@ -201,7 +201,7 @@ If there are errors, render the otpVerification page with an error message.
             //XX: true, // write the data even if the key already exists
         } ;
         //this is a uuv4 assigned at the start of the request
-        let userKey = "USER";
+        let userKey = generateLoggedInUserCacheKey(req.session.userID);
         await writeDataToRedisCache(userKey, JSON.stringify(loggedInUser), writeOptions);
         //await saveJSONObjectToRedisCache(userKey, loggedInUser, writeOptions);
                

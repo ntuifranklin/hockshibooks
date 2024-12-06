@@ -145,6 +145,7 @@ const addBookWithISBN= async(req,res)=>{
     if(!errors.isEmpty()){
         const err=errors.array()[0]
         res.render("../books/pages/addBookWithISBNForm",{
+            pagetitle:"Add Book with ISBN",
             msg:err,
             books_route_name:"books",
             add_books_route_name: "addBookWithExternalAPI",
@@ -157,7 +158,7 @@ const addBookWithISBN= async(req,res)=>{
         try{
             const response= await axios.get(url)
 
-           // console.log(`${JSON.stringify(response.data, null,2)}`);
+           console.log(`${JSON.stringify(response.data, null,2)}`);
 
             const data= response.data[`ISBN:${isbn}`] 
 
@@ -243,6 +244,7 @@ const getAddBookWithISBNForm=(req,res)=>{
  * @return {Promise<void>} A promise that resolves when the template is rendered.
  */
     res.status(200).render("../books/pages/addBookWithISBNForm",{
+        pagetitle:"Add Book with ISBN",
         msg:false,
         books_route_name:"books",
         add_books_route_name: "addBookWithExternalAPI",

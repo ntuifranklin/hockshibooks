@@ -65,7 +65,13 @@ let dynamicCookie =  {
 /* Prevent attackes from guessing passwords with rate limiting per IP address */
 const { rateLimit } = require('express-rate-limit');
 const { serialize } = require('v8');
-const { initializeRedisClient, setRedisLoggedInUserCacheMiddleware, setRedisUserCartCacheMiddleware, redisCacheMiddleware } = require('./middleware/redis');
+const { 
+	setUniqueUserID,
+	initializeRedisClient, 
+	setRedisLoggedInUserCacheMiddleware, 
+	setRedisUserCartCacheMiddleware, 
+	redisCacheMiddleware 
+} = require('./middleware/redis');
 const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME } = require('./utilities/universal_web_constants');
 
 const request_rate_limiter = rateLimit({
@@ -136,7 +142,9 @@ async function startNewHockshiServer(){
 	app.use(cookieParser())
 
 	app.use(csrfProtection);
-
+	
+	//generate a unique web visitor user id for each user
+	app.use(setUniqueUserID);
 	app.use((req, res, next) => {
 				
 		res.locals = app.locals ;
@@ -147,25 +155,13 @@ async function startNewHockshiServer(){
 		req.locals.valid_cart_actions = valid_cart_actions ;
 
 		//console.log(`Request process ID: ${process.pid}.`);
-
-		//assign unique identifier
-		if (!req.session.userID) {
-			req.session.userID = uuidv4();
-		} ;
-		if (!req.session.cart) {
-			req.session.cart = {} ;
-		} ;
+		console.log(`User ID: ${req.session.userID}`);
 		
-	
-		if (!req.session.someTypeOfCounter) {
-			req.session.someTypeOfCounter = 0 ;	
-		} ;
-		console.log(req.headers['user-agent']);
+		//console.log(req.headers['user-agent']);
 		//log userID
-		console.log(`session userID: ${req.session.userID}`);
+		//console.log(`session userID: ${req.session.userID}`);
 		req.session.someTypeOfCounter = req.session.someTypeOfCounter + 1 ;	
-		console.log(`Some type of counter: ${req.session.someTypeOfCounter}`);
-		
+		//console.log(`Some type of counter: ${req.session.someTypeOfCounter}`);
 		
 		req.session.save();
 		next();
