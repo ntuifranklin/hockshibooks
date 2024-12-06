@@ -11,6 +11,7 @@
 */
 let stringified_action = `<%= valid_cart_actions %>` ;
 const valid_cart_actions = stringified_action.split(',') ;
+const DEFAULT_ALERT_INDEX = 'cartUpdateResult';
 //console.log(`valid cart actions: ${JSON.stringify(valid_cart_actions)}`);
 function sendToCart(category="books",productIDToUpdate="", source='', alertIndex='', action='a'){
     var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -41,7 +42,7 @@ function sendToCart(category="books",productIDToUpdate="", source='', alertIndex
       if(alertIndex != '')
         $(`#${alertIndex}`).html(successHtml);
       else
-        $(`#cartUpdateResult`).html(successHtml);
+        $(`#${DEFAULT_ALERT_INDEX}`).html(successHtml);
       location.href = location.href;
     }).fail((data) => {
       
@@ -55,7 +56,7 @@ function sendToCart(category="books",productIDToUpdate="", source='', alertIndex
       if(alertIndex != '')
         $(`#${alertIndex}`).html(errorHtml);
       else
-        $(`#cartUpdateResult`).html(errorHtml);
+        $(`#${DEFAULT_ALERT_INDEX}`).html(errorHtml);
        
     });
 
