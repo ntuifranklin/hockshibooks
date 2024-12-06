@@ -105,17 +105,17 @@ const updateCartInRedisSessionCache = async (req, res) => {
     */
     const cartKey = `cart:${USER_CART_NAME}`;
     //const cartKey = cartRequestCategoryToKey(req, category);
-    console.log(`Cart Key: ${cartKey}`);
+    //console.log(`Cart Key: ${cartKey}`);
     let cart ;
     try {
         const existingCart = await readDataFromRedisCache(cartKey);
-        console.log(`Existing Cart: ${existingCart}`);
+        //console.log(`Existing Cart: ${existingCart}`);
         if (existingCart) {
             cart = JSON.parse(existingCart);
         } else {
             cart = {};
         } ;
-        console.log(`Cart: ${JSON.stringify(cart)}`);
+        //console.log(`Cart: ${JSON.stringify(cart)}`);
         if (!(category in cart)) {
             cart[category] = {};
         } ;
