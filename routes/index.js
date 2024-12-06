@@ -13,6 +13,8 @@ const booksRoute = require('../books/route');
 //cart module
 const cartRoute = require('../cart/route');
 
+//docs module
+const docsRoute = require('../agreementdocs/route');
 
 const {
   showHomePage,
@@ -60,8 +62,8 @@ module.exports = () => {
 
   router.use (`/admin`,adminRoute())
   router.use(`/books`,booksRoute())
-
   router.use("/cart", cartRoute())
+  router.use("/docs", docsRoute())
   
   /* 
    router.get("/productDetails/:id",bookDetail)

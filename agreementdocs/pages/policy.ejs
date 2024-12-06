@@ -1,0 +1,89 @@
+<%- include('../../views/partials/pagehead') %>
+<%- include('../../views/layout/customerNavBar') %>
+<%- include('../../views/partials/breadcrumbs') %>
+    
+
+<div id="main-wrapper">
+    <div class="site-wrapper-reveal border-bottom">
+        <!-- Policy Area Start -->
+        <div class="policy-wrapper section-space--ptb_120">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="shop-toolbar__items shop-toolbar__item--left">
+                            <div class="shop-toolbar__item shop-toolbar__item--title">
+                                <h1>Policies</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="policy-content-wrapper">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="policy-section mb-20">
+                                <h5>1. General Information</h5>
+                                <p>At <%= companyName %>, we aim to provide a seamless experience for buyers and sellers of used books. All books are sold "as-is," and sellers are required to accurately describe the condition of their items.</p>
+                            </div>
+                            <div class="policy-section mb-20">
+                                <h5>2. Selling Policy</h5>
+                                <ul>
+                                    <li>Only registered users can list books for sale.</li>
+                                    <li>Sellers must provide clear photos, accurate descriptions, and condition details (e.g., Like New, Good, Acceptable).</li>
+                                    <li>Listings violating copyright laws or containing offensive content will be removed.</li>
+                                    <li>A [X%] commission will be applied to each sale.</li>
+                                </ul>
+                            </div>
+                            <div class="policy-section mb-20">
+                                <h5>3. Buying Policy</h5>
+                                <ul>
+                                    <li>Buyers are responsible for providing correct shipping details during checkout.</li>
+                                    <li>Payments are accepted through [list payment methods].</li>
+                                    <li>Sellers are required to ship items within [X business days] of purchase.</li>
+                                </ul>
+                            </div>
+                            <div class="policy-section mb-20">
+                                <h5>4. Shipping Policy</h5>
+                                <ul>
+                                    <li>Sellers must provide tracking details for shipped orders.</li>
+                                    <li>We are not responsible for delays caused by carriers.</li>
+                                </ul>
+                            </div>
+                            <div class="policy-section mb-20">
+                                <h5>5. Return and Refund Policy</h5>
+                                <p>Returns are accepted only if the item is significantly different from its description. Buyers must contact support within [X days] of receipt to request a refund.</p>
+                            </div>
+                            <div class="policy-section mb-20">
+                                <h5>6. User Responsibilities</h5>
+                                <p>Users are responsible for keeping their account information secure and refraining from fraudulent or abusive activities.</p>
+                            </div>
+                            <div class="policy-section mb-20">
+                                <h5>7. Privacy Policy</h5>
+                                <p>Your data is secure with us. Refer to our <a href="/privacy-policy">Privacy Policy</a> for more details.</p>
+                            </div>
+                            <div class="policy-section mb-20">
+                                <h5>8. Contact Us</h5>
+                                <p>For questions or concerns, reach out to us at:</p>
+                                <ul>
+                                    <li>Email: <%= customerBusinessEmail %></li>
+                                    <li>Phone: <%= companyPhoneNumber %></li>
+                                    <li>Address: <%= companyAddress %></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Policy Area End -->
+    </div>
+
+    <%- include('../../views/partials/footerarea') %>
+</div>
+
+
+
+</body>
+</html>
+

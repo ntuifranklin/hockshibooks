@@ -112,12 +112,15 @@ async function startNewHockshiServer(){
 	app.locals.websiteUrl = process.env.WEBSITE_URL ;
 	app.locals.companyPhoneNumber = process.env.COMPANY_PHONE_NUMBER;
 	app.locals.customerBusinessEmail = process.env.CUSTOMER_BUSINESS_EMAIL;
-	app.locals.companyAddress = process.env.COMPANY_ADDRESS;
+	//<%= companyCity  %> <%= companyState  %>, <%= companyZip %>
+	app.locals.companyAddress = process.env.COMPANY_CITY + " " + process.env.COMPANY_STATE + ", " + process.env.COMPANY_ZIP;
 	app.locals.facebookpage = process.env.FACEBOOK_PAGE;
 	app.locals.xpage = process.env.X_PAGE;
 	app.locals.instagrampage = process.env.INSTAGRAM_PAGE;
 	app.locals.linkedinpage = process.env.LINKEDIN_PAGE;
-	
+	//Terms and conditions
+	app.locals.minimumUserAge = process.env.MINIMUM_USER_AGE;
+	app.locals.companyJurisdiction = process.env.COMPANY_JURISDICTION;
 	app.use(bodyParser.urlencoded({extended: true}));
 
 	//app.use(dynamicCookie)	
