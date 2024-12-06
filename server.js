@@ -12,6 +12,8 @@ const routes = require('./routes');
 const multer=require("multer")
 const csrf = require('csurf');
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+const {mysq_store_session_database_options} = require('./sessionmanagement/session');
 const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
 
@@ -45,12 +47,11 @@ checkUploadDir()
 const validateOTP=require("./middleware/OTPmiddleware")
 
 
-const site_secret = faker.internet.password({ length:128 });
+const site_secret = process.env.SITE_SECRET;
 let dynamicCookie =  {
     sameSite: 'none',
 	secret:site_secret,
 	cookie:{
-		
 		maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS),
 	},																				
     secure: false,
@@ -67,15 +68,15 @@ const { serialize } = require('v8');
 const { initializeRedisClient, setRedisLoggedInUserCacheMiddleware, setRedisUserCartCacheMiddleware, redisCacheMiddleware } = require('./middleware/redis');
 const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME } = require('./utilities/universal_web_constants');
 
-const form_rate_limiter = rateLimit({
+const request_rate_limiter = rateLimit({
 	windowMs: 30 * 60 * 1000, // 30 minutes
-	limit: 10000, // Limit each IP to 1000 requests per `window` (here, per 30 minutes).
+	limit: 1000, // Limit each IP to 1000 requests per `window` (here, per 30 minutes).
 	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
 	// store: ... , // Use an external store for consistency across multiple server instances.
 });
 
-
+let mysqlSessionStore = new MySQLStore(mysq_store_session_database_options);
 
 async function startNewHockshiServer(){
 	
@@ -88,7 +89,7 @@ async function startNewHockshiServer(){
 	app.set('views', path.join(__dirname, './views'));
 	app.use(express.json());
 
-	app.use(form_rate_limiter); 
+	app.use(request_rate_limiter); 
 
 	if (port == process.env.PRODUCTION_SITE_PORT) {
 			
@@ -126,9 +127,10 @@ async function startNewHockshiServer(){
 	//app.use(dynamicCookie)	
 	app.use(session({
 		secret: site_secret, // Replace with a secure secret key
-		resave: true, // Prevents session from being saved on every request
+		resave: false, // Prevents session from being saved on every request
 		saveUninitialized: false, // Ensures session is saved only when modified
 		cookie: { maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS) }, // 1-day cookie
+		store: mysqlSessionStore,
 	  }));
 
 	app.use(cookieParser())
@@ -144,6 +146,7 @@ async function startNewHockshiServer(){
 		const valid_cart_actions = [ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM];
 		req.locals.valid_cart_actions = valid_cart_actions ;
 
+		//console.log(`Request process ID: ${process.pid}.`);
 
 		//assign unique identifier
 		if (!req.session.userID) {
@@ -152,6 +155,18 @@ async function startNewHockshiServer(){
 		if (!req.session.cart) {
 			req.session.cart = {} ;
 		} ;
+		
+	
+		if (!req.session.someTypeOfCounter) {
+			req.session.someTypeOfCounter = 0 ;	
+		} ;
+		console.log(req.headers['user-agent']);
+		//log userID
+		console.log(`session userID: ${req.session.userID}`);
+		req.session.someTypeOfCounter = req.session.someTypeOfCounter + 1 ;	
+		console.log(`Some type of counter: ${req.session.someTypeOfCounter}`);
+		
+		
 		req.session.save();
 		next();
 	});

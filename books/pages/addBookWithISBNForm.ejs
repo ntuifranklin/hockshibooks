@@ -1,6 +1,7 @@
 <%- include('./partials/pagehead') %>
-
-<div class="container">
+<%- include('../../views/layout/customerNavBar') %>
+<%- include('../../views/partials/breadcrumbs') %>
+    <div class="container">
        
     <div class="errors">
         <% if (msg) { %>
@@ -61,7 +62,8 @@
 
         </div>
     </div>
+    <%- include('../../views/partials/footerarea') %>
 </div>
 </body>
-
 </html>
+

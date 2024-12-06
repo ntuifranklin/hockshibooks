@@ -4,3 +4,4 @@ sudo docker stop mariadb \
     -e MYSQL_DATABASE=hockshi \
     -e MARIADB_ROOT_PASSWORD= mariadb
 mysql -h 172.17.0.2 -P 3306 -u root -p < database/sql/hockshidb.sql
+mysql -h 172.17.0.2 -P 3306 -u root -p < sessionmanagement/hockshisessiondb.sql

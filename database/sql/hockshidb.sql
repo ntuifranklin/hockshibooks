@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS hockshi;
+CREATE DATABASE IF NOT EXISTS hockshi;
+
 use hockshi;
 
 -- Dropping all the views first

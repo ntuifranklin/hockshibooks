@@ -11,10 +11,10 @@ const ip = require("ip");
 
 const {isTestEnvUpgraded} = require('./utilities/functions.js');
 
-if (cluster.isMaster) {
+if (cluster.isPrimary) {
     
     console.log(`Number of CPUs is ${totalCPUs}`);
-    console.log(`Master ${process.pid} is running`);
+    console.log(`Primary Process ${process.pid} is running`);
    
     // Fork workers.
     for (let i = 0; i < totalCPUs; i++) {
