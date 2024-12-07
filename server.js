@@ -111,7 +111,6 @@ async function startNewHockshiServer(){
 		dynamicCookie.httpOnly = false;
 	} ;
 
-
 	app.locals.companyName = process.env.COMPANY_NAME;
 	app.locals.companyCity = process.env.COMPANY_CITY;
 	app.locals.companyState = process.env.COMPANY_STATE;
