@@ -1,15 +1,15 @@
 
 const express = require('express');
-const { faker } = require('@faker-js/faker');
+//const { faker } = require('@faker-js/faker');
 const path = require('path');
-const createError = require('http-errors');
-const {isTestEnvironment,connect,checkUploadDir}=require("./utilities/functions");
+//const createError = require('http-errors');
+const {connect,checkUploadDir}=require("./utilities/functions");
 
 const bodyParser = require('body-parser');
-const {decode} = require('html-entities');
-const template_folder = './statictemplate';
+//const {decode} = require('html-entities');
+//const template_folder = './statictemplate';
 const routes = require('./routes');
-const multer=require("multer")
+//const multer=require("multer")
 const csrf = require('csurf');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
@@ -17,15 +17,15 @@ const {mysq_store_session_database_options} = require('./sessionmanagement/sessi
 const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
 
-const RedisStore = require('connect-redis');
-const { v4: uuidv4 } = require('uuid');
+//const RedisStore = require('connect-redis');
+//const { v4: uuidv4 } = require('uuid');
 
 //controllers
 require("dotenv").config()
 
-let parseForm = bodyParser.urlencoded({ extended: false });
+//let parseForm = bodyParser.urlencoded({ extended: false });
 
-const { stripe,testStripeProductCreation } = require('./utilities/stripe'); 
+//const { stripe,testStripeProductCreation } = require('./utilities/stripe'); 
 
 // const DEV_PORT=5445 ;
 
@@ -44,7 +44,7 @@ checkUploadDir()
 
 //middleware
 
-const validateOTP=require("./middleware/OTPmiddleware")
+//const validateOTP=require("./middleware/OTPmiddleware")
 
 
 const site_secret = process.env.SITE_SECRET;
@@ -64,7 +64,7 @@ let dynamicCookie =  {
 
 /* Prevent attackes from guessing passwords with rate limiting per IP address */
 const { rateLimit } = require('express-rate-limit');
-const { serialize } = require('v8');
+//const { serialize } = require('v8');
 const { 
 	setUniqueUserID,
 	initializeRedisClient, 
