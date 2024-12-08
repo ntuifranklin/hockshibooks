@@ -105,6 +105,18 @@ class Email {
             };
         });
     }
+
+    async generateHTMLBdyFromTemplate(viewsFolder='views',EmailTemplateFolder='EmailTemplates', templateFile='OTPcodeTemplate.ejs', templateData={code:'00000'}) {   
+        
+            const templatePath = path.join(process.env.ROOT_PATH, viewsFolder,EmailTemplateFolder ,templateFile);
+            ejs.renderFile(templatePath,templateData, (err, html) => {
+                if(err) {
+                    console.log(`Error rendering email template: ${err}`);
+                    return err;
+                }
+                return html;
+            });
+    }
 };
 exports.Email = Email;
 const MIN_EMAIL_ADDR_LENGTH = 6 ;
