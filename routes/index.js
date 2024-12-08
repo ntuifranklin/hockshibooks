@@ -83,7 +83,9 @@ module.exports = () => {
    router.get("/productDetails/:id",bookDetail)
   */
 
-
+  /* Moved to books/search 
+  router.post("/search",searchBook)
+  */
 
   router.route("/login").get(loginPage).post(loginPagePost)
 
@@ -93,7 +95,6 @@ module.exports = () => {
   router.route("/showForm").get(showForm).post(processGuestUser)
 
 
-  router.post("/search",searchBook)
 
 
   router.post("/verifyOTP",verifyOTP)

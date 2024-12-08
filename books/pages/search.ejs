@@ -1,0 +1,50 @@
+<%- include('../../views/partials/pagehead') %>
+
+<%- include('../../views/layout/customerNavBar') %>
+
+<%- include('../../views/partials/breadcrumbs') %>
+    
+    <div id="main-wrapper">        
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-4">
+                    <div class="section-title text-lg-start text-center mb-20">
+                        <h3 class="section-title">Search Results</h3>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <ul class="nav product-tab-menu justify-content-lg-end justify-content-center" role="tablist">
+                        <li class="tab__item nav-item active" role="presentation">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#tab_list_01" role="tab" aria-selected="true">All Books</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="tab-content mt-30">
+                <div class="tab-pane fade show active" id="tab_list_01" role="tabpanel">
+                    <!-- product-slider-active -->
+                    <div class="row">
+                       <%- include('./booklistdisplay') %>           
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--====================  scroll top ====================-->
+    <a href="#" class="scroll-top" id="scroll-top">
+        <i class="arrow-top icon-arrow-up"></i>
+        <i class="arrow-bottom icon-arrow-up"></i>
+    </a>
+    
+<%- include('../../views/partials/commonjslibs'); %>
+
+<%- include('../assets/fetch_and_display_books_js') %>
+
+<%- include('../../cart/pages/partials/post_product_to_update_cart_js.ejs') %>
+
+</body>
+
+</html>

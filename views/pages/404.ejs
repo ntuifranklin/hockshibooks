@@ -11,9 +11,11 @@
                             <h1 class="mb-20">ohh! page not found</h1>
                             <p class="description">It seems we can't find what you're looking for. Perhaps searching can help or go back to <a href="/">Homepage</a></p>
 
+                            
                             <div class="search-page-box mt-40">
-                                <form action="#" class="pages-search">
-                                    <input class="input-box" type="text" placeholder="Search …">
+                                <form  action="/books/search" method="POST" class="pages-search">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <input class="input-box" type="text" placeholder="Search …" name="query">
                                     <button class="submit-btn"><i class="icon-magnifier"></i></button>
                                 </form>
                             </div>

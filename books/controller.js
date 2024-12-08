@@ -9,7 +9,6 @@ const { generateSeoFriendlyTitle } = require("./utilities");
 const booksHtmlView = async(req,res)=>{
 
     //dir_where_node_started/books_folder/pages_folder
-
     return res.render("../books/pages/books", {
         "pagetitle":"Books Available",
         books_route_name:"books",
@@ -250,12 +249,59 @@ const getAddBookWithISBNForm=(req,res)=>{
         add_books_route_name: "addBookWithExternalAPI",
 
     })
-}
+} ;
+
+const searchBook=async (req,res)=>{
+    /**
+     * Searches for books based on a query and renders the home page with the search results.
+     *
+     * @param {Object} req - The request object containing the query parameter.
+     * @param {Object} res - The response object used to render the home page with the search results.
+     * @return {Promise<void>} - Returns a promise that resolves when the home page is rendered with the search results.
+     */
+    
+    /**
+    It extracts the search query from the request body (req.body.query).
+    It uses the bookModel to search for books where the title, author, or ISBN matches the query (case-insensitive).
+    It includes the inventoryModel in the search results.
+    If the search is successful, it renders the homePage template with the search results (books) and returns a 200 status code.
+    If an error occurs, it redirects to the root URL with a 500 status code.
+    */
+        try{
+            let query= req.body.query 
+            query = query.trim();
+            //console.log(`Searching for query: ${query}`);
+            const books= await bookModel.findAll({
+                where: {
+                  [Op.or]: [
+                    { title: { [Op.like]: `%${query}%` } }, // Op.iLike is for case-insensitive search in PostgreSQL
+                    { author: { [Op.like]: `%${query}%` } },
+                    { isbn: { [Op.like]: `%${query}%` } }
+                  ]
+                },
+                include:[
+                    {model:inventoryModel}
+                ]
+              });
+    
+    
+              return res.status(200).render("../books/pages/search",{
+                "books":books,
+                "pagetitle":"Search Books",
+                base_route_name:"books",
+                api_route_name:"api"
+            })
+        }catch(e){
+            res.status(500).redirect(`${process.env.HOST}/`)
+        }
+    
+    };
 
 module.exports = {
     booksHtmlView,
     allBooksDumpApi,
     oneBookDetailsHtmlView,
     addBookWithISBN,
-    getAddBookWithISBNForm
+    getAddBookWithISBNForm,
+    searchBook
 }

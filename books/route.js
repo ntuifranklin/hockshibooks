@@ -5,7 +5,7 @@ var path = require('path');
 require('dotenv').config();
 const csrf = require('csurf');
 
-const {booksHtmlView,allBooksDumpApi,oneBookDetailsHtmlView,addBookWithISBN,getAddBookWithISBNForm} = require('./controller');
+const {booksHtmlView,allBooksDumpApi,oneBookDetailsHtmlView,addBookWithISBN,getAddBookWithISBNForm, searchBook} = require('./controller');
 const {booksApiRouteName, addBooksWithISBNOnlyRouteName} = require('./utilities') ;
 const { verifyLogin } = require('../admin/middleware') ;
 const validateISBN = require('./middleware');
@@ -14,7 +14,8 @@ module.exports = () => {
   
     router.get("/",booksHtmlView);
     router.get(`/addBookWithExternalAPI`,verifyLogin,  getAddBookWithISBNForm);
-    router.post(`/addBookWithExternalAPI`,verifyLogin,validateISBN, addBookWithISBN);        
+    router.post(`/addBookWithExternalAPI`,verifyLogin,validateISBN, addBookWithISBN);    
+    router.post('/search', searchBook)    
     //send this to the api section
     router.get(`/api`, allBooksDumpApi)
 
