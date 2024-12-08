@@ -7,7 +7,9 @@ const otpModel=require("../models/otpModel")
 const customerModel=require("../models/customerModel")
 const cusomerOtpModel=require("../models/customerOtpModel")
 const nodemailerMock=require("nodemailer-mock")
-const axios= require("axios")
+const axios= require("axios");
+const { Email } = require('./email');
+const ejs = require('ejs');
 require("dotenv").config()
 
 function isTestEnvironment(root_dir=new String(__dirname)) {
@@ -72,40 +74,22 @@ const generateAndSendOTP=async (userId,mail,otpmodel)=>{
   // Save OTP to the database
   if(otpmodel.toString()==otpModel.toString()){
   let code =await otpmodel.create({  otp:otpCode,powerUserId:userId, expiration_time:expiresAt });
-}
-  else if(otpmodel.toString()==cusomerOtpModel.toString()){
+  } else if(otpmodel.toString()==cusomerOtpModel.toString()){
    let code=await otpmodel.create({  otp:otpCode,customerId:userId, expiration_time:expiresAt });
 
   }
-  
-// if (process.env.NODE_ENV === 'test') {
-//   Transporter = nodemailerMock.createTransport();
+  const email = new Email();    
 
-
-
-//   } 
-  // else{ 
-    
-    Transporter=nodemailer.createTransport({
-      service:'gmail',
-
-      auth:{
-        user:process.env.EMAIL_USER,
-        pass:process.env.EMAIL_PASS //google does not allow you to use your regular password for third party apps instead , you will generate an app pass , app passwords can only be generated for accounts with 2FA
-
-      }
-    });
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to: mail,
-    subject: 'Your OTP Code',
-    text: `Your OTP code is ${otpCode}. It will expire in 15 minutes.`,
-  };
   try{
+      
+    let templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'OTPcodeTemplate.ejs');
+    //console.log(`\tTemplate path: ${templatePath}`);
+    templatePath = path.normalize(templatePath);
+    //console.log(`\tTemplate path: ${templatePath}`);
+    const html = await ejs.renderFile(templatePath,{code:otpCode});
+    await email.sendEmail(mail, 'OTP code', html) ;
+    //console.log(`Email sent successfully in ${__filename} : ${JSON.stringify(html)}`);
 
-      await Transporter.sendMail(mailOptions,()=>{
-        console.log("Email sent successfully.");        });
-        console.log(otpCode);
   }
   catch(e){
     console.log("email error" , e)
@@ -128,6 +112,44 @@ const sendStatusChangedMessage=async(order,status)=>{
       customer_id:order.customer_id
     }
   })
+
+
+  const email = new Email();    
+
+  try{
+      
+    let templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'orderCompletedMessage.ejs');
+    //console.log(`\tTemplate path: ${templatePath}`);
+    templatePath = path.normalize(templatePath);
+    //console.log(`\tTemplate path: ${templatePath}`);
+    const html = await ejs.renderFile(templatePath,{
+        emailTitle: 'A new order was made',
+        customerName: `${customer.first_name}`,
+        orderId: `${order.order_id}`,
+    });
+    await email.sendEmail(customer.email, 'A New Order Was Made', html) ;
+    //console.log(`Email sent successfully in ${__filename} : ${JSON.stringify(html)}`);
+
+  }
+  catch(e){
+    console.log("email error" , e)
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   Transporter=nodemailer.createTransport({
     service:'gmail',
 

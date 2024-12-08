@@ -10,7 +10,7 @@ const customerOtpModel=require("../models/customerOtpModel")
 const orderModel= require("../models/ordersModel")
 const OrderItem = require("../models/orderItemsModel");
 const paymentModel=require("../models/paymentModel")
-const{convertDateFormat} = require("../utilities/functions");
+const{convertDateFormat, sendStatusChangedMessage} = require("../utilities/functions");
 const { generateUniqueCartSessionRedisCacheKey } = require("../cart/utilities");
 const { retrieveJSONObjectFromRedisCache, deleteDataFromRedisCache } = require("../middleware/redis");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -282,6 +282,8 @@ const  successPayment = async(req,res)=>{
         req.session.lineItems = null;
         req.session.stripePaymentSession = null;
         await req.session.save();
+        //send email to customer
+        sendStatusChangedMessage(order,"processing");
         return res.status(200).render("pages/successPage")
     }
     catch(err){

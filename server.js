@@ -79,9 +79,9 @@ async function startNewHockshiServer(){
 
 	//start redis cache
 	await initializeRedisClient();
+	app.use(express.static(path.join(__dirname, 'views')));
 	app.set('view engine', 'ejs');
-	app.use(express.static(path.join(__dirname, './views')));
-	app.set('views', path.join(__dirname, './views'));
+	app.set('views', path.join(__dirname, 'views'));
 	app.use(express.json());
 
 	app.use(request_rate_limiter); 
