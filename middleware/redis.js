@@ -317,7 +317,8 @@ async function setUniqueUserID(request, response, next) {
     if (!request.session.userID) {
         let userID = await generateShortUUID(length=8);
         request.session.userID = userID;
-        console.log(`Generated new user ID: ${request.session.userID}`);
+        request.session.save();
+        //console.log(`Generated new user ID: ${request.session.userID}`);
     }
     next();
 };

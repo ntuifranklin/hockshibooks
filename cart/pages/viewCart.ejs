@@ -1,4 +1,4 @@
-    <%- include('./partials/pagehead') %>
+    <%- include('../../views/partials/pagehead') %>
     <%- include('../../views/layout/customerNavBar') %>
     <%- include('../../views/partials/breadcrumbs') %>
         
@@ -10,8 +10,23 @@
         <div class="cart-main-area  section-space--ptb_90">
             <div class="container">
                 <div class="row">
+                    <div class="col-lg-8 col-md-12 col-sm-12">
+                        <div class="animation  hidden">
+                            <div class="containered">
+                                <div class="bar"></div>
+                                <div class="bar"></div>
+                                <div class="bar"></div>
+                                <div class="bar"></div>
+                            </div>
+                            <p>Processing, Please Wait ...</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
                     <div class="col-lg-12">
-                        <form action="#">
+                        <% //form below goes no where %>
+                        <form>
                             <div class="table-content table-responsive cart-table-content header-color-gray">
                                 <table>
                                     <thead>
@@ -30,7 +45,18 @@
                                 </table>
                             </div>
                         </form>
-                       
+                        <div class="shopping-update-area row">
+
+                            <div class="continue-shopping-butotn col-6 col-md-8 col-sm-12 mt-30">
+                                <a href="/books" class="btn btn--lg btn--black"><i class="icon-arrow-left"></i> Continue Shopping </a>
+                            </div>
+                            <!--
+                            <div class="update-cart-button col-6 text-end mt-30">
+                                <a href="#" class="btn btn--lg btn--border_1">Update cart</a>
+                            </div>
+                            -->
+
+                        </div>
                         <div class="cart-buttom-area">
                             <div class="row">
                                 <div class="col-lg-6">
@@ -42,7 +68,7 @@
                                             <div class="grand-total-content">
                                                 <ul>
                                                     <div class="cartCon">
-                                                        <li>Subtotal <span> $87.00</span></li>
+                                                        <li>Subtotal <span> </span></li>
 
                                                     </div>
                                                     <hr>
@@ -51,7 +77,10 @@
                                             </div>
                                         </div>
                                         <div class="grand-btn mt-30">
-                                            <p class="btn--black btn--full text-center btn--lg" id="reveal">Proceed to checkout</p>
+                                            <a href="/checkout"  class="btn--black btn--full text-center btn--lg" id="reveal">                                                
+                                                    Proceed to checkout  
+                                            </a>
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -60,127 +89,11 @@
 
                     </div>
                 </div>
-            </div>
-            
-            <div class="animation  hidden ">
-                <div class="containered">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                </div>
-                <p>Processing, Please Wait ...</p>
-            </div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-7">
-
-                    </div>
-                   
-                </div>
-
-                <div class="loading-container">
-
-                    <div class="cart-item loading">
-                      <div class="image animated-background"></div>
-                      <div class="content">
-                        <div class="title animated-background"></div>
-                        <div class="author animated-background"></div>
-                        <div class="price animated-background"></div>
-                        <div class="quantity animated-background"></div>
-                        <div class="status animated-background"></div>
-                      </div>
-                    </div>
-                    
-                    <div class="cart-item loading">
-                      <div class="image animated-background"></div>
-                      <div class="content">
-                        <div class="title animated-background"></div>
-                        <div class="author animated-background"></div>
-                        <div class="price animated-background"></div>
-                        <div class="quantity animated-background"></div>
-                        <div class="status animated-background"></div>
-                      </div>
-                    </div>
-                    
-                </div>
-                <div class="checkout-wrap hidden" >
-                    <div class="row">
-                        <div class="col-lg-7">
-                            <div class="billing-info-wrap mr-100">
-                                <h6 class="mb-20">Billing Details</h6>
-                                <div class="row">
-                                    <form  id="checkout">
-                                   
-                                    <div class="col-lg-12">
-                                        <div class="billing-select mb-25">
-                                            <label>Country <span class="required" title="required">*</span></label>
-                                            <select class="select-active" name="country" id="country">
-                                                <% for(let i=0; i < country.length; i++) { %>
-                                                    
-                                                      <option value="<%= country[i].country_name %>"><%= country[i].country_name %></option> 
-                                                      <% } %>
-                                            </select>
-                          <p id="countryError" class="error"></p>
-
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12">
-                                        <div class="billing-select mb-25">
-                                            <label>State <span class="required" title="required">*</span></label>
-                                            <select class="select-active" name="state" id="state">
-                                                <% for(let i=0; i < states.length; i++) { %>
-                                                    
-                                                      <option value="<%= states[i].province_state_name %>"><%= states[i].province_state_name %></option> 
-                                                      <% } %>
-                                            </select>
-
-                          <p id="stateError" class="error"></p>
-
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12">
-                                        <div class="billing-info mb-25">
-                                            <label>shipping address <span class="required" title="required">*</span></label>
-                                            <input class="billing-address" placeholder="House number and street name" type="text" name="address" id="address">
-                      <p id="addressError" class="error"></p>
-                                        
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12">
-                                        <div class="billing-info mb-25">
-                                            <label>Town / City <span class="required" title="required">*</span></label>
-                                            <input type="text" name="city" id="city">
-                      <p id="cityError" class="error"></p>
-
-                                        </div>
-                                    </div>
-                                   
-                                    <div class="col-lg-12 col-md-12">
-                                        <div class="billing-info mb-25">
-                                            <label>Postcode / ZIP (optional) <span class="required" title="required">*</span></label>
-                                            <input type="text" name="postal code" id="postalCode">
-                          <p id="postalCodeError" class="error"></p>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="place-order mt-30">
-                                        <button type="submit" class="btn--full btn--black btn--lg text-center">Place Order</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="col-lg-5">
-                           
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </div>        
         </div>
         <!-- checkout end -->
     </div>
-    <script src="https://js.stripe.com/v3/"></script>
+    
     <%- include('../../views/partials/footerarea') %>
 </div>
 <script>
@@ -208,97 +121,99 @@
             var cartItems =  [];
             await fetch('/cart/items')
             .then(response => response.json())
-            .then(detailedCartItems => {
+            .then(async(detailedCartItems) => {
                 detailedCartItems=detailedCartItems
                 cartLength=detailedCartItems.length
-                displayCartItems(detailedCartItems);
+                await displayCartItems(detailedCartItems);
             })
             .catch(error => {
                 console.error('Error fetching cart items:', error);
             });
         }
 
-        function removeFromCart(productId) {
-                    // Refresh the cart display after removing the specified product from the cart.
-            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-            cartItems = cartItems.filter(item => item.id != productId);
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
-            fetchCartItems(); // Refresh the cart display after removal
-        }
-        function displayCartItems(detailedCartItems) {
-                    /**
-         * Displays the detailed cart items in the cartItemsContainer element.
-         *
-         * @param {Array} detailedCartItems - An array of detailed cart items to be displayed.
-         * @return {void} This function does not return anything.
-         */
-            const cartItemsContainer = document.querySelector('tbody');
-            //console.log(cartItemsContainer)
-            cartItemsContainer.innerHTML = '';
-            detailedCartItems.forEach(item => {
-                const itemElement = document.createElement('tr');
-                itemElement.classList.add('itemElement');  
-                itemElement.innerHTML = `
-                    <td></td>
-                    <td class="product-img">
-                        <a href="#"><img src="${item.cover_image}" alt="" style="width: 80px; height:80px margin-right: 10px"></a>
-                    </td>
-                    <td class="product-name"><a href="#" class="productName">${item.title}</a></td>
+    function removeFromCart(productId) {
+                // Refresh the cart display after removing the specified product from the cart.
+        let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        cartItems = cartItems.filter(item => item.id != productId);
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        fetchCartItems(); // Refresh the cart display after removal
+    }
+    async function displayCartItems(detailedCartItems) {
+                /**
+     * Displays the detailed cart items in the cartItemsContainer element.
+     *
+     * @param {Array} detailedCartItems - An array of detailed cart items to be displayed.
+     * @return {void} This function does not return anything.
+     */
+        const cartItemsContainer = document.getElementById('cartItemsList');
+        //console.log(cartItemsContainer)
+        cartItemsContainer.innerHTML = '';
+        detailedCartItems.forEach(item => {
+            const itemElement = document.createElement('tr');
+            itemElement.classList.add('itemElement');  
+            itemElement.innerHTML = `
+                <td></td>
+                <td class="product-img">
+                    <a href="/books/${item.seo_friendly_title}"><img src="${item.cover_image}" alt="" style="width: 80px; height:80px margin-right: 10px"></a>
+                </td>
+                <td class="product-name"><a href="/books/${item.seo_friendly_title}" class="productName">${item.title}</a></td>
 
-                    <td class="product-price"><span class="productPrice">$${item.price}</span></td>
+                <td class="product-price"><span class="productPrice">$${item.price}</span></td>
 
-                    <td class="cart-quality">
-                        <div class="quickview-quality quality-height-dec2">
-                            <div class="cart-plus-minus">
-                                <label class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${item.qty}>
-                                ${item.qty}
-                                </label>
-                            </div>
+                <td class="cart-quality">
+                    <div class="quickview-quality quality-height-dec2">
+                        <div class="cart-plus-minus">
+                            <label class="productQty" data-product-id=${item.book_id} data-qty-available=${item.Inventory.quantity_available} value=${item.qty}>
+                            ${item.qty}
+                            </label>
                         </div>
-                    </td>                    
-                    <td class="product-remove">
-                        <a href="#" onclick="sendToCart(category='books',productIDToUpdate='${item.book_id}', source='', alertIndex='', action='r')">
-                            <i class="icon-cross2" id="delete-item" data-product-id="${item.book_id}"></i>
-                        </a>
-                    </td>`;
-                cartItemsContainer.appendChild(itemElement);
-            });
-
-            loadValue()
-           
-        }
-
-        const loadValue= ()=>{
-                    /**
-         * Loads the saved quantity values for each product in the cart.
-         * 
-         * Iterates through all select elements, retrieves the corresponding product ID,
-         * and updates the select element's selected index based on the saved quantity value.
-         * 
-         * @return {void}
-         */
-            let selectBoxes= document.querySelectorAll("select")
-
-            selectBoxes.forEach(select=>{
-            let id=select.getAttribute("data-product-id")
-            const items=JSON.parse(localStorage.getItem("cartItems"))
-            
-                let saved=items.find(item=>item.id==id)
-
-                if(saved){
-                    select.selectedIndex=saved.qty-1
+                    </div>
+                </td>                    
+                <td class="product-remove">
                     
-                }
-            })
-        }
+                    <i class="icon-cross2" id="delete-item" data-product-id="${item.book_id}" onclick="sendToCart(category='books',productIDToUpdate='${item.book_id}', source='', alertIndex='', action='r')">
+                    </i>
+                    
+                </td>`;
+            cartItemsContainer.appendChild(itemElement);
+        });
 
-        const displayOrderSummary=async ()=>{
-                    /**
-         * Asynchronously displays the order summary by fetching the detailed cart items and calculating the total price.
-         *
-         * @return {Promise<void>} A Promise that resolves when the order summary is displayed.
-         */
-            let detailedCartItems= await document.querySelectorAll(".itemElement")
+        loadValue()
+        await displayOrderSummary()
+        
+    }
+
+    const loadValue= ()=>{
+                /**
+     * Loads the saved quantity values for each product in the cart.
+     * 
+     * Iterates through all select elements, retrieves the corresponding product ID,
+     * and updates the select element's selected index based on the saved quantity value.
+     * 
+     * @return {void}
+     */
+        let selectBoxes= document.querySelectorAll("select")
+
+        selectBoxes.forEach(select=>{
+        let id=select.getAttribute("data-product-id")
+        const items=JSON.parse(localStorage.getItem("cartItems"))
+        
+            let saved=items.find(item=>item.id==id)
+
+            if(saved){
+                select.selectedIndex=saved.qty-1
+                
+            }
+        })
+    }
+
+    const displayOrderSummary=async ()=>{
+                /**
+     * Asynchronously displays the order summary by fetching the detailed cart items and calculating the total price.
+     *
+     * @return {Promise<void>} A Promise that resolves when the order summary is displayed.
+     */
+        let detailedCartItems= await document.querySelectorAll(".itemElement")
         const cartItemsContainer = document.querySelector('.col-md-4');
         const cartI = document.querySelector('.cartCon');
         let totalprice=0;
@@ -307,74 +222,72 @@
         let productPrice="";
         cartI.innerHTML=""
 
-            var subTotalPrice=0;
-            detailedCartItems.forEach(item=>{
-                const itemElement = document.createElement('li');
-                
-
-               productName=item.querySelector(".productName").innerHTML
-               productQty=item.querySelector(".productQty").innerHTML
-               productPrice=item.querySelector(".productPrice").innerHTML ;
-               subTotalPrice= Math.round(parseFloat(productPrice.slice(1)) * parseFloat(productQty));
-                itemElement.innerHTML=`
-
-
-                        <li>${productName} ${productPrice}(${productQty}) <span> $${productPrice.slice(1) * productQty}</span></li>
-                
-                `
-                totalprice+= subTotalPrice ;
-                cartI.appendChild(itemElement)
-               
-            })
+        var subTotalPrice=0;
+        detailedCartItems.forEach(item=>{
+            const itemElement = document.createElement('li');
             
-            let totalPric=document.querySelector(".totalPrice")
 
-            totalPric.innerHTML=`
-            Total <span>$${totalprice}</span>
-                    
+            productName=item.querySelector(".productName").innerHTML
+            productQty=item.querySelector(".productQty").innerHTML
+            productPrice=item.querySelector(".productPrice").innerHTML ;
+            subTotalPrice= parseFloat(productPrice.slice(1)) * parseFloat(productQty);
+            itemElement.innerHTML=`
+                <li>${productName} ${productPrice} x ${productQty}  <span> = $${productPrice.slice(1) * productQty}</span></li>
+            
             `
-       
-    }
-
-        // Initialize cart count and fetch cart items on page load
-        document.addEventListener('DOMContentLoaded', async () => {
-            // updateCartCount();
-            await fetchCartItems();
-
-            deleteButton=document.querySelectorAll("#delete-item")
-            let selectBoxs=document.querySelectorAll(".productQty")
+            totalprice+= subTotalPrice ;
+            cartI.appendChild(itemElement)
             
-            deleteButton.forEach(button=>{
-                button.addEventListener("click",async(e)=>{
-                const productId = e.target.getAttribute('data-product-id');
-                removeFromCart(productId)
-                location.reload()
-            //    await displayOrderSummary()
-            })
-
-        });
-            
+        })
         
-        const checkoutBtn=document.getElementById("checkout")
-            checkoutBtn.addEventListener("submit",async (e)=>{
+        let totalPric=document.querySelector(".totalPrice")
 
-                e.preventDefault()
-                if(cartLength===0){
-                alert("you shopping cart is empty, please add some books in your cart")
-            }
-            else{
+        totalPric.innerHTML=`
+        Total <span> = $${totalprice.toFixed(2)}</span>
                 
-                const shippingInfo = {
-            address: document.getElementById('address').value,
-            city: document.getElementById('city').value,
-            state: document.getElementById('state').value,
-            country: document.getElementById('country').value,
-            postalCode: document.getElementById('postalCode').value
-      };
-        console.log(shippingInfo)
+        `
+    
+}
 
-      document.querySelector(".animation").classList.remove("hidden")
-                document.getElementById("body").classList.add("body_style")
+    // Initialize cart count and fetch cart items on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+        // updateCartCount();
+        await fetchCartItems();
+
+        deleteButton=document.querySelectorAll("#delete-item")
+        let selectBoxs=document.querySelectorAll(".productQty")
+        
+        deleteButton.forEach(button=>{
+            button.addEventListener("click",async(e)=>{
+            const productId = e.target.getAttribute('data-product-id');
+            removeFromCart(productId)
+            location.reload()
+        //    await displayOrderSummary()
+        })
+
+    });
+        
+    
+    const checkoutBtn=document.getElementById("checkout")
+    checkoutBtn.addEventListener("submit",async (e) => {
+
+        e.preventDefault()
+        if(cartLength===0){
+            alert("you shopping cart is empty, please add some books in your cart")
+        }
+        else{
+                
+            const shippingInfo = {
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                country: document.getElementById('country').value,
+                postalCode: document.getElementById('postalCode').value
+            };
+            console.log(shippingInfo)
+
+            document.querySelector(".animation").classList.remove("hidden")
+            document.getElementById("body").classList.add("body_style")
             
             const stripe = Stripe('pk_test_51PBfXMI23B1KGZBvr0u1jx8rYbAi3Tl8wz2DGvGy2lWSK1Vh2YZAaFYwn41tHjwE3WbTB6Dg9ElN73VQvqnLNxaA00XmhuFpMT');
 
@@ -388,77 +301,77 @@
              *
              * @return {Promise<void>} This function does not return anything.
              */
-                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                //const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
-            const response = await fetch('/checkout', {
-                method: 'POST',
-                headers: {
-                    "X-CSRF-Token":"<%=csrfToken%>",
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    items: cartItems,
-                    shippingInfo:shippingInfo
-                })
-            }); 
+                const response = await fetch('/checkout', {
+                    method: 'POST',
+                    headers: {
+                        "X-CSRF-Token":"<%=csrfToken%>",
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        //items: cartItems,
+                        shippingInfo:shippingInfo
+                    })
+                }); 
 
             
 
-            const data = await response.json();
-            if (response.status === 401) {
-                document.querySelector(".animation").classList.add("hidden")
-                document.getElementById("body").classList.remove("body_style")
-                window.location.href = data.redirectUrl;
-            } 
-            else if(data.errors){
-                document.querySelector(".animation").classList.add("hidden")
-                document.getElementById("body").classList.remove("body_style")
-                data.errors.forEach(error => {
-          document.getElementById(`${error.path.split(".")[1]}Error`).innerText = error.msg;
-        });
+                const data = await response.json();
+                if (response.status === 401) {
+                    document.querySelector(".animation").classList.add("hidden")
+                    document.getElementById("body").classList.remove("body_style")
+                    window.location.href = data.redirectUrl;
+                } 
+                else if(data.errors){
+                    document.querySelector(".animation").classList.add("hidden")
+                    document.getElementById("body").classList.remove("body_style")
+                    data.errors.forEach(error => {
+                        document.getElementById(`${error.path.split(".")[1]}Error`).innerText = error.msg;
+                    });
 
-            }
-            else {
-                document.querySelector(".animation").classList.remove("hidden")
-                document.getElementById("body").classList.add("body_style")
+                } else {
+                    document.querySelector(".animation").classList.remove("hidden")
+                    document.getElementById("body").classList.add("body_style")
 
-                // Redirect to the Stripe Checkout page
-                const { error } = await stripe.redirectToCheckout({
-                    sessionId: data.id,
-                });
+                    // Redirect to the Stripe Checkout page
+                    const { error } = await stripe.redirectToCheckout({
+                        sessionId: data.id,
+                    });
 
-                if (error) {
-                    console.error(error);
+                    if (error) {
+                        console.error(error);
+                    }
                 }
+            } catch (error) {
+                console.error('Error:', error);
             }
-        } catch (error) {
-            console.error('Error:', error);
         }
-    }
 
 
-        })
+    })
+    
+    /*
+    const reveal= document.getElementById("reveal")
+
+    reveal.addEventListener("click",()=>{
         
-        const reveal= document.getElementById("reveal")
-
-        reveal.addEventListener("click",()=>{
-           
-            if(cartLength===0){
-                alert("you shopping cart is empty, please add some books in your cart")
-            }
-            else{
-            const rev=document.querySelector(".hidden")
+        if(cartLength===0){
+            alert("you shopping cart is empty, please add some books in your cart")
+        } else {
+            const rev=document.querySelector(".checkout-wrap")
             rev.classList.remove("hidden")
             window.scrollTo(0,1311)
-                }
-        })
+        }
+    })
+    */
 
 
-        await displayOrderSummary()
+    
 
-        selectBoxs.forEach(box=>{
-            // Iterate over each select box in the array
+    selectBoxs.forEach(box=>{
+        // Iterate over each select box in the array
 // Add an event listener for the "change" event on each select box
 // Retrieve the cart items from localStorage and parse them as JSON, defaulting to an empty array if not found
 // Get the product ID from the data attribute of the changed select box
@@ -471,43 +384,43 @@
 // Update the cart items in localStorage with the modified cart items array
 // Update the order summary on the UI
 
-                box.addEventListener("change",async(e)=>{
-                    //let cartItems =await JSON.parse(localStorage.getItem('cartItems')) || [];
-                     const productId = e.target.getAttribute('data-product-id');
-                    const quantity_available=e.target.getAttribute("data-qty-available")
-                    let product = cartItems.find(item => item.id == productId);
+            box.addEventListener("change",async(e)=>{
+                //let cartItems =await JSON.parse(localStorage.getItem('cartItems')) || [];
+                    const productId = e.target.getAttribute('data-product-id');
+                const quantity_available=e.target.getAttribute("data-qty-available")
+                let product = cartItems.find(item => item.id == productId);
 
-                 if (product) {
-                    if(parseInt(e.target.value)>quantity_available){
-                        e.preventDefault()
-                        alert("The quantity selected is more than the quantity available")
-                    }
-                    else{
-                   product.qty=parseInt(e.target.value)
-                    }
-                } 
-                //localStorage.setItem('cartItems', JSON.stringify(cartItems));
-                    displayOrderSummary()
-                })
+                if (product) {
+                if(parseInt(e.target.value)>quantity_available){
+                    e.preventDefault()
+                    alert("The quantity selected is more than the quantity available")
+                }
+                else{
+                product.qty=parseInt(e.target.value)
+                }
+            } 
+            //localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                displayOrderSummary()
             })
         })
+    })
 
-        window.addEventListener("load",()=>{
-            // Add an event listener for the "load" event on the window object
-// This code will execute when the page has fully loaded
+    window.addEventListener("load",()=>{
+        // Add an event listener for the "load" event on the window object
+        // This code will execute when the page has fully loaded
 
-// Select the element with the class "loading-container" for the loading animation
-// Select the element with the class "container-container" for the products display
+        // Select the element with the class "loading-container" for the loading animation
+        // Select the element with the class "container-container" for the products display
 
-// Add the "move" class to the loading animation element to start or change its animation
-// Remove the "hidden" class from the products element to make it visible
+        // Add the "move" class to the loading animation element to start or change its animation
+        // Remove the "hidden" class from the products element to make it visible
 
-            const animation= document.querySelector(".loading-container")
-            const products=document.querySelector(".container-container")
+        const animation= document.querySelector(".loading-container")
+        const products=document.querySelector(".container-container")
 
-            animation.classList.add("move")
-            //products.classList.remove("hidden")
-        })
+        animation.classList.add("move")
+        //products.classList.remove("hidden")
+    })
 
 </script>
 

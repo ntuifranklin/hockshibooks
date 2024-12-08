@@ -44,7 +44,7 @@
                                             .then(response => response.json())
                                             .then(data => {
                                                 //console.log(`cart items near cart icon: ${JSON.stringify(data)}`);
-                                                if (typeof data != "undefined" && typeof data.length  != "undefined"){
+                                                if (typeof data != "undefined" && typeof data.length  != "undefined" && data.length > 0){
                                                     let total = 0;
                                                     for (let i = 0; i < data.length; i++){
                                                         total += data[i].qty;
@@ -97,22 +97,19 @@
                 <nav class="offcanvas-navigation">
                     <ul>
                         <li class="has-children">
-                            <a href="/login">Login</a>
-                            
-                        </li>
-                        <li class="has-children">
                             <a href="/">Home</a>
                             
                         </li>
                         <li class="has-children">
-                            <a href="/books">Books</a>
-                            
-                            
+                            <a href="/books">Books</a>                     
                         </li>
 
                         <li class="has-children">
-                            <a href="/cart/view">Shopping cart</a>
-                            
+                            <a href="/cart/view">Shopping Cart</a>                            
+                        </li>
+
+                        <li class="has-children">
+                            <a href="/login">Login</a>
                             
                         </li>
                         

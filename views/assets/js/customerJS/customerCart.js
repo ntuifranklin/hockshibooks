@@ -231,27 +231,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     
 
 const checkoutBtn=document.getElementById("checkout")
-    checkoutBtn.addEventListener("submit",async (e)=>{
-
-        e.preventDefault()
-        if(cartLength===0){
+checkoutBtn.addEventListener("submit",async (e)=>{
+    e.preventDefault()
+    if(cartLength===0){
         alert("you shopping cart is empty, please add some books in your cart")
     }
     else{
         
         const shippingInfo = {
-    address: document.getElementById('address').value,
-    city: document.getElementById('city').value,
-    state: document.getElementById('state').value,
-    country: document.getElementById('country').value,
-    postalCode: document.getElementById('postalCode').value
-};
-console.log(shippingInfo)
+            address: document.getElementById('address').value,
+            city: document.getElementById('city').value,
+            state: document.getElementById('state').value,
+            country: document.getElementById('country').value,
+            postalCode: document.getElementById('postalCode').value
+        };
+        console.log(shippingInfo)
 
-document.querySelector(".animation").classList.remove("hidden")
+        document.querySelector(".animation").classList.remove("hidden")
         document.getElementById("body").classList.add("body_style")
     
-    const stripe = Stripe('pk_test_51PBfXMI23B1KGZBvr0u1jx8rYbAi3Tl8wz2DGvGy2lWSK1Vh2YZAaFYwn41tHjwE3WbTB6Dg9ElN73VQvqnLNxaA00XmhuFpMT');
+        const stripe = Stripe('pk_test_51PBfXMI23B1KGZBvr0u1jx8rYbAi3Tl8wz2DGvGy2lWSK1Vh2YZAaFYwn41tHjwE3WbTB6Dg9ElN73VQvqnLNxaA00XmhuFpMT');
 
     try {
         /**

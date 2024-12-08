@@ -1,4 +1,6 @@
 
+
+require("dotenv").config()
 const express = require('express');
 //const { faker } = require('@faker-js/faker');
 const path = require('path');
@@ -17,24 +19,11 @@ const {mysq_store_session_database_options} = require('./sessionmanagement/sessi
 const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
 
-//const RedisStore = require('connect-redis');
-//const { v4: uuidv4 } = require('uuid');
 
-//controllers
-require("dotenv").config()
-
-//let parseForm = bodyParser.urlencoded({ extended: false });
-
-//const { stripe,testStripeProductCreation } = require('./utilities/stripe'); 
-
-// const DEV_PORT=5445 ;
-
-// let PORT = process.env.NODE_ENV=="test"?4000:3000 ;
 const env = process.env.NODE_ENV||"dev";
 const port = env == "test" ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
 
 
-const sequelize = require('./config/database');
 process.env.ROOT_PATH=path.join(__dirname, './');
 
 //connects to the database
@@ -154,15 +143,15 @@ async function startNewHockshiServer(){
 		req.locals.valid_cart_actions = valid_cart_actions ;
 
 		//console.log(`Request process ID: ${process.pid}.`);
-		console.log(`User ID: ${req.session.userID}`);
+		//console.log(`User ID: ${req.session.userID}`);
 		
 		//console.log(req.headers['user-agent']);
 		//log userID
 		//console.log(`session userID: ${req.session.userID}`);
-		req.session.someTypeOfCounter = req.session.someTypeOfCounter + 1 ;	
+		//req.session.someTypeOfCounter = req.session.someTypeOfCounter + 1 ;	
 		//console.log(`Some type of counter: ${req.session.someTypeOfCounter}`);
 		
-		req.session.save();
+		//req.session.save();
 		next();
 	});
 

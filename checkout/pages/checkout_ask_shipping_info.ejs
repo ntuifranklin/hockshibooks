@@ -1,0 +1,246 @@
+<%- include('../../views/partials/pagehead') %>
+<%- include('../../views/layout/customerNavBar') %>
+<%- include('../../views/partials/breadcrumbs') %>
+    
+
+<div id="main-wrapper" class="site-wrapper-reveal border-bottom">
+    <!-- cart start -->
+           
+        <div class="container">           
+
+            <div class="animation  hidden d-none">
+                <div class="containered">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                </div>
+                <p>Processing, Please Wait ...</p>
+            </div>
+
+
+            <div class="loading-container">
+
+                <div class="cart-item loading">
+                  <div class="image animated-background"></div>
+                  <div class="content">
+                    <div class="title animated-background"></div>
+                    <div class="author animated-background"></div>
+                    <div class="price animated-background"></div>
+                    <div class="quantity animated-background"></div>
+                    <div class="status animated-background"></div>
+                  </div>
+                </div>
+                
+                <div class="cart-item loading">
+                  <div class="image animated-background"></div>
+                  <div class="content">
+                    <div class="title animated-background"></div>
+                    <div class="author animated-background"></div>
+                    <div class="price animated-background"></div>
+                    <div class="quantity animated-background"></div>
+                    <div class="status animated-background"></div>
+                  </div>
+                </div>
+                
+            </div>
+            <div class="checkout-wrap hidden" >
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <div class="billing-info-wrap mr-100">
+                            <h6 class="mb-20">Billing Details</h6>
+                            <div class="row">
+                                <form action="/checkout" id="checkout" method="POST">
+                               
+                                <div class="col-lg-12">
+                                    <div class="billing-select mb-25">
+                                        <label>Country <span class="required" title="required">*</span></label>
+                                        <select class="select-active" name="country" id="country">
+                                            <% for(let i=0; i < country.length; i++) { %>
+                                                
+                                                  <option value="<%= country[i].country_name %>"><%= country[i].country_name %></option> 
+                                                  <% } %>
+                                        </select>
+                                        <p id="countryError" class="error"></p>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="billing-select mb-25">
+                                        <label>State <span class="required" title="required">*</span></label>
+                                        <select class="select-active" name="state" id="state">
+                                            <% for(let i=0; i < states.length; i++) { %>
+                                                
+                                                  <option value="<%= states[i].province_state_name %>"><%= states[i].province_state_name %></option> 
+                                                  <% } %>
+                                        </select>
+
+                                        <p id="stateError" class="error"></p>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="billing-info mb-25">
+                                        <label>shipping address <span class="required" title="required">*</span></label>
+                                        <input class="billing-address" placeholder="House number and street name" type="text" name="address" id="address">
+                                        <p id="addressError" class="error"></p>
+                                    
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="billing-info mb-25">
+                                        <label>Town / City <span class="required" title="required">*</span></label>
+                                        <input type="text" name="city" id="city">
+                                        <p id="cityError" class="error"></p>
+
+                                    </div>
+                                </div>
+                               
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="billing-info mb-25">
+                                        <label>Postcode / ZIP (optional) <span class="required" title="required">*</span></label>
+                                        <input type="text" name="postal code" id="postalCode">
+                                        <p id="postalCodeError" class="error"></p>
+
+                                    </div>
+                                </div>
+
+                                <div class="place-order mt-30">
+                                    <button type="submit" class="btn--full btn--black btn--lg text-center">Place Order</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    <!-- checkout end -->
+    <%- include('../../views/partials/footerarea') %>
+</div>
+<script src="https://js.stripe.com/v3/"></script>
+
+</div>
+
+<%- include('../../views/partials/commonjslibs'); %>
+
+<script>
+window.addEventListener("load", async () => {
+    const getCartItems = async() => {
+        
+        return await fetch('/cart/items')
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error fetching cart items:', error);
+        });
+
+
+    } ;
+
+    let cartLength=0
+    let cartItems=[] ;
+    cartItems = await getCartItems();
+    cartLength=cartItems.length || 0 ;
+    console.log(`Cart gotten from server: ${JSON.stringify(cartItems)}`);
+    
+    const checkoutBtn=document.getElementById("checkout")
+    checkoutBtn.addEventListener("submit",async (e) => {
+
+        e.preventDefault()
+        if(cartLength===0){
+            alert("you shopping cart is empty, please add some items in your cart")
+        }
+        else{
+                
+            const shippingInfo = {
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                country: document.getElementById('country').value,
+                postalCode: document.getElementById('postalCode').value
+            };
+            console.log(shippingInfo)
+
+            document.querySelector(".animation").classList.remove("hidden")
+            document.getElementById("body").classList.add("body_style")
+            const stripe_public_key_data = await fetch('/checkout/stripe_public_key',
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }).then(response => response.json()) ;
+            console.log(`Stripe public key obtained: ${JSON.stringify(stripe_public_key_data)}`);
+            const stripe = Stripe(stripe_public_key_data.stripe_public_key);
+
+            try {
+                /**
+             * This function sends a POST request to the '/checkout' endpoint with the user's cart items and shipping information.
+             * It then handles the response from the server accordingly.
+             * If the response status is 401, it redirects the user to the login page.
+             * If there are errors in the response, it displays the error messages on the page.
+             * Otherwise, it redirects the user to the Stripe Checkout page.
+             *
+             * @return {Promise<void>} This function does not return anything.
+             */
+                //const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+                const response = await fetch('/checkout', {
+                    method: 'POST',
+                    headers: {
+                        "X-CSRF-Token":"<%= csrfToken %>",
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        //items: cartItems,
+                        shippingInfo:shippingInfo
+                    })
+                }); 
+
+            
+
+                const data = await response.json();
+                if (response.status === 401) {
+                    document.querySelector(".animation").classList.add("hidden")
+                    document.getElementById("body").classList.remove("body_style")
+                    window.location.href = data.redirectUrl;
+                } 
+                else if(data.errors){
+                    document.querySelector(".animation").classList.add("hidden")
+                    document.getElementById("body").classList.remove("body_style")
+                    data.errors.forEach(error => {
+                        document.getElementById(`${error.path.split(".")[1]}Error`).innerText = error.msg;
+                    });
+
+                } else {
+                    document.querySelector(".animation").classList.remove("hidden")
+                    document.getElementById("body").classList.add("body_style")
+
+                    // Redirect to the Stripe Checkout page
+                    const { error } = await stripe.redirectToCheckout({
+                        sessionId: data.id,
+                    });
+
+                    if (error) {
+                        console.error(error);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+
+    })
+    
+});
+    
+</script>
+
+</body>
+</html>

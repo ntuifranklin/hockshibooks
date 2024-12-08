@@ -16,6 +16,11 @@ const cartRoute = require('../cart/route');
 //docs module
 const docsRoute = require('../agreementdocs/route');
 
+//checkout route 
+const checkoutRoute = require('../checkout/route');
+
+//orders route
+const ordersRoute = require('./OrdersRoute');
 const {
   showHomePage,
   searchBook,
@@ -36,8 +41,6 @@ const {
   logout
 }= require("../controllers/indexController");
 const customerSignupValidation = require('../middleware/customerSignupValidation');
-const verifyUser= require("../middleware/verifyUser")
-const shippingInfoValidation=require("../middleware/shipping-infoValidation")
 const updateProfileValidation=require("../middleware/updateProfileValidation")
 
 // const {stripe} = require('../utilities/stripe') ;
@@ -60,10 +63,21 @@ exports.calculateOrderAmount = calculateOrderAmount ;
 module.exports = () => {
   router.get("/",showHomePage)
 
-  router.use (`/admin`,adminRoute())
-  router.use(`/books`,booksRoute())
-  router.use("/cart", cartRoute())
-  router.use("/docs", docsRoute())
+  router.use('/admin',adminRoute())
+  router.use('/books',booksRoute())
+  router.use('/cart', cartRoute())
+  router.use('/docs', docsRoute())
+  
+
+  router.use( '/checkout',checkoutRoute())
+  /*
+    router.get("/success",successPayment)
+  */
+
+    router.use('/order',ordersRoute());
+
+
+  
   
   /* 
    router.get("/productDetails/:id",bookDetail)
@@ -88,19 +102,13 @@ module.exports = () => {
 
   router.post("/signup",customerSignupValidation,signupPost)
 
-  router.post( '/checkout',verifyUser,shippingInfoValidation,checkout)
-
-
-
-  router.get("/success",successPayment)
-
   router.get("/logout",logout)
 
   router.get("/profile",Profile)
 
   router.post("/updateProfile",updateProfileValidation,updateProfile)
 
-  router.get("/orderDetail/:id",orderDetail)
+  //router.get("/orderDetail/:id",orderDetail)
   router.get("/f404",showError404)
   router.get("/*", showError404)
   router.post("/*", showError404)

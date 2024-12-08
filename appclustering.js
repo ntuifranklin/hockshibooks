@@ -6,10 +6,6 @@ const totalCPUs = require("os").availableParallelism();
 
 const {startNewHockshiServer} = require('./server.js');
 
-// for server ip :
-const ip = require("ip");
-
-const {isTestEnvUpgraded} = require('./utilities/functions.js');
 
 if (cluster.isPrimary) {
     
@@ -29,8 +25,8 @@ if (cluster.isPrimary) {
 } else {     
     
   startNewHockshiServer() ;
-  console.log(`\n\tChild process started : `);
-  console.log(`\tprocessID ${process.pid} `);
-  console.log(`\ttime started: at :${(new Date()).toISOString()}`)
+  console.log(`\nChild process started : `);
+  console.log(`\tProcessID ${process.pid} `);
+  console.log(`\tTime started :${(new Date()).toISOString()}`)
       
 } ;

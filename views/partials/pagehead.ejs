@@ -49,9 +49,17 @@
 	<link rel="canonical" href="<%= websiteUrl %>">
 
     <%  } %>
-    
+
+
+    <% /* Include css for cart page only */%>
+    <% if(typeof cartPage != 'undefined' && cartPage) { %>
+        <%- include('./cartpagecssonly') %>
+    <% } %>
+
+
+    <% /* Below is the default css */ %>
     <%- include('./defaultcommoncss') %>
 
 </head>
 
-<body class="">
+<body class="" id="body">

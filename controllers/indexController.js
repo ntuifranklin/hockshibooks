@@ -985,7 +985,7 @@ const orderDetail= async(req,res)=>{
             })
         }
         catch(e){
-        return res.redirect(`${process.env.HOST}/login?msg=An+Error+Occured+Please+login`)
+            return res.redirect(`${process.env.HOST}/login?msg=An+Error+Occured+Please+login`)
 
         }
         }

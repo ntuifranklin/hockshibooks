@@ -29,6 +29,8 @@ const viewCart= async(req,res)=>{
 
 
     return res.render("../cart/pages/viewCart",{
+        pagetitle:"Your Shopping Cart",
+        cartPage:true,
         states:states,
         country:country
     })
@@ -180,6 +182,7 @@ const updateCartInRedisSessionCache = async (req, res) => {
             }
         } else if(action == removeItem) {
             delete cart[category][productIDToUpdate] ;
+            //cart[category] = {} ;
             let sc = JSON.stringify(cart);
             //cart = await JSON.parse(sc);
             await writeDataToRedisCache(cartKey, sc, options);

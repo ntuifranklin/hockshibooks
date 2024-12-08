@@ -38,6 +38,8 @@ module.exports = () => {
     router.post("/adminProfile",verifyLogin,dashboard) ;
     router.get("/logout",logout) ;
     router.post("/verifyOtp",validateOTP,verifyOTP) ;
+    
+    
 
     return router  ;
 }
