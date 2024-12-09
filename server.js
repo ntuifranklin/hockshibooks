@@ -107,6 +107,10 @@ async function startNewHockshiServer(){
 	app.locals.websiteUrl = process.env.WEBSITE_URL ;
 	app.locals.companyPhoneNumber = process.env.COMPANY_PHONE_NUMBER;
 	app.locals.customerBusinessEmail = process.env.CUSTOMER_BUSINESS_EMAIL;
+	app.locals.shippingDays = process.env.SHIPPING_DAYS;
+	app.locals.buyerRefundPolicyDeadlineDays = process.env.BUYER_REFUND_POLICY_DEADLINE_DAYS;
+	app.locals.acceptedPaymentMethods = process.env.ACCEPTED_PAYMENT_METHODS;
+	app.locals.sellerChargedCommission = process.env.SELLER_CHARGED_COMMISSION;
 	//<%= companyCity  %> <%= companyState  %>, <%= companyZip %>
 	app.locals.companyAddress = process.env.COMPANY_CITY + " " + process.env.COMPANY_STATE + ", " + process.env.COMPANY_ZIP;
 	app.locals.facebookpage = process.env.FACEBOOK_PAGE;
