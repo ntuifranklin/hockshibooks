@@ -232,7 +232,6 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
         const books= await bookModel.findAll({
                 include:[
                         {model:inventoryModel}
-
                 ],
                 
         })

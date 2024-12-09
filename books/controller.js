@@ -138,13 +138,15 @@ const addBookWithISBN= async(req,res)=>{
  */
     const isbn=req.body.isbn
     const price=req.body.price || 25
-    const qty=10;
-    const errors=validationResult(req)
-    
+    const qty=req.body.qty || 1;
+    const errors=validationResult(req) ;
+    //This code will not run if an admin user is not logged in.
+    let user = req.session.USER;
     if(!errors.isEmpty()){
         const err=errors.array()[0]
         res.render("../books/pages/addBookWithISBNForm",{
             pagetitle:"Add Book with ISBN",
+            user:user,
             msg:err,
             books_route_name:"books",
             add_books_route_name: "addBookWithExternalAPI",
@@ -157,7 +159,7 @@ const addBookWithISBN= async(req,res)=>{
         try{
             const response= await axios.get(url)
 
-           console.log(`${JSON.stringify(response.data, null,2)}`);
+            //console.log(`${JSON.stringify(response.data, null,2)}`);
 
             const data= response.data[`ISBN:${isbn}`] 
 
@@ -242,8 +244,12 @@ const getAddBookWithISBNForm=(req,res)=>{
  * @param {Object} res - The response object.
  * @return {Promise<void>} A promise that resolves when the template is rendered.
  */
+
+    //This code will not run if an admin user is not logged in.
+    let user = req.session.USER;
     res.status(200).render("../books/pages/addBookWithISBNForm",{
         pagetitle:"Add Book with ISBN",
+        user:user,
         msg:false,
         books_route_name:"books",
         add_books_route_name: "addBookWithExternalAPI",

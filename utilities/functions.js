@@ -133,52 +133,7 @@ const sendStatusChangedMessage=async(order,status)=>{
   }
   catch(e){
     console.log("email error" , e)
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  Transporter=nodemailer.createTransport({
-    service:'gmail',
-
-    auth:{
-      user:process.env.EMAIL_USER,
-      pass:process.env.EMAIL_PASS //google does not allow you to use your regular password for third party apps instead , you will generate an app pass , app passwords can only be generated for accounts with 2FA
-
-    }
-  });
-const mailOptions = {
-  from: process.env.EMAIL,
-  to: customer.email,
-  subject: 'Order status change',
-  text: `
-  dear ${customer.last_name || "geust user"}, 
-
-  the status of your order with the id ${order.order_id} has been changed to ${status}
-  
-  `,
-};
-try{
-
-    await Transporter.sendMail(mailOptions,()=>{
-      console.log("Email sent successfully.");        });
-      // console.log(otpCode)
-}
-catch(e){
-  console.log("email error" , e)
-}
+  };
 }
 const Md5Rand=()=>{
   /**

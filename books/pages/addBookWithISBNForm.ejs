@@ -1,5 +1,5 @@
 <%- include('./partials/pagehead') %>
-<%- include('../../views/layout/customerNavBar') %>
+<%- include('../../admin/pages/navBar') %>
 <%- include('../../views/partials/breadcrumbs') %>
     <div class="container">
        
@@ -19,7 +19,7 @@
             <div class="my-account-page-warpper section-space--ptb_120">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 m-auto w-50">
+                        <div class="col-lg-4 col-md-8 col-sm-12 col-xs-12 m-auto w-50">
                             <div class="myaccount-box-wrapper">
                                 
                                 <div class="tab-content content-modal-box">
@@ -34,17 +34,18 @@
 
                                                 </label>
                                             </div>
-                                            <div class="single-input">
-                                                
-                                                    <label for="displayName" class="w-100">price: 
-
-                                                    <input type="number" step=".01" class="form-control" id="displayName" placeholder="$25 is the default price" name="price">
-
-                                                    </label>
-                                                
+                                            <div class="single-input">                                                
+                                                    <label for="displayName" class="w-100">price:
+                                                        <input type="number" step=".01"  name="price" value=25.00 class="form-control" id="displayName" placeholder="$25 is the default price">
+                                                    </label>                                                
                                             </div>
-                                            <input type="hidden" name="_csrf"
-                                            value="<%= csrfToken %>">
+                                            
+                                            <div class="single-input">
+                                                <label for="qty" class="w-100">Quantity: 
+                                                    <input type="number" name="qty" value=1 class="form-control" id="qty" placeholder="The number of books">
+                                                </label>
+                                            </div>
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                             
                                             <div class="button-box mt-25">
                                                 <button type="submit" class="btn btn--full btn--black">Save updates</button>
@@ -64,6 +65,23 @@
     </div>
     <%- include('../../views/partials/footerarea') %>
 </div>
+
+
+<%- include('../../admin/pages/partials/adminMobileMenuOverlay') %>
+
+  <!--====================  scroll top ====================-->
+  <a href="#" class="scroll-top" id="scroll-top">
+    <i class="arrow-top icon-arrow-up"></i>
+    <i class="arrow-bottom icon-arrow-up"></i>
+  </a>
+    
+<%- include('../../admin/pages/partials/admin_jslibs') %>
+
+
+
+</body>
+
+</html>
 </body>
 </html>
 

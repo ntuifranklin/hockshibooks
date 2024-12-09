@@ -2,15 +2,13 @@
 <script>
 
     let currentPage = 1;
-    const limit = 6; // Number of items per page
+    const limit = 50; // Number of items per page
     let result
     let data
     let currentSort = 'latest';  // Default sort value
     let base_url = "/books";
     let api_get_books_url = `/books/api`;
     let bookID_url = `/books`;
-
-
 
     async function renderBooks (data){
             var bookList = await document.getElementById('booksContainer');

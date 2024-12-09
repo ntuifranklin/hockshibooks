@@ -36,6 +36,7 @@ const verifyLogin= async(req,res,next)=>{
     let user = await retrieveJSONObjectFromRedisCache(userKey);
     if (user) {
         req.session.USER = user;
+        await req.session.save();
         return next();
     } else {
         return res.status(403).redirect(`/admin`);

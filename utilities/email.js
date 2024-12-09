@@ -105,7 +105,7 @@ class Email {
                             subject: subject,
                             html: html
                         };
-                        console.log(`Result of email sending: ${JSON.stringify(result)}`);
+                        //console.log(`Result of email sending: ${JSON.stringify(result)}`);
                         resolve(`Email sent successfully ${JSON.stringify(emailObject)}`);
                     }
                 )
