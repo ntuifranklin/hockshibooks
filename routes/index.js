@@ -61,60 +61,67 @@ return 50;
 exports.calculateOrderAmount = calculateOrderAmount ;
 
 module.exports = () => {
-  router.get("/",showHomePage)
+  try{
+    
+      router.get("/",showHomePage)
 
-  router.use('/admin',adminRoute())
-  router.use('/books',booksRoute())
-  router.use('/cart', cartRoute())
-  router.use('/docs', docsRoute())
-  
+      router.use('/admin',adminRoute())
+      router.use('/books',booksRoute())
+      router.use('/cart', cartRoute())
+      router.use('/docs', docsRoute())
+      
 
-  router.use( '/checkout',checkoutRoute())
-  /*
-    router.get("/success",successPayment)
-  */
+      router.use( '/checkout',checkoutRoute())
+      /*
+        router.get("/success",successPayment)
+      */
 
-    router.use('/order',ordersRoute());
-
-
-  
-  
-  /* 
-   router.get("/productDetails/:id",bookDetail)
-  */
-
-  /* Moved to books/search 
-  router.post("/search",searchBook)
-  */
-
-  router.route("/login").get(loginPage).post(loginPagePost)
+        router.use('/order',ordersRoute());
 
 
-  router.get("/askGuest",showGuestPage)
+      
+      
+      /* 
+      router.get("/productDetails/:id",bookDetail)
+      */
 
-  router.route("/showForm").get(showForm).post(processGuestUser)
+      /* Moved to books/search 
+      router.post("/search",searchBook)
+      */
 
-
-
-
-  router.post("/verifyOTP",verifyOTP)
-
-  router.get("/signup",signupPage)
-
-  router.post("/signup",customerSignupValidation,signupPost)
-
-  router.get("/logout",logout)
-
-  router.get("/profile",Profile)
-
-  router.post("/updateProfile",updateProfileValidation,updateProfile)
-
-  //router.get("/orderDetail/:id",orderDetail)
-  router.get("/f404",showError404)
-  router.get("/*", showError404)
-  router.post("/*", showError404)
+      router.route("/login").get(loginPage).post(loginPagePost)
 
 
+      router.get("/askGuest",showGuestPage)
+
+      router.route("/showForm").get(showForm).post(processGuestUser)
+
+
+
+
+      router.post("/verifyOTP",verifyOTP)
+
+      router.get("/signup",signupPage)
+
+      router.post("/signup",customerSignupValidation,signupPost)
+
+      router.get("/logout",logout)
+
+      router.get("/profile",Profile)
+
+      router.post("/updateProfile",updateProfileValidation,updateProfile)
+
+      //router.get("/orderDetail/:id",orderDetail)
+      router.get("/f404",showError404)
+      router.get("/*", showError404)
+      router.post("/*", showError404)
+  } catch (error){
+    //send 500 error to the client
+    res.status(500).send("Internal server error")
+
+    console.log(`Error in ${__filename}`, error)
+    
+  } ;
 
 
   return router ;

@@ -168,7 +168,7 @@ const addBookWithISBN= async(req,res)=>{
                 try {
                     const tmp=await bookModel.findOne({
                         where:{
-                            title:data.title
+                            ISBN:isbn
                         }
                     })
                     /* ISBN coul return a valid 13 o a valid 10 isbn numbers */
@@ -189,34 +189,57 @@ const addBookWithISBN= async(req,res)=>{
                     );
                     if(!tmp){
                         let createdBook=await bookModel.create({
-                        seo_friendly_title:seo_friendly_title,
-                        title:data.title,
-                        author:data.authors[0].name,
-                        ISBN:isbn10_or_13,
-                        description: desc,
-                        publication_date:data.publication_date,
-                        cover_image_url:cover_image_url,
-                        price:price
-                    })
-    
-                    let inventory = await inventoryModel.create({
-                        book_id:createdBook.book_id ,
-                        quantity_available:qty,
-                        location:"warehouse"
-                    })
+                            seo_friendly_title:seo_friendly_title,
+                            title:data.title,
+                            author:data.authors[0].name,
+                            ISBN:isbn10_or_13,
+                            description: desc,
+                            publication_date:data.publication_date,
+                            cover_image_url:cover_image_url,
+                            price:price
+                        }) 
+        
+                        let inventory = await inventoryModel.create({
+                            book_id:createdBook.book_id ,
+                            quantity_available:qty,
+                            location:"warehouse"
+                        })
 
-                    return res.status(201).redirect(`/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
-                }
-                else{
+                        return res.status(201).redirect(`/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
+                    } else {
 
-                    res.status(500).render("../books/pages/addBookWithISBNForm",{
-                        msg:{
-                            msg:"a book with this title already exists"
-                        },
-                        books_route_name:"books",
-                        add_books_route_name: "addBookWithExternalAPI",
-                    })
-                }
+                        //book exists. let's check the inventory, and add the book only if the inventory is 0
+                        let inventory = await inventoryModel.findOne({
+                            where:{
+                                book_id:tmp.book_id
+                            }
+                        })
+                        //if inventory is 0, update the quantity available to the new quaantity
+                        if(inventory.quantity_available < 1){
+                            inventory.quantity_available=qty;
+                            await inventory.save();
+                            //also update the book price
+                            tmp.price=price;
+                            tmp.save();
+
+                            return res.status(201).redirect(`/admin/dashboard?msg=${tmp.title}+quantity+and+price+in+inventory+was+updated+successfully+added&type=success`);
+                        }
+                        else{ 
+
+                            return res.status(500).render("../books/pages/addBookWithISBNForm",{
+                                msg:{
+                                    msg:"a book with this title already exists"
+                                },
+                                user:user,
+                                books_route_name:"books",
+                                add_books_route_name: "addBookWithExternalAPI",
+                            })
+
+                        }
+
+
+                       
+                    }
                 } catch (error) {
                     console.log(`${error.message}`);
                     return res.status(500).redirect(`/books/addBookWithExternalAPI?msg=error+when+creating+book&type=danger`);

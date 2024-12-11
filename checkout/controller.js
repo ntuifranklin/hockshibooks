@@ -10,7 +10,7 @@ const customerOtpModel=require("../models/customerOtpModel")
 const orderModel= require("../models/ordersModel")
 const OrderItem = require("../models/orderItemsModel");
 const paymentModel=require("../models/paymentModel")
-const{convertDateFormat, sendStatusChangedMessage} = require("../utilities/functions");
+const{convertDateFormat, sendStatusChangedMessage,sendCustomerNewOrderEmailNotofication} = require("../utilities/functions");
 const { generateUniqueCartSessionRedisCacheKey } = require("../cart/utilities");
 const { retrieveJSONObjectFromRedisCache, deleteDataFromRedisCache } = require("../middleware/redis");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -118,7 +118,7 @@ const checkout = async(req,res)=>{
                         product_data: {
                             name: productDetails.title,
                         },
-                        unit_amount: productDetails.price*100, // amount in cents
+                        unit_amount: Math.round(productDetails.price*100), // amount in cents
                     },
                     quantity: items[i].qty,
 
@@ -152,7 +152,7 @@ const checkout = async(req,res)=>{
         req.session.lineItems = lineItems;
         await req.session.save();
         res.json({ id: stripePaymentSession.id });
-        //console.log(`Stripe Payment Session Details Returned: \n\t: ${JSON.stringify(stripePaymentSession, null, 2)}`);
+        console.log(`Stripe Payment Session Details Returned: \n\t: ${JSON.stringify(stripePaymentSession, null, 2)}`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -187,6 +187,7 @@ const  successPayment = async(req,res)=>{
      */
 
     let t = await sequelize.transaction();
+    let orderToSendAsEmail = [];
     try{
         //get the customer email from stripe session
         //const stripePaymentSession = req.session.stripePaymentSession;
@@ -229,7 +230,7 @@ const  successPayment = async(req,res)=>{
             order_date: new Date(),
             total_amount: session.amount_total / 100,
             payment_status: 'Pending',
-            shipping_address: customerRetrieved.shipping.address.line1,
+            shipping_address: customerRetrieved.shipping.address.line1 + ' ' +  customerRetrieved.shipping.address.line2 ,
             shipping_city: customerRetrieved.shipping.address.city,
             shipping_state_province: customerRetrieved.shipping.address.state,
             shipping_country: customerRetrieved.address.country,
@@ -260,7 +261,13 @@ const  successPayment = async(req,res)=>{
 
                 productDetails.Inventory.quantity_available-=item.qty
 
-                await productDetails.Inventory.save()
+                await productDetails.Inventory.save() ;
+                orderToSendAsEmail.push({
+                    title: productDetails.title,
+                    quantity: item.qty,
+                    price: productDetails.price,
+                    subtotal: item.qty * productDetails.price
+                });
             }
             else{
                 continue
@@ -283,8 +290,8 @@ const  successPayment = async(req,res)=>{
         req.session.stripePaymentSession = null;
         await req.session.save();
         //send email to customer
-        sendStatusChangedMessage(order,"processing");
-        return res.status(200).render("pages/successPage")
+        sendCustomerNewOrderEmailNotofication(order, orderToSendAsEmail, customer);
+        return res.status(200).render("../checkout/pages/successPage")
     }
     catch(err){
         console.log(err)

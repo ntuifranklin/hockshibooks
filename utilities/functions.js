@@ -98,7 +98,7 @@ const generateAndSendOTP=async (userId,mail,otpmodel)=>{
  return otpCode
 }
 
-const sendStatusChangedMessage=async(order,status)=>{
+const sendStatusChangedMessage=async(order,status, orderToSendAsEmail=[], customer={})=>{
   /**
  * Sends an email to the customer with the updated order status.
  *
@@ -107,11 +107,15 @@ const sendStatusChangedMessage=async(order,status)=>{
  * @return {Promise<void>} A Promise that resolves when the email is sent successfully.
  * @throws {Error} If there is an error sending the email.
  */
-  const customer= await customerModel.findOne({
-    where:{
-      customer_id:order.customer_id
-    }
-  })
+  if (customer == null || !customer || customer == {}) {
+
+    customer= await customerModel.findOne({
+      where:{
+        customer_id:order.customer_id
+      }
+    })
+  }
+ 
 
 
   const email = new Email();    
@@ -134,7 +138,58 @@ const sendStatusChangedMessage=async(order,status)=>{
   catch(e){
     console.log("email error" , e)
   };
-}
+} ;
+const sendCustomerNewOrderEmailNotofication=async(order, orderToSendAsEmail=[], customer={})=>{
+  /**
+ * Sends an email to the customer with the updated order status.
+ *
+ * @param {Object} order - The order object containing the customer ID and order ID.
+ * @return {Promise<void>} A Promise that resolves when the email is sent successfully.
+ * @throws {Error} If there is an error sending the email.
+ */
+  if (customer == null || !customer || customer == {}) {
+
+    customer= await customerModel.findOne({
+      where:{
+        customer_id:order.customer_id
+      }
+    })
+  }
+ 
+  const email = new Email();    
+
+  try{
+      
+    let templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'customerNewOrderEmailNotification.template.ejs');
+    //console.log(`\tTemplate path: ${templatePath}`);
+    templatePath = path.normalize(templatePath);
+    //console.log(`\tTemplate path: ${templatePath}`);
+    
+    let ejsData = {
+      emailTitle: `${customer.first_name || 'Guest User'}, your order was received`,
+      customerName: `${customer.first_name}`,
+      orderId: `${order.order_id}`,
+      orderList: orderToSendAsEmail,
+      shippingAddress: order.shipping_address,
+      shippingCity: order.shipping_city || '',
+      shippingState: order.shipping_state_province,
+      shippingCountry: order.shipping_country,
+      shippingPostalCode: order.shipping_postal_code,
+      totalAmount: order.total_amount,
+      companyName: process.env.COMPANY_NAME,
+      termsAndConditionsLink: process.env.WEBSITE_URL + "/docs/terms-and-conditions",
+      privacyPolicyLink: process.env.WEBSITE_URL + "/docs/policy",
+  };
+    const html = await ejs.renderFile(templatePath,ejsData);
+    await email.sendEmail(customer.email, ejsData.emailTitle, html) ;
+    //console.log(`Email sent successfully in ${__filename} : ${JSON.stringify(html)}`);
+
+  }
+  catch(e){
+    console.log("email error" , e)
+  };
+};
+
 const Md5Rand=()=>{
   /**
  * Generates an MD5 hash of a random value.
@@ -214,4 +269,15 @@ const getBookDescription= async (openLibraryId)=>{
         return 'No description available';
     }
 }
-module.exports={sendStatusChangedMessage,convertDateFormat,connect,isTestEnvironment,generateAndSendOTP,Md5Rand,checkFileExtension,checkUploadDir,getBookDescription}
+module.exports={
+  sendCustomerNewOrderEmailNotofication,
+  sendStatusChangedMessage,
+  convertDateFormat,
+  connect,
+  isTestEnvironment,
+  generateAndSendOTP,
+  Md5Rand,
+  checkFileExtension,
+  checkUploadDir,
+  getBookDescription
+}

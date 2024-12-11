@@ -211,7 +211,7 @@ If there are errors, render the otpVerification page with an error message.
                 }
         }) ;
         let testUser = await retrieveJSONObjectFromRedisCache(userKey) ;
-        console.log(`User retrieved from cache: ${JSON.stringify(testUser)}`);
+        //console.log(`User retrieved from cache: ${JSON.stringify(testUser)}`);
         req.session.user = loggedInUser ;
         await req.session.save();
         

@@ -90,33 +90,30 @@
                                     <table>
                                         <thead>
                                             <tr class="bg-gray">
-                                                <th></th>
-                                                <th></th>
+                                                <th class="product-img">&nbsp;</th>
                                                 <th class="product-name">Product</th>
                                                 
                                                 <th class="product-price"> Price</th>
                                                 
                                                 <th>Quantity</th>
                                                 <th>Total</th>
-                                                <th></th>
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
 
                                             <% for (let i=0;i != orderItems.length;i++){ %>
-                                                <tr>
-                                          
+                                                <tr>                                    
 
-                                                    <td></td>
+                                                    
                                                     <td class="product-img">
-                                                        <a href="/productDetails/<%=`${orderItems[i].Book.book_id} `%>">
-                                                                                    
-                                                    <% if(orderItems[i].Book.cover_image_url.split(":")[0]=="https") { %>
-                                                        <img  src="<%=`${orderItems[i].Book.cover_image_url}`%>" class="img-fluid bookCoverImage" alt="Product Images"  >
-                                                        <% } else { %>
-                                                        <img  src="/uploads/<%=`${orderItems[i].Book.cover_image_url}`%>" class="img-fluid bookCoverImage" alt="Product Images"  >
-                                    
-                                                        <% } %>
+                                                        <a href="/productDetails/<%=`${orderItems[i].Book.book_id} `%>">                                                                                    
+                                                            <% if(orderItems[i].Book.cover_image_url.split(":")[0]=="https") { %>
+                                                                <img  src="<%=`${orderItems[i].Book.cover_image_url}`%>" class="img-fluid bookCoverImage" alt="Product Images"  >
+                                                            <% } else { %>
+                                                                <img  src="/uploads/<%=`${orderItems[i].Book.cover_image_url}`%>" class="img-fluid bookCoverImage" alt="Product Images"  >
+                                            
+                                                            <% } %>
                                                         
                                                         </a>
                                                     </td>
@@ -127,17 +124,15 @@
                                                     <td class="cart-quality">
                                                         <div class="quickview-quality quality-height-dec2">
                                                             
-                                                                <p class="cart-plus-minus-box" ><%=orderItems[i].quantity %></p>
+                                                            <p class="cart-plus-minus-box" ><%=orderItems[i].quantity %></p>
                                                            
                                                         </div>
                                                     </td>
                                                     <td class="price-total">
                                                         <span class="amount">$ <%=orderItems[i].subtotal %></span>
                                                     </td>
-                                                    
                                                 </tr>
-
-                                                <% } %>
+                                            <% } %>
                                          
                                         </tbody>
                                     </table>

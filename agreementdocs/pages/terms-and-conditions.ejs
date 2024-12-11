@@ -71,7 +71,21 @@
                                 <p>If you have any questions about these terms, contact us at:</p>
                                 <ul>
                                     <li>Email: <%= customerBusinessEmail %></li>
-                                    <li>Phone: <%= companyPhoneNumber %></li>
+                                                                       
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            function revealPhoneNumberTermsAndConditionPage(){
+                                                let phoneNumberTag = document.querySelector('#listTagPhoneNumber')
+                                                
+                                                
+                                                phoneNumberTag.innerHTML = '<i class="icon_phone"></i>: <%= companyPhoneNumber %>';
+                                                
+                                            }
+                                            document.querySelector('#listTagPhoneNumber').addEventListener('click',revealPhoneNumberTermsAndConditionPage) ;
+                                            document.querySelector('#listTagPhoneNumber').addEventListener('mouseover',revealPhoneNumberTermsAndConditionPage) ;
+                                        });
+                                    </script>
+                                    <li id="listTagPhoneNumber"><i class="icon_phone"></i>click or hover to reveal phone number</li>
                                     <li>Address: <%= companyAddress %></li>
                                 </ul>
                             </div>
