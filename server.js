@@ -8,8 +8,7 @@ const path = require('path');
 const {connect,checkUploadDir}=require("./utilities/functions");
 
 const bodyParser = require('body-parser');
-//const {decode} = require('html-entities');
-//const template_folder = './statictemplate';
+const {setStripeKeysToUse} = require('./middleware/set_stripe_keys');
 const routes = require('./routes');
 //const multer=require("multer")
 const csrf = require('csurf');
@@ -20,8 +19,8 @@ const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
 
 
-const env = process.env.NODE_ENV||"dev";
-const port = env == "test" ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
+const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
+const port = env != process.env.PRODUCTION_ENV ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
 
 
 process.env.ROOT_PATH=path.join(__dirname, './');
@@ -29,11 +28,11 @@ process.env.ROOT_PATH=path.join(__dirname, './');
 //connects to the database
 connect()
 //checks if the uploads dir exists, this dir is where all our cover images will be stored
-checkUploadDir()
+checkUploadDir();
 
-//middleware
 
-//const validateOTP=require("./middleware/OTPmiddleware")
+//set stripe keys to use
+setStripeKeysToUse();
 
 
 const site_secret = process.env.SITE_SECRET;
@@ -145,17 +144,7 @@ async function startNewHockshiServer(){
 		res.removeHeader("X-Powered-By");
 		const valid_cart_actions = [ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM];
 		req.locals.valid_cart_actions = valid_cart_actions ;
-
-		//console.log(`Request process ID: ${process.pid}.`);
-		//console.log(`User ID: ${req.session.userID}`);
 		
-		//console.log(req.headers['user-agent']);
-		//log userID
-		//console.log(`session userID: ${req.session.userID}`);
-		//req.session.someTypeOfCounter = req.session.someTypeOfCounter + 1 ;	
-		//console.log(`Some type of counter: ${req.session.someTypeOfCounter}`);
-		
-		//req.session.save();
 		next();
 	});
 
@@ -168,6 +157,10 @@ async function startNewHockshiServer(){
 	app.listen(port, () => {
 		console.log(`One hockshi worker server listening on port ${port}`);
 	}) ;
+
+	//check the values of the stripe keys
+	console.log("Stripe public key: ", process.env.STRIPE_PUBLIC_KEY);
+	console.log("Stripe secret key: ", process.env.STRIPE_SECRET_KEY);
 
 	return app ;
 } ;
