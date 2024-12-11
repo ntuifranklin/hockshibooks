@@ -2,15 +2,14 @@
 
 require("dotenv").config()
 const express = require('express');
-//const { faker } = require('@faker-js/faker');
+
 const path = require('path');
-//const createError = require('http-errors');
 const {connect,checkUploadDir}=require("./utilities/functions");
 
 const bodyParser = require('body-parser');
 const {setStripeKeysToUse} = require('./middleware/set_stripe_keys');
 const routes = require('./routes');
-//const multer=require("multer")
+
 const csrf = require('csurf');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
