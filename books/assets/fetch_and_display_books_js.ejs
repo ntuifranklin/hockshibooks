@@ -31,7 +31,7 @@
                 <div class="single-product-item text-center">
                         <div class="products-images">
                             <a href="${bookID_url}/${book.seo_friendly_title}" class="product-thumbnail">                          
-                                <img  src="${bookimage}" class="img-fluid bookCoverImage1" alt="Product Images" width="300px" height="300px" >
+                                <img  src="${bookimage}" class="img-fluid bookCoverImage1" alt="${book.seo_friendly_title}" width="300px" height="300px" >
                                     ${book.Inventory.quantity_available <= 0? `<span class="ribbon out-of-stock">Out Of Stock</span>`:""}
                             </a>                        
                             <div class="product-actions">

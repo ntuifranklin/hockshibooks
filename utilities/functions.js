@@ -10,6 +10,8 @@ const nodemailerMock=require("nodemailer-mock")
 const axios= require("axios");
 const { Email } = require('./email');
 const ejs = require('ejs');
+const { createCanvas, loadImage } = require('canvas');
+
 require("dotenv").config()
 
 function isTestEnvironment(root_dir=new String(__dirname)) {
@@ -224,6 +226,7 @@ const checkUploadDir=()=>{
   // Construct the path to the uploads directory
 
 const uploadsDir = path.join(process.env.ROOT_PATH, 'views/uploads');
+
 // Check if the uploads directory exists
 if (!fs.existsSync(uploadsDir)) {
       // Create the uploads directory if it doesn't exist
@@ -268,8 +271,42 @@ const getBookDescription= async (openLibraryId)=>{
         console.error('Error fetching book description:', error);
         return 'No description available';
     }
+};
+
+
+
+/*
+  This function creates a default image for a book with the specified title.
+  The image is saved to the uploads directory and the filename is returned.
+  If no title is provided, the image will have a default title.
+  The image dimensions can also be specified.
+*/
+const createDefaultBookImage=async (width=300, height=300, imageTitle='default-image')=>{
+  
+const canvas = createCanvas(width, height);
+const context = canvas.getContext('2d');
+
+// Fill background
+context.fillStyle = '#dcb14a'; // website brand color for background
+context.fillRect(0, 0, width, height);
+
+// Add text
+context.font = '17px Arial';
+context.fillStyle = '#000000'; // Black text
+context.fillText(imageTitle, 50, 100);
+
+// Save image to file
+const buffer = canvas.toBuffer('image/png');
+let imageFilename = imageTitle + '.png';
+
+const uploadsDir = path.join(process.env.ROOT_PATH, 'views/uploads');
+fs.writeFileSync(uploadsDir + '/' + imageFilename, buffer);
+
+return imageFilename;
+
 }
 module.exports={
+  createDefaultBookImage,
   sendCustomerNewOrderEmailNotofication,
   sendStatusChangedMessage,
   convertDateFormat,
@@ -281,3 +318,4 @@ module.exports={
   checkUploadDir,
   getBookDescription
 }
+

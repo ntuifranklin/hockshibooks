@@ -109,37 +109,6 @@ const CreateBook=async (req,res)=>{
                 // File information is available in req.file
 }
 
-const updateBook=async (req,res)=>{ 
-    updateBookId=req.params.id?req.params.id:req.body.bookId
-    /**
-     * Inside the function, it uses the await keyword to asynchronously find a book by its primary key (req.params.id) from the bookModel and includes the associated genreModel and inventoryModel.
-
-It then retrieves all genres from the genreModel using the findAll method.
-
-Finally, it renders a view template named "pages/updateBook" and passes the fetched book, root path from the environment variable process.env.ROOT_PATH, the cover image URL from the book, and the fetched genres as data to the template.
-     */
-    let error;
-
-    if(req.errors){
-        error=req.errors
-    }else{
-        error=false
-    }
-    let book= await bookModel.findByPk(updateBookId, {include:[
-        {model:inventoryModel}
-
-]},)
-const genre= await genreModel.findAll()
-    // res.send(book)
-    res.render("pages/updateBook",{
-        book:book,
-        root_path:process.env.ROOT_PATH,
-        image:book.cover_image_url,
-        msg:error
-
-    })
-
-}
 
 const saveUpdate=async(req,res)=>{
     /**
@@ -229,40 +198,6 @@ if(!errors.isEmpty()){
 
 }
 
-const deleteBook=async (req,res)=>{
-    
-      /**
- * Deletes a book and its associated cover image from the server and database.
- * 
- * This function performs the following steps:
- * 1. Retrieves the book record from the database by its primary key (ID) provided in the request parameters.
- * 2. Constructs the path to the cover image file associated with the book.
- * 3. Attempts to delete the cover image file from the server's file system.
- * 4. If the image deletion is successful, it deletes the book record from the database.
- * 5. Redirects the user to the admin dashboard with a success message if the deletion is successful.
- * 6. If an error occurs at any step, logs the error and redirects the user to the admin dashboard with an error message.
- * 
-     */
-    let book= await bookModel.findByPk(req.params.id)
-    try{
-        const coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url);
-        // Delete the cover image file
-        fs.unlink(coverImagePath, async (err) => {
-            if (err) {
-                return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
-
-            } 
-        })
-        
-        await book.destroy()
-        return res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+deleted&type=success`);
-        
-    }
-    catch(e){
-        return res.redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+record&type=danger`);
-
-    }
-}
 
 const getaddBookWithISBNForm=(req,res)=>{
     /**
@@ -391,5 +326,5 @@ const addBookWithISBN= async(req,res)=>{
 }
 
 module.exports={
-    deleteBook,GetinsertBook,CreateBook,updateBook,saveUpdate,addBookWithISBN,getaddBookWithISBNForm
+    GetinsertBook,CreateBook,saveUpdate,addBookWithISBN,getaddBookWithISBNForm
 }   

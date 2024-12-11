@@ -152,7 +152,7 @@ const checkout = async(req,res)=>{
         req.session.lineItems = lineItems;
         await req.session.save();
         res.json({ id: stripePaymentSession.id });
-        console.log(`Stripe Payment Session Details Returned: \n\t: ${JSON.stringify(stripePaymentSession, null, 2)}`);
+        //console.log(`Stripe Payment Session Details Returned: \n\t: ${JSON.stringify(stripePaymentSession, null, 2)}`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');

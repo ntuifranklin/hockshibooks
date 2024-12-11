@@ -1,3 +1,4 @@
+const { format } = require("path");
 
 
 const INDEX_ROUTE_NAME = "books";
@@ -17,10 +18,11 @@ function addBooksWithISBNOnlyRouteName() {
   return ADD_BOOK_USING_OPEN_LIBRARY_API ;
 } ;
 
-function generateSeoFriendlyTitle(bookTitle, authorName = '', publicationYear = '') {
+function generateSeoFriendlyTitle(bookTitle, authorName = '', publicationYear = '', bookISBN='') {
     // Helper function to remove special characters and replace spaces with hyphens
     const formatString = (str) => {
-      return str
+      let s = String(str)
+      return s
         .toLowerCase() // Convert to lowercase
         .replace(/[^a-z0-9\s-]/g, '') // Remove non-alphanumeric characters (except spaces and hyphens)
         .trim() // Remove leading/trailing spaces
@@ -40,7 +42,10 @@ function generateSeoFriendlyTitle(bookTitle, authorName = '', publicationYear = 
     if (publicationYear) {
       seoTitle += `-${publicationYear}`;
     }
-  
+    if (bookISBN && bookISBN.length > 0) {
+      seoTitle += `-${formatString(bookISBN)}`;
+    }
+    
     // Combine with the base URL and return the full URL
     //const baseUrl = 'https://example.com/book/';
     return `${seoTitle}`;
