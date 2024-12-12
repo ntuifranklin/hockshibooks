@@ -71,7 +71,7 @@
                                         <select class="select-active" name="state" id="state">
                                             <% for(let i=0; i < states.length; i++) { %>
                                                 
-                                                  <option value="<%= states[i].province_state_name %>"><%= states[i].province_state_name %></option> 
+                                                  <option value="<%= states[i].province_state_name %>"><%= states[i].country_code %>-<%= states[i].province_state_name %></option> 
                                                   <% } %>
                                         </select>
 

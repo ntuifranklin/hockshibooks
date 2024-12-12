@@ -1,0 +1,47 @@
+<%- include('../../views/partials/pagehead') %>
+
+<%- include('../../views/layout/customerNavBar') %>
+
+<%- include('../../views/partials/breadcrumbs') %>
+    <div class="container-fluid vh-100">
+        <div class="row h-100">
+            <div class="col-md-5 d-flex align-items-center justify-content-center login-section">
+                <div class="login-box text-center">
+                    <p>We sent an otp code to <%=email%></p>
+                    <form action="/customer/verifyOTP" method="POST">
+                        <div class="otp-input">
+                            <input type="text" name="OTP" maxlength="6" class="otp-field">
+                            
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg mt-3">Sign in</button>
+                        <input type="hidden" name="_csrf"
+                        value="<%= csrfToken %>">
+                        <input type="hidden" name="userId"
+                      value="<%= userId %>">
+
+                      
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-7 dashboard-section p-4">
+                <div class="dashboard-content">
+                  <img src="/assets/images/undraw_mail_sent_re_0ofv.svg" alt="">
+                </div>
+            </div>
+        </div>
+        
+        <%- include('../../views/partials/footerarea') %>
+      
+    </div>
+
+    <!--====================  scroll top ====================-->
+    <a href="#" class="scroll-top" id="scroll-top">
+        <i class="arrow-top icon-arrow-up"></i>
+        <i class="arrow-bottom icon-arrow-up"></i>
+    </a>
+    
+<%- include('../../views/partials/commonjslibs'); %>
+
+</body>
+
+</html>

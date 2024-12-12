@@ -1,7 +1,8 @@
-<%- include('../partials/pagehead') %>
-<%- include('../layout/customerNavBar') %>
-<%- include('../partials/breadcrumbs') %>
+<%- include('../../views/partials/pagehead') %>
 
+<%- include('../../views/layout/customerNavBar') %>
+
+<%- include('../../views/partials/breadcrumbs') %>
     <div id="main-wrapper">
         <div class="site-wrapper-reveal border-bottom">
     
@@ -32,7 +33,7 @@
                                 <div class="tab-content content-modal-box">
                                     <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
                                         
-                                        <form action="/verifyOTP" method="POST" class="account-form-box">
+                                        <form action="/customer/verifyOTP" method="POST" class="account-form-box">
                                             <h2>Welcome Back, </h2>
                                             <p>We sent a code to <%=email%></p>
                                             <div class="single-input">
@@ -40,18 +41,10 @@
 
                                             </div>
                                            
-                                            <!-- <div class="checkbox-wrap mt-10">
-                                                <label class="label-for-checkbox inline mt-15">
-                                                    <input class="input-checkbox" name="rememberme" type="checkbox" id="rememberme" value="forever"> <span>Remember me</span>
-                                                </label>
-                                                <a href="#" class=" mt-10">Lost your password?</a>
-                                            </div> -->
     
-                                            <input type="hidden" name="_csrf"
-                        value="<%= csrfToken %>">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         
-                        <input type="hidden" name="userId"
-                      value="<%= userId %>">
+                                            <input type="hidden" name="userId" value="<%= userId %>">
                                             <div class="button-box mt-25">
                                                 <button type="submit" class="btn btn--full btn--black">Log in</button>
                                             </div>
@@ -66,15 +59,18 @@
             </div>
     
         </div>
-    
-
-    
+        <%- include('../../views/partials/footerarea') %>
+      
     </div>
 
-    <%- include('../partials/footerarea') %>
+    <!--====================  scroll top ====================-->
+    <a href="#" class="scroll-top" id="scroll-top">
+        <i class="arrow-top icon-arrow-up"></i>
+        <i class="arrow-bottom icon-arrow-up"></i>
+    </a>
     
-    <%- include('../partials/commonjslibs'); %>
-    
+<%- include('../../views/partials/commonjslibs'); %>
+
 </body>
+
 </html>
-    

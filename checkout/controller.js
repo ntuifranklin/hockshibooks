@@ -25,9 +25,17 @@ const askShippingInfo = async(req, res) => {
      */
     
     
-    const states=await provinceStateModel.findAll()
-    const country=await CountryModel.findAll()
-  
+    const states=await provinceStateModel.findAll({
+        order: [
+            ['province_state_name', 'ASC'],
+        ],
+    });
+    const country=await CountryModel.findAll({
+        order: [
+            ['country_name', 'DESC'],
+        ],
+    });
+    
     res.render("../checkout/pages/checkout_ask_shipping_info",{
         pagetitle:"fill in your shipping details",
         checkoutPage:true,

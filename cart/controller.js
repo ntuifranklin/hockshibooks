@@ -186,7 +186,7 @@ const updateCartInRedisSessionCache = async (req, res) => {
             let sc = JSON.stringify(cart);
             //cart = await JSON.parse(sc);
             await writeDataToRedisCache(cartKey, sc, options);
-            console.log('Item removed from cart');
+            console.log(`Item removed from cart, with action ${removeItem}`);
             return res.status(200).send({ message: 'success', responseText: 'Item removed from cart' });
 
         } else if (action == addQuantity) {

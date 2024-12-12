@@ -1,9 +1,8 @@
-<%- include('../partials/pagehead') %>
+<%- include('../../views/partials/pagehead') %>
 
-<%- include('../layout/customerNavBar') %>
+<%- include('../../views/layout/customerNavBar') %>
 
-
-<%- include('../partials/breadcrumbs') %>
+<%- include('../../views/partials/breadcrumbs') %>
 
 
 <div id="main-wrapper">
@@ -70,13 +69,18 @@
     </div>
 
 
-
-
+    <%- include('../../views/partials/footerarea') %>
+      
 </div>
 
-<%- include('../partials/footerarea') %>
-<%- include('../partials/commonjslibs'); %>
+<!--====================  scroll top ====================-->
+<a href="#" class="scroll-top" id="scroll-top">
+    <i class="arrow-top icon-arrow-up"></i>
+    <i class="arrow-bottom icon-arrow-up"></i>
+</a>
 
+<%- include('../../views/partials/commonjslibs'); %>
 
 </body>
+
 </html>

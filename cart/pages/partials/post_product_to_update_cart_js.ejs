@@ -43,7 +43,7 @@ function sendToCart(category="books",productIDToUpdate="", source='', alertIndex
         $(`#${alertIndex}`).html(successHtml);
       else
         $(`#${DEFAULT_ALERT_INDEX}`).html(successHtml);
-      location.href = location.href;
+      //location.href = location.href;
     }).fail((data) => {
       
       console.log(`Failure data received : ${JSON.stringify(data)}`);

@@ -8,13 +8,13 @@ const csrf = require('csurf');
 const {booksHtmlView,allBooksDumpApi,oneBookDetailsHtmlView,addBookWithISBN,getAddBookWithISBNForm, searchBook,deleteBook} = require('./controller');
 const {booksApiRouteName, addBooksWithISBNOnlyRouteName} = require('./utilities') ;
 const { verifyLogin } = require('../admin/middleware') ;
-const validateISBN = require('./middleware');
+const {validateISBN} = require('./middleware');
 const { showError404 } = require('../controllers/indexController');
 module.exports = () => {
   
     router.get("/",booksHtmlView);
     router.get(`/addBookWithExternalAPI`,verifyLogin,  getAddBookWithISBNForm);
-    router.post(`/addBookWithExternalAPI`,verifyLogin,validateISBN, addBookWithISBN);  
+    router.post(`/addBookWithExternalAPI`,verifyLogin, validateISBN,addBookWithISBN);  
 
     router.get(`/delete/:id`,verifyLogin,validateISBN, deleteBook);    
     router.post('/search', searchBook)    

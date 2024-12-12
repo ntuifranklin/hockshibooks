@@ -40,7 +40,8 @@ const verifyLogin= async(req,res,next)=>{
         return next();
     } else {
         return res.status(403).redirect(`/admin`);
-    }
+    } ;
+    //next();
 } ;
 
 const redirectToAdminDashboardIfLoggedIn= (req,res,next)=>{
