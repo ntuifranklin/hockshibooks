@@ -268,16 +268,15 @@ const logout=async(req,res)=>{
         */ 
        try{
         
-                if (!req.session.user) {
-                        return res.status(404).redirect(`/admin`);
-                } ;
-                let userKey = "USER";
+                
+                let userKey = generateLoggedInUserCacheKey(req.session.userID);
                 const loggedInUser = await retrieveJSONObjectFromRedisCache(userKey) ;
                 if(!loggedInUser)
                         return res.status(404).redirect(`/admin`)   
                 
                 
                 await deleteDataFromRedisCache(userKey) ;
+                await req.session.destroy();
                 return res.status(200).redirect(`/admin`) 
 
         } catch(e){

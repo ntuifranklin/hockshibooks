@@ -38,7 +38,7 @@ const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
     process.exit(1);
   } ;
   
-    /* print current settings 
+    //print current settings 
     console.log("Current settings: ");
     console.log("DB_USER: ", process.env.DB_USER);
     console.log("DB_PSWD: ", process.env.DB_PSWD);
@@ -49,7 +49,7 @@ const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
       please set the environment variable NODE_ENV to either production, 
       testing or development`
     );
-    */
+    
 } ;
 
 

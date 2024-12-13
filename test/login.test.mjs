@@ -169,8 +169,34 @@ describe('User Authentication and Page Access with OTP', async function() {
     res = await agent.get("/admin/dashboard")
     csrfToken = extractCsrfToken(res);
     expect(res).to.have.status(200);
+
+    //when a user logs out and access the dashboard they should be redirected to the login page
+    res = await agent.get("/admin/logout")
+    expect(res).to.have.status(302);
+    
+    //when a user logs out and access the dashboard they should be redirected to the login page
+    res = await agent.get("/admin/dashboard")
+    expect(res).to.have.status(302);
+    //the respons eshould contain an email and password field
+    res = await agent.get("/admin/")
+    expect(res).to.have.status(200);
+    csrfToken = extractCsrfToken(res);
+    expect(csrfToken).to.exist;
+    //console.log(csrfToken)
+    // Step 2: Send POST request to /admin with the CSRF token and valid credentials
+    postResponse =  await agent
+    .set('csrf-token', csrfToken)
+    .post('/admin')
+    .send({ ...validUser, _csrf: csrfToken });    
     
   });
   
 });
 
+process.on('SIGINT', () => {
+  console.log('Shutting down gracefully...');
+  app.close(() => {
+    console.log('Server closed.');
+    process.exit(0);
+  });
+});

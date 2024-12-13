@@ -144,3 +144,13 @@ describe('search book functionality ',async () => {
   
 
 })
+
+
+
+process.on('SIGINT', () => {
+  console.log('Shutting down gracefully...');
+  app.close(() => {
+    console.log('Server closed.');
+    process.exit(0);
+  });
+});
