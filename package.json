@@ -11,7 +11,7 @@
     "test": "NODE_ENV=test  mocha --timeout 200000 --recursive --exit ",
     "start": "node appclustering.js",
     "profiling": "node --prof appclustering.js",
-    "prod": "pm2 restart pm2.ecosystem.yml --env production",
+    "prod": "NODE_ENV=production && pm2 restart pm2.ecosystem.yml --env production",
     "dev": "NODE_ENV=development nodemon -e js,ejs,html -w . -w public -w views -w routes -w database --trace-warnings appclustering.js"
   },
   "author": "Franklin Nkokam Ngongang",

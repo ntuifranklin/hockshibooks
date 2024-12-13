@@ -7,7 +7,7 @@ const { expect } = chai;
 // Load environment variables
 config();
 
-const stripe = Stripe(process.env.Stripe_secret_key);
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 describe('Stripe Payment Tests', () => {
   it('should create a successful charge', async () => {

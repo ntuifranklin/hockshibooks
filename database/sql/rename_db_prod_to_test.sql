@@ -1,0 +1,1 @@
+ALTER DATABASE `hockshidbprod` RENAME TO `hockshidbtest`;

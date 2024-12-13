@@ -1,19 +1,15 @@
 const { USER_CART_NAME, ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, QUANTITY } = require("../utilities/universal_web_constants");
 
 const { 
-    cartRequestCategoryToKey, 
-    deleteDataFromRedisCache,
     writeDataToRedisCache, 
     readDataFromRedisCache, 
     retrieveJSONObjectFromRedisCache, 
-    saveJSONObjectToRedisCache
 } = require('../middleware/redis');
 const { Op } = require("sequelize");
 const provinceStateModel = require("../models/provinceStateModel");
 const CountryModel = require("../models/countryModel");
 const bookModel = require("../models/bookModel") ;
 const inventoryModel = require("../models/inventory");
-const e = require("express");
 const { generateUniqueCartSessionRedisCacheKey } = require("./utilities");
 const viewCart= async(req,res)=>{
     /**

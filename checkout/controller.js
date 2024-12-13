@@ -1,16 +1,15 @@
 const { Op } = require("sequelize");
 const sequelize = require('../config/database');
 const bookModel=require("../models/bookModel")
-const genreModel=require("../models/genreModel")
+
 const inventoryModel=require("../models/inventory");
 const CountryModel=require("../models/countryModel");
 const provinceStateModel=require("../models/provinceStateModel")
 const customerModel=require("../models/customerModel")
-const customerOtpModel=require("../models/customerOtpModel")
 const orderModel= require("../models/ordersModel")
 const OrderItem = require("../models/orderItemsModel");
 const paymentModel=require("../models/paymentModel")
-const{convertDateFormat, sendStatusChangedMessage,sendCustomerNewOrderEmailNotofication} = require("../utilities/functions");
+const{sendCustomerNewOrderEmailNotofication} = require("../utilities/functions");
 const { generateUniqueCartSessionRedisCacheKey } = require("../cart/utilities");
 const { retrieveJSONObjectFromRedisCache, deleteDataFromRedisCache } = require("../middleware/redis");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -53,8 +52,8 @@ const checkout = async(req,res)=>{
  * @return {Promise<void>} - Returns a Promise that resolves with the session ID in the response.
  * @throws {Error} - Throws an error if the items in the request body is not an array.
  */
-    /*
-   1. It retrieves the items and shippingInfo from the request body.
+/*
+1. It retrieves the items and shippingInfo from the request body.
 2.   It checks if the items is an array. If not, it returns a JSON response with an error message.
 3. It initializes an empty array called lineItems.
 4. It iterates over each item in the items array and retrieves the corresponding product details from a database.

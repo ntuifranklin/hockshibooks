@@ -22,6 +22,60 @@ const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
 const port = env != process.env.PRODUCTION_ENV ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
 
 
+/* Set dynamic db settings from these seting taken from aws secrets:
+# development db settings
+DB_DEV_USER="root"
+DB_DEV_PASSWORD="hockshidbprod"
+DB_DEV_DB_NAME="Z+x3xxFqB0CDWsQqLSc6SghXDzKVzBa9yUuKlQZ9OeA="
+DB_DEV_HOST="172.17.0.2"
+
+# testing db settings
+DB_TEST_USER="root"
+DB_TEST_PASSWORD="hockshidbtest"
+DB_TEST_DB_NAME="Z+x3xxFqB0CDWsQqLSc6SghXDzKVzBa9yUuKlQZ9OeA="
+DB_TEST_HOST="172.17.0.2"
+
+# production db settings
+DB_PROD_USER="root"
+DB_PROD_PASSWORD="hockshidbprod"
+DB_PROD_DB_NAME="Z+x3xxFqB0CDWsQqLSc6SghXDzKVzBa9yUuKlQZ9OeA="
+DB_PROD_HOST="172.17.0.2"
+
+DB_USER=""
+DB_NAME=""
+DB_HOST=""
+*/
+
+if (env == process.env.PRODUCTION_ENV) {
+	process.env.DB_USER = process.env.DB_PROD_USER;
+	process.env.DB_PSWD = process.env.DB_PROD_PASSWORD;
+	process.env.DB_NAME = process.env.DB_PROD_DB_NAME;
+	process.env.DB_HOST = process.env.DB_PROD_HOST;
+} else if (env == process.env.TEST_ENV) {
+	process.env.DB_USER = process.env.DB_TEST_USER;
+	process.env.DB_PSWD = process.env.DB_TEST_PASSWORD;
+	process.env.DB_NAME = process.env.DB_TEST_DB_NAME;
+	process.env.DB_HOST = process.env.DB_TEST_HOST;
+} else if (env == process.env.DEVELOPMENT_ENV) {
+	process.env.DB_USER = process.env.DB_DEV_USER;
+	process.env.DB_PSWD = process.env.DB_DEV_PASSWORD;
+	process.env.DB_NAME = process.env.DB_DEV_DB_NAME;
+	process.env.DB_HOST = process.env.DB_DEV_HOST;
+} else {
+	//print current settings 
+	console.log("Current settings: ");
+	console.log("DB_USER: ", process.env.DB_USER);
+	console.log("DB_PSWD: ", process.env.DB_PSWD);
+	console.log("DB_NAME: ", process.env.DB_NAME);
+	console.log("DB_HOST: ", process.env.DB_HOST);
+	console.log(
+		`Environment not set for database settings, 
+		please set the environment variable NODE_ENV to either production, 
+		testing or development`
+	);
+	process.exit(1);
+}
+
 process.env.ROOT_PATH=path.join(__dirname, './');
 
 //connects to the database
@@ -54,10 +108,7 @@ const { rateLimit } = require('express-rate-limit');
 //const { serialize } = require('v8');
 const { 
 	setUniqueUserID,
-	initializeRedisClient, 
-	setRedisLoggedInUserCacheMiddleware, 
-	setRedisUserCartCacheMiddleware, 
-	redisCacheMiddleware 
+	initializeRedisClient
 } = require('./middleware/redis');
 const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME } = require('./utilities/universal_web_constants');
 
@@ -84,7 +135,7 @@ async function startNewHockshiServer(){
 
 	app.use(request_rate_limiter); 
 
-	if (port == process.env.PRODUCTION_SITE_PORT) {
+	if (env == process.env.PRODUCTION_ENV) {
 			
 		app.set('trust proxy', 1) // trust first proxy
 		dynamicCookie.secure = true; // serve secure cookies

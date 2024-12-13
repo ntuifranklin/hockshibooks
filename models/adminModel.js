@@ -2,10 +2,7 @@ const {Sequelize,DataTypes,Model}= require('sequelize')
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
-
 const sequelize = require('../config/database');
-
-
 
 //powerUser model
 class powerUser extends Model{}

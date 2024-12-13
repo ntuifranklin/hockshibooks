@@ -1,18 +1,21 @@
 
-const csrf = require('csurf');
+
 const bcrypt = require('bcrypt');
-const sequelize = require('../config/database');
+
 const {generateAndSendOTP}=require("../utilities/functions");
 const { validationResult } = require('express-validator');
-const {saveJSONObjectToRedisCache, retrieveJSONObjectFromRedisCache, deleteDataFromRedisCache, userRequestToKey, writeDataToRedisCache} = require('../middleware/redis');
-const { json } = require('body-parser');
+const { retrieveJSONObjectFromRedisCache, 
+        deleteDataFromRedisCache, 
+        writeDataToRedisCache
+} = require('../middleware/redis');
+
 require("dotenv").config()      
 
 //models
 const powerUSer= require("../models/adminModel")
 const otpModel=require("../models/otpModel")
 const bookModel=require("../models/bookModel")
-const genreModel=require("../models/genreModel")
+
 const inventoryModel=require("../models/inventory")
 const paymentModel=require("../models/paymentModel")
 const customerModel=require("../models/customerModel")
@@ -20,12 +23,9 @@ const orderModel= require("../models/ordersModel")
 
 
 //middleware
-const OTPvalidation= require("../middleware/OTPmiddleware");
-const validateOTP = require('../middleware/OTPmiddleware');
-const { adminRouteName, isAdminUserIsLoggedInAndSavedInCache, generateLoggedInUserCacheKey } = require('./utilities');
-const { LOGGED_IN_USER_VARIABLE_NAME } = require('../utilities/universal_web_constants');
-const { addBooksWithISBNOnlyRouteName, booksRouteName } = require('../books/utilities');
-let user_email,authUser;
+const { adminRouteName, generateLoggedInUserCacheKey } = require('./utilities');
+
+let user_email;
 let userId
 
 
