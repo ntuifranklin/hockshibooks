@@ -1,6 +1,7 @@
 
 import config from 'dotenv';
-import express from 'express';
+config.config({ path: '../.test.env' });
+
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import { describe, it, before,after} from 'mocha';
@@ -9,17 +10,16 @@ import supertest from "supertest";
 import { assert,expect,should } from "chai";
 import * as cheerio from "cheerio";
 
-import otpModel from "../models/otpModel.js";
-import adminModel from "../models/adminModel.js";
 
 import {startNewHockshiServer} from '../server.js';
 import {generateAndSendOTP} from '../utilities/functions.js';
 
-config.config();
-process.env.NODE_ENV = process.env.TEST_ENV;
+import otpModel from "../models/otpModel.js";
+import adminModel from "../models/adminModel.js";
 
-chai.use(chaiHttp);
 let app = await startNewHockshiServer();
+setTimeout(() => {}, 3000);
+chai.use(chaiHttp);
 let csrfToken;
 let agent = supertest.agent(app);
 const isbns = [
@@ -60,8 +60,6 @@ function  extractCsrfToken(res) {
 
 describe('User Authentication and Page Access with OTP', async function() {
 
-
-
   it('should return 200 OK for the login route',  async () => {
     
     let res = await agent.get("/admin/")
@@ -96,6 +94,7 @@ describe('User Authentication and Page Access with OTP', async function() {
       }
       expect(otpCode).to.exist; 
   
+      csrfToken = extractCsrfToken(postResponse);
       // Step 4: Send POST request to verify OTP
       const otpResponse = await agent
         .set('csrf-token', csrfToken)
@@ -105,8 +104,9 @@ describe('User Authentication and Page Access with OTP', async function() {
   
       // Validate that the response has the correct cookie
       expect(otpResponse).to.have.cookie('connect.sid');
+      expect(otpResponse).to.have.status(302);
     } catch (err) {
-      //console.log(`${err.message}`);
+      console.log(`${err.message}`);
       throw err;
     }
   });
@@ -132,14 +132,44 @@ describe('User Authentication and Page Access with OTP', async function() {
 
 
   it('should save books succesfully in the database from open libary', async() => {
+    //need to log in first
     
-    let res = await agent.get("/books/addBookWithExternalAPI")
+    let res = await agent.get('/admin');
     let csrfToken = extractCsrfToken(res);
-    let postResponse = await agent
-      .post(`/books/addBookWithExternalAPI`)
-      .set('csrf-token', csrfToken)
-      .send({isbn:isbn,_csrf: csrfToken, qty:1} )
+
+    // Step 2: Send POST request to /admin with the CSRF token and valid credentials
+    let postResponse =  await agent
+    .set('csrf-token', csrfToken)
+    .post('/admin')
+    .send({ ...validUser, _csrf: csrfToken });
+
+    // Validate response (Example: checking status)
     expect(postResponse).to.have.status(200);
+
+    // Step 3: Generate and send OTP
+    let emailResult = await  generateAndSendOTP(validUser.userId, validUser.email, otpModel);
+    //console.log(`OTP code is ${emailResult}`);
+    let otpCode = emailResult;
+
+    if (!otpCode) {
+      throw new Error('OTP code not found in email');
+    }
+    expect(otpCode).to.exist; 
+
+    // Step 4: Send POST request to verify OTP
+    let otpResponse = await agent
+      .set('csrf-token', csrfToken)
+      .post('/admin/verifyOtp')
+      .send({ userId: validUser.userId, OTP: otpCode, _csrf: csrfToken })
+      
+
+    // Validate that the response has the correct cookie
+    expect(otpResponse).to.have.cookie('connect.sid');
+
+    res = await agent.get("/admin/dashboard")
+    csrfToken = extractCsrfToken(res);
+    expect(res).to.have.status(200);
+    
   });
   
 });

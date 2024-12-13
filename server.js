@@ -1,10 +1,15 @@
 
 
-require("dotenv").config()
+require("dotenv").config() ;
+const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
+const port = env != process.env.PRODUCTION_ENV ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
+
+
+
 const express = require('express');
 
 const path = require('path');
-const {connect,checkUploadDir}=require("./utilities/functions");
+const {connect,checkUploadDir,setDatabaseEnvironment}=require("./utilities/functions");
 
 const bodyParser = require('body-parser');
 const {setStripeKeysToUse} = require('./middleware/set_stripe_keys');
@@ -18,68 +23,13 @@ const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
 
 
-const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
-const port = env != process.env.PRODUCTION_ENV ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
-
-
-/* Set dynamic db settings from these seting taken from aws secrets:
-# development db settings
-DB_DEV_USER="root"
-DB_DEV_PASSWORD="hockshidbprod"
-DB_DEV_DB_NAME="Z+x3xxFqB0CDWsQqLSc6SghXDzKVzBa9yUuKlQZ9OeA="
-DB_DEV_HOST="172.17.0.2"
-
-# testing db settings
-DB_TEST_USER="root"
-DB_TEST_PASSWORD="hockshidbtest"
-DB_TEST_DB_NAME="Z+x3xxFqB0CDWsQqLSc6SghXDzKVzBa9yUuKlQZ9OeA="
-DB_TEST_HOST="172.17.0.2"
-
-# production db settings
-DB_PROD_USER="root"
-DB_PROD_PASSWORD="hockshidbprod"
-DB_PROD_DB_NAME="Z+x3xxFqB0CDWsQqLSc6SghXDzKVzBa9yUuKlQZ9OeA="
-DB_PROD_HOST="172.17.0.2"
-
-DB_USER=""
-DB_NAME=""
-DB_HOST=""
-*/
-
-if (env == process.env.PRODUCTION_ENV) {
-	process.env.DB_USER = process.env.DB_PROD_USER;
-	process.env.DB_PSWD = process.env.DB_PROD_PASSWORD;
-	process.env.DB_NAME = process.env.DB_PROD_DB_NAME;
-	process.env.DB_HOST = process.env.DB_PROD_HOST;
-} else if (env == process.env.TEST_ENV) {
-	process.env.DB_USER = process.env.DB_TEST_USER;
-	process.env.DB_PSWD = process.env.DB_TEST_PASSWORD;
-	process.env.DB_NAME = process.env.DB_TEST_DB_NAME;
-	process.env.DB_HOST = process.env.DB_TEST_HOST;
-} else if (env == process.env.DEVELOPMENT_ENV) {
-	process.env.DB_USER = process.env.DB_DEV_USER;
-	process.env.DB_PSWD = process.env.DB_DEV_PASSWORD;
-	process.env.DB_NAME = process.env.DB_DEV_DB_NAME;
-	process.env.DB_HOST = process.env.DB_DEV_HOST;
-} else {
-	//print current settings 
-	console.log("Current settings: ");
-	console.log("DB_USER: ", process.env.DB_USER);
-	console.log("DB_PSWD: ", process.env.DB_PSWD);
-	console.log("DB_NAME: ", process.env.DB_NAME);
-	console.log("DB_HOST: ", process.env.DB_HOST);
-	console.log(
-		`Environment not set for database settings, 
-		please set the environment variable NODE_ENV to either production, 
-		testing or development`
-	);
-	process.exit(1);
-}
+/* This has to be done before any database connection is made */
+setDatabaseEnvironment();
 
 process.env.ROOT_PATH=path.join(__dirname, './');
 
 //connects to the database
-connect()
+//connect()
 //checks if the uploads dir exists, this dir is where all our cover images will be stored
 checkUploadDir();
 
@@ -123,7 +73,9 @@ const request_rate_limiter = rateLimit({
 let mysqlSessionStore = new MySQLStore(mysq_store_session_database_options);
 
 async function startNewHockshiServer(){
-	
+		
+	/* This is a duplicate right here */
+	setDatabaseEnvironment();
 	const app = express();
 
 	//start redis cache

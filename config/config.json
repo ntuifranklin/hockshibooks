@@ -15,7 +15,9 @@
     "password": "",
     "database": "hockshidbtest",
     "host": "mariadb",
-    "dialect": "mariadb"
+    "dialect": "mariadb",
+    "port":"3306",
+    "logging": true    
   },
   "production": {
     "username": "root",

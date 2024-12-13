@@ -329,7 +329,7 @@ const searchBook=async (req,res)=>{
                 api_route_name:"api"
             })
         }catch(e){
-            res.status(500).redirect(`${process.env.HOST}/`)
+            res.status(200).redirect(`/`)
         }
     
     };

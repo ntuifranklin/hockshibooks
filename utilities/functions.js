@@ -14,6 +14,45 @@ const { createCanvas, loadImage } = require('canvas');
 
 require("dotenv").config()
 
+function setDatabaseEnvironment() {
+  
+const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
+/* This has to be done before any database connection is made */
+
+  if (env == process.env.PRODUCTION_ENV) {
+    process.env.DB_USER = process.env.DB_PROD_USER;
+    process.env.DB_PSWD = process.env.DB_PROD_PASSWORD;
+    process.env.DB_NAME = process.env.DB_PROD_DB_NAME;
+    process.env.DB_HOST = process.env.DB_PROD_HOST;
+  } else if (env == process.env.TEST_ENV) {
+    process.env.DB_USER = process.env.DB_TEST_USER;
+    process.env.DB_PSWD = process.env.DB_TEST_PASSWORD;
+    process.env.DB_NAME = process.env.DB_TEST_DB_NAME;
+    process.env.DB_HOST = process.env.DB_TEST_HOST;
+  } else if (env == process.env.DEVELOPMENT_ENV) {
+    process.env.DB_USER = process.env.DB_DEV_USER;
+    process.env.DB_PSWD = process.env.DB_DEV_PASSWORD;
+    process.env.DB_NAME = process.env.DB_DEV_DB_NAME;
+    process.env.DB_HOST = process.env.DB_DEV_HOST;
+  } else {
+    process.exit(1);
+  } ;
+  
+    /* print current settings 
+    console.log("Current settings: ");
+    console.log("DB_USER: ", process.env.DB_USER);
+    console.log("DB_PSWD: ", process.env.DB_PSWD);
+    console.log("DB_NAME: ", process.env.DB_NAME);
+    console.log("DB_HOST: ", process.env.DB_HOST);
+    console.log(
+      `Environment not set for database settings, 
+      please set the environment variable NODE_ENV to either production, 
+      testing or development`
+    );
+    */
+} ;
+
+
 function isTestEnvironment(root_dir=new String(__dirname)) {
    
     const current_dir = root_dir;
@@ -53,7 +92,7 @@ const connect = () => {
     // Authenticate the connection
 
   sequelize.authenticate().then(() => { 
-    console.log('Connection established successfully.');
+    console.log('Database with [sequelize] Connection established successfully.');
   }).catch(err => {
     console.error('Unable to connect to the database:', err);
   });
@@ -316,6 +355,7 @@ module.exports={
   Md5Rand,
   checkFileExtension,
   checkUploadDir,
-  getBookDescription
+  getBookDescription,
+  setDatabaseEnvironment
 }
 

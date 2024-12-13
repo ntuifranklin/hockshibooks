@@ -6,7 +6,6 @@ const totalCPUs = require("os").availableParallelism();
 
 const {startNewHockshiServer} = require('./server.js');
 
-
 if (cluster.isPrimary) {
     
     console.log(`Number of CPUs is ${totalCPUs}`);
