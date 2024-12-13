@@ -139,9 +139,18 @@ const addBookWithISBN= async(req,res)=>{
  * @param {Object} res - The response object used to render templates or redirect the user.
  * @return {Promise<void>} A promise that resolves when the function is completed.
  */
-    const isbn=req.body.isbn
+    let isbn=req.body.isbn
     const price=req.body.price || 25
     const qty=req.body.qty || 1;
+    
+    const isbnLength = isbn.length;
+    if (isbnLength < 10) {
+        isbn = isbn.padStart(10, '0');
+    }
+    if (isbnLength < 13) {
+        isbn = isbn.padStart(13, '0');
+    }
+    isbn = new String(isbn).trim();
     const errors=validationResult(req) ;
     //This code will not run if an admin user is not logged in.
     let user = req.session.USER;
@@ -157,6 +166,8 @@ const addBookWithISBN= async(req,res)=>{
 
     }
     else{
+
+        //isbn could be less than 10 or less than 8 characters. lets pad it with 000s
         
         const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`;
         try{
