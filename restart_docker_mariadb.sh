@@ -16,5 +16,3 @@ mysql -h 172.17.0.2 -P 3306 -u root -p hockshidbtest < database/sql/hockshidb.sq
 mysql -h 172.17.0.2 -P 3306 -u root -p hockshidbdev < database/sql/hockshidb.sql
 # session management
 mysql -h 172.17.0.2 -P 3306 -u root -p < sessionmanagement/hockshisessiondb.sql
-
-

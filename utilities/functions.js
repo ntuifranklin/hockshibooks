@@ -330,10 +330,31 @@ const context = canvas.getContext('2d');
 context.fillStyle = '#dcb14a'; // website brand color for background
 context.fillRect(0, 0, width, height);
 
+//writing px should be about 7% of the image width
+let writePx = Math.ceil(width * 0.07);
 // Add text
-context.font = '17px Arial';
+context.font = `${writePx}px Arial`;
 context.fillStyle = '#000000'; // Black text
-context.fillText(imageTitle, 50, 100);
+//write 15 characters for every line of the image title to the image
+const lines = [];
+let line = '';
+const words = imageTitle.split('-');
+for (let i = 0; i < words.length; i++) {
+  if (line.length + words[i].length <= 15) {
+    line += words[i] + ' ';
+  } else {
+    lines.push(line);
+    line = words[i] + ' ';
+  }
+}
+lines.push(line);
+//start at about 25% of the image width and 25% of the image height
+let startX = Math.round(width * 0.25);
+let startY = Math.round(height * 0.25);
+for (let i = 0; i < lines.length; i++) {
+  context.fillText(lines[i], startX, startY + i * writePx);
+}
+
 
 // Save image to file
 const buffer = canvas.toBuffer('image/jpeg');

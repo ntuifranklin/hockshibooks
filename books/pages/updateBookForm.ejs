@@ -1,7 +1,7 @@
 <%- include('./partials/pagehead') %>
 <%- include('../../admin/pages/navBar') %>
 <%- include('../../views/partials/breadcrumbs') %>
-
+<%- include('../../admin/pages/partials/commonjslibs') %>
 
 <div id="main-wrapper">
     <div class="site-wrapper-reveal border-bottom">
@@ -11,7 +11,7 @@
                 
                 <div class="row">
                     <div class="col-lg-8 col-md-9 col-sm-12 col-xs-12 m-auto">
-                        <div id="udpdateBookFormResponseMessages">
+                        <div id="updateBookFormResponseMessages">
                         
                         </div>
                     </div>
@@ -19,9 +19,9 @@
                 <div class="row">
                     <div class="col-md-5 mx-auto w-100 d-flex justify-content-center align-items-center ">
                         <% if(book.cover_image_url.split(":")[0]=="https") { %>
-                            <img  src="<%=`${book.cover_image_url}`%>" class="img-fluid mx-auto w-30 h-20">
+                            <img  src="<%=`${book.cover_image_url_medium}`%>" class="img-fluid mx-auto w-30 h-20">
                         <% } else { %>
-                            <img  src="/uploads/<%=`${book.cover_image_url}`%>" class="img-fluid mx-auto w-30 h-20">
+                            <img  src="/uploads/<%=`${book.cover_image_url_medium}`%>" class="img-fluid mx-auto w-30 h-20">
             
                         <% } %>
                     </div>
@@ -81,15 +81,25 @@
 
                                         </div>
                                         <div class="single-input">
-                                            <label for="" class="w-100">Release Date:
+                                            <label for="" class="w-100">Publication Date:
 
-                                                <input type="date" class="form-control" id="date" name="date" >
+                                                <input type="date" class="form-control" id="date" name="date" value="<%= book.publication_date %>">
 
                                             </label>
                                         </div>
                                         <div class="single-input">
                                             <label for="" class="w-100">Cover Image:
                                                 <input type="file"  id="coverImage"  name="coverImage">
+                                                                        
+                                                <% if(book.cover_image_url.split(":")[0]=="https") { %>
+                                                    <a href="<%=`${book.cover_image_url_large}`%>">
+                                                        <img  src="<%=`${book.cover_image_url_small}`%>" class="img-fluid mx-auto w-30 h-20">
+                                                    </a>
+                                                <% } else { %>
+                                                    <a href="/uploads/<%=`${book.cover_image_url_large}`%>">
+                                                    <img  src="/uploads/<%=`${book.cover_image_url_small}`%>" class="img-fluid mx-auto w-30 h-20">
+                                                    </a>
+                                                <% } %>
 
                                             </label>
                                         </div>
@@ -97,7 +107,7 @@
 
                                             <label for="decription" class="w-100">Description:
 
-                                                <textarea class="w-100" id="description" name="description"  resize=false rows="10"  width="1000px">
+                                                <textarea class="w-100" id="description" name="description" resize=true rows="12"  width="1000px">
                                                     <%= book.description %>
                                                 </textarea>
                                             </label>
@@ -109,7 +119,7 @@
                                         <div class="button-box mt-25">
                                             <button type="submit" class="btn btn--full btn--black">Save updates</button>
                                         </div>
-                                        <div class="spinner-border text-dark single-input" role="status">
+                                        <div class="spinner-border text-dark" role="status" id="updateBookSpinner">
                                                 <span class="sr-only">Loading...</span>                                                  
                                         </div>
                                     </form>
@@ -118,13 +128,13 @@
                                     <script>
                                         //Script to post a fgorm with ajax asynchrously
                                         $(document).ready(function(){
-                                            $('.spinner-border').hide();
-                                            let alertcontainerID = document.getElementById('udpdateBookFormResponseMessages');
+                                            $('#updateBookSpinner').hide();
+                                            let alertcontainerID = document.getElementById('updateBookFormResponseMessages');
                                             $('#updateBookForm').submit(async function(e){
                                                                                                  
                                                 e.preventDefault();
-                                                $('.spinner-border').show();
-                                                var form = $(this);
+                                                $('#updateBookSpinner').show();
+                                                //var form = $(this);
                                                 var url = "/books/update";
                                                 var type = "POST";
                                                 let formData = new FormData();
@@ -137,12 +147,12 @@
                                                     quantity: $('#quantity').val(),
                                                     location: $('#location').val(),
                                                     date: $('#date').val(),
-                                                    description: $('#description').val(),
-                                                    cover_image_url: cover_image_url,
+                                                    description: $('#description').innerHTML,
+                                                    cover_image_url: $('#coverImage').val(),
                                                 };
-                                                for (let key in data) {
+                                                /*for (let key in Object.keys(data)) {
                                                     formData.append(key, data[key]);
-                                                }
+                                                }*/
                                                 //set header
                                                 $.ajaxSetup({
                                                     headers: {
@@ -154,10 +164,10 @@
                                                     {
                                                     url: url,
                                                     type: type,
-                                                    body: formData,
+                                                    data: data,
                                                     success: async function(response){
-                                                        $('.spinner-border').hide();
-                                                        console.log(`Success from server: `,JSON.stringify(response,null,2));
+                                                        $('#updateBookSpinner').hide();
+                                                        //console.log(`Success from server: `,JSON.stringify(response,null,2));
                                                         let d = await JSON.parse(JSON.stringify(response,null,2));
                                                         if(d){
                                                             alertcontainerID.innerHTML =
@@ -168,11 +178,11 @@
                                                                     </button>
                                                                 </div>` ;                                                                
                                                         } else {
-                                                            alert(`Sucess: But could not update DOM `);
+                                                            alert(`Success: But could not update DOM `);
                                                         }
                                                     },
                                                     error: async function(error){
-                                                        $('.spinner-border').hide();
+                                                        $('#updateBookSpinner').hide();
                                                         console.log(`Error from: ${JSON.stringify(error,null,2)}`);
                                                         let d = await JSON.parse(JSON.stringify(error,null,2));
                                                         if(d.responseJSON){
@@ -216,7 +226,6 @@
 </a>
 
     
-<%- include('../../admin/pages/partials/admin_jslibs') %>
 
 
 </body>

@@ -158,7 +158,7 @@ const addBookWithISBN= async(req,res)=>{
         if(data){
             let desc= await getBookDescription(data.identifiers.openlibrary[0])
             try {
-                const tmp=await bookModel.findOne({
+                const bookMightExistInInventory=await bookModel.findOne({
                     where:{
                         ISBN:isbn
                     }
@@ -178,68 +178,29 @@ const addBookWithISBN= async(req,res)=>{
                 );
                     
                 var cover_image_url = "";
+                var cover_image_url_small = "";
+                var cover_image_url_medium = "";
+                var cover_image_url_large = "";
                 let filename_for_cloudflare = "";
+                let localPath = "";
                 if (typeof data.cover != "undefined" && typeof data.cover.medium != "undefined"){
-                    cover_image_url = data.cover.medium;
+                    //here an image was returned by open library
+                    cover_image_url = data.cover.large;
+                    cover_image_url_small = data.cover.small;
+                    cover_image_url_medium = data.cover.medium;
+                    cover_image_url_large = data.cover.large;
                     //download the file to local uploads folder using axios, then upload it to cloudflare
-                
+                } else {
+                    //here no image was returned by open library
+                    //create a default image
                     try{
-                        filename_for_cloudflare = `${seo_friendly_title}_cover_image.jpg`;
-                        const localPath = path.join(process.env.ROOT_PATH, 'views', 'uploads',`${filename_for_cloudflare}`) ; // Replace with the desired local path
-
-                        let imageResponse = await axios.get(cover_image_url, { responseType: 'stream' });
-
-                        imageResponse.data.pipe(fs.createWriteStream(localPath));
-                        cover_image_url = await uploadImageToCloudFlare(localPath, filename_for_cloudflare);
-
-                    } catch(error){
-                        console.log(`Error downloading image: ${error.message}`);
-                    }
-                }
-                    
-                if (cover_image_url == ""){
-                    try{
-                        
-                        cover_image_url = await createDefaultBookImage(width=300, height=300,imageTitle=seo_friendly_title);
-                        filename_for_cloudflare = `${seo_friendly_title}_cover_image.jpg`;
-                        let cloudflare_response = await uploadImageToCloudFlare("uploads/"+cover_image_url, filename_for_cloudflare);
-                        cloudflare_response = await JSON.parse(JSON.stringify(cloudflare_response));
-                        //console.log(`Cloudflare response: ${JSON.stringify(cloudflare_response, null, 2)}`);
-                        let item_image_json_object = cloudflare_response["result"];
-                        //console.log(`Result of cloudflare response: ${JSON.stringify(item_image_json_object, null, 2)}`);
-                        
-                        let variants = await JSON.parse(JSON.stringify(item_image_json_object["variants"])); 
-                        //variants = await JSON.parse(JSON.stringify(variants)); 
-                        //console.log(`Accessing variants: ${JSON.stringify(variants, null, 2)}`);
-                        //console.log(`Variants.length: ${JSON.stringify(variants.length, null, 2)}`);
-                        
-                        
-                        let filename = item_image_json_object["filename"];
-                        
-                        /*   
-                            `cloudflare_image_id` VARCHAR(64) NOT NULL,
-                            `item_id` VARCHAR(16) NOT NULL,
-                            `filename` VARCHAR(255) DEFAULT NULL,
-                            `variant_110x118` VARCHAR(264) DEFAULT NULL,
-                            `variant_384x320` VARCHAR(264) DEFAULT NULL,
-                            `variant_70x70` VARCHAR(264) DEFAULT NULL,
-                            `date_uploaded` DATETIME DEFAULT CURRENT_TIMESTAMP(),
-                            `date_modified` DATETIME DEFAULT CURRENT_TIMESTAMP(),
-                        */
-                        cloudflare_image_id = item_image_json_object["id"];
-                        
-                        for (let i=0 ; i < variants.length; i++) {
-                            let variant = variants[i] ;
-                            if (variant.includes("300x300"))
-                                cover_image_url = variants[i];
-                            /*
-                            else if (variant.includes("110x118"))
-                                variant_110x118 = variants[i];
-                            else if (variant.includes("384x320"))
-                                variant_384x320 = variants[i];
-                            */
-                        }
-                        
+                        //large: 333x475
+                        //medium: 180x274
+                        //small: 38x58
+                        cover_image_url = await createDefaultBookImage(width=333, height=475,imageTitle=seo_friendly_title+"-large-cover");  
+                        cover_image_url_large = cover_image_url
+                        cover_image_url_small = await createDefaultBookImage(width=60, height=92,imageTitle=seo_friendly_title+"-small-cover");
+                        cover_image_url_medium = await createDefaultBookImage(width=180, height=274,imageTitle=seo_friendly_title+"-medium-cover");
 
                     } catch(e){
                         console.log(`Error creating default image: ${e.message}`);
@@ -248,15 +209,19 @@ const addBookWithISBN= async(req,res)=>{
                 
                 
 
-                if(!tmp){
+                if(!bookMightExistInInventory){
                     let createdBook=await bookModel.create({
                         seo_friendly_title:seo_friendly_title,
                         title:data.title,
                         author:data.authors[0].name,
                         ISBN:isbn10_or_13,
                         description: desc,
-                        publication_date:data.publication_date,
+                        number_of_pages:data.number_of_pages,
+                        publication_date:data.publish_date,
                         cover_image_url:cover_image_url,
+                        cover_image_url_small:cover_image_url_small,
+                        cover_image_url_medium:cover_image_url_medium,
+                        cover_image_url_large:cover_image_url_large,
                         price:price
                     }) 
     
@@ -279,22 +244,35 @@ const addBookWithISBN= async(req,res)=>{
                     //book exists. let's check the inventory, and add the book only if the inventory is 0
                     let inventory = await inventoryModel.findOne({
                         where:{
-                            book_id:tmp.book_id
+                            book_id:bookMightExistInInventory.book_id
                         }
-                    })
+                    });
+                    /* 
+                    maybe a new image is available at open library. 
+                    If it is then lets update the image if the image we have is empty 
+                    */
+                    if (cover_image_url && bookMightExistInInventory.cover_image_url == ""){
+                        bookMightExistInInventory.cover_image_url = cover_image_url;
+                        bookMightExistInInventory.cover_image_url_small = cover_image_url_small;
+                        bookMightExistInInventory.cover_image_url_medium = cover_image_url_medium;
+                        bookMightExistInInventory.cover_image_url_large = cover_image_url_large;
+                        await bookMightExistInInventory.save();
+                    }
+                    
                     //if inventory is 0, update the quantity available to the new quaantity
                     if(inventory && inventory.quantity_available && inventory.quantity_available < 1){
                         inventory.quantity_available=qty;
-                        await inventory.save();
                         //also update the book price
-                        tmp.price=price;
-                        tmp.save();
+                        bookMightExistInInventory.price=price;
+                        //save the changes
+                        await inventory.save();
+                        await bookMightExistInInventory.save();
 
                         return res.status(201).json({
                                 success:true,
-                                msg:`${tmp.title}'s quantity and price data updated+successfully`,
+                                msg:`${bookMightExistInInventory.title}'s quantity and price data updated+successfully`,
                                 data:{
-                                    book:tmp,
+                                    book:bookMightExistInInventory,
                                     inventory:inventory
                                 },
                                 statusCode:201
@@ -428,18 +406,33 @@ const deleteBook=async (req,res)=>{
                     /* check that the cover image url is not hosted on another server, 
                     meaning starts with http or htps */
                     if (!book.cover_image_url.startsWith("http")){
-                        const coverImagePath = path.join(process.env.ROOT_PATH, 'views','uploads',book.cover_image_url);
+                        let coverImagePath = path.join(process.env.ROOT_PATH, 'views','uploads',book.cover_image_url);
                         // Delete the cover image file
                         fs.unlink(coverImagePath, async (err) => {
                             if (err) {
                                 returnMessage += `Error deleting cover image: ${err.message}`;        
                             } 
                         })
+                        coverImagePath = path.join(process.env.ROOT_PATH, 'views','uploads',book.cover_image_url_small);
+                        // Delete the cover image file
+                        fs.unlink(coverImagePath, async (err) => {
+                            if (err) {
+                                returnMessage += `Error deleting cover image small format: ${err.message}`;        
+                            } 
+                        })
+                        coverImagePath = path.join(process.env.ROOT_PATH, 'views','uploads',book.cover_image_url_medium);
+                        // Delete the cover image file
+                        fs.unlink(coverImagePath, async (err) => {
+                            if (err) {
+                                returnMessage += `Error deleting cover image medium format: ${err.message}`;        
+                            } 
+                        })
                     }
                 }
+                let oldTitle = book.title;
                 await book.destroy()
-                let s = returnMessage.length > 0 ? returnMessage.trim().replace(/ /g, "+") + '&type=danger' : "item+successfully+deleted&type=success";
-                return res.redirect(`/admin/dashboard?msg=${returnMessage}`);
+                let s = returnMessage.length > 0 ? returnMessage.trim().replace(/ /g, "+") + '&type=danger' : `Book+${oldTitle}+successfully+deleted&type=success`;
+                return res.redirect(`/admin/dashboard?msg=${s}`);
           }         
           
       }
@@ -468,14 +461,11 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
     }else{
         error=false
     }
-    let book= await bookModel.findByPk(
-            updateBookId, 
-            {
-            include:[{model:inventoryModel}]
-            },
-    );
-    // res.send(book)
-    res.render("../books/pages/updateBookForm",{
+    let book= res.locals.bookToUpdate;
+    if (!book){
+        return res.status(404).redirect('/admin/dashboard?msg=book+not+found&type=danger');
+    }
+    return res.render("../books/pages/updateBookForm",{
         user:req.session.USER,
         pagetitle:"Update Book",
         book:book,
@@ -500,37 +490,81 @@ const saveUpdateBookFormData=async(req,res)=>{
 
        
             //The function updates the fields of the book and inventory records with the data from the request body.
-        
-            book.set({
-                title :req.body.title,
-                author : req.body.author,
-                language : req.body.language,
-                price :req.body.price,
-                description :req.body.description,
-                publication_date:req.body.date,
-            })
+            //only update fields that have changed
+            if(req.body.title != book.title){
+                book.set({title:req.body.title.trim()})
+            } ;
+            if(req.body.author != book.author){
+                book.set({author:req.body.author.trim()})
+            };
+            if(req.body.language != book.language){
+                book.set({language:req.body.language.trim()})
+            };
+            if(req.body.price != book.price){
+                book.set({price:req.body.price})
+            };
+            if(req.body.description != book.description){
+                book.set({description:req.body.description.trim()})
+            };
+            if(req.body.date != book.publication_date){
+                book.set({publication_date:req.body.date})
+            };
+            if(req.body.quantity != inventory.quantity_available){
+                inventory.set({quantity_available:req.body.quantity})
+            };
+            if(req.body.location != inventory.location){
+                inventory.set({location:req.body.location.trim()})
+            };        
 
-            inventory.set({
-                quantity_available : req.body.quantity,
-                location:req.body.location,
-            })            
-
-        
+            let localPath = "";
+            //the file name in body is called coverImage
+            /* Access the file in the request body using the req.file property. If a file is uploaded, the function sets the cover image URL of the book record to the new file path. */
+            
             if(req.file){
-                //If a new file is uploaded, the old cover image file is deleted from the file system, and the new file path is set.
-                const coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url);
-                // Delete the cover image file
-                fs.unlink(coverImagePath, async (err) => {
-                    if (err) {
-                        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
-                    }
-                })
-        
-                book.set({cover_image_url:req.file.path.split("/")[2]})            
+                //only unlink all files if files are local
+                
+                if(book.cover_image_url && !book.cover_image_url.startsWith("http")){
+                    //files are local
+                    
+                    //If a new file is uploaded, the old cover image file is deleted from the file system, and the new file path is set.
+                    coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url);
+                    // Delete the cover image file
+                    fs.unlink(coverImagePath, async (err) => {
+                        if (err) {
+                            return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
+                        }
+                    }) 
+                    //If a new file is uploaded, the old cover image file is deleted from the file system, and the new file path is set.
+                    coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url_small);
+                    // Delete the cover image file
+                    fs.unlink(coverImagePath, async (err) => {
+                        if (err) {
+                            return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
+                        }
+                    })
+                     
+                    //If a new file is uploaded, the old cover image file is deleted from the file system, and the new file path is set.
+                    coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url_medium);
+                    // Delete the cover image file
+                    fs.unlink(coverImagePath, async (err) => {
+                        if (err) {
+                            return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
+                        }
+                    })
+
+                    //rename uploaded file to seo_friendly_title
+                    let filename = req.file.path.split("/")[2];
+                    let newFilename = path.join(process.env.ROOT_PATH, 'views','uploads',book.seo_friendly_title);
+                    fs.renameSync(req.file);
+                    book.set({cover_image_url:newFilename.split("/")[3]})  
+
+                } else if(book.cover_image_url) {
+                    //files are remote
+                    book.set({cover_image_url:req.body.coverImage})
+                }
+                
            }
-           if(req.body.ISBN != book.ISBN){
-            book.set({ISBN:req.body.ISBN})
-           }
+          
 
            //The function saves the updated book and inventory records to the database.
 

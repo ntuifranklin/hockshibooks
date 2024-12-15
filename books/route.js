@@ -36,7 +36,11 @@ module.exports = () => {
     router.get(`/delete/:id`,verifyAdminIsLoggedIn,validateBookID, deleteBook);    
     router.post('/search', searchBook)    
 
-    
+    /*
+    Since validateBookID and getUpdateBookForm both access the databse twice for the same book
+
+    router.get(`/update/:id`,verifyAdminIsLoggedIn,validateBookID, getUpdateBookForm);   
+    */
     router.get(`/update/:id`,verifyAdminIsLoggedIn,validateBookID, getUpdateBookForm);    
     router.post('/update', verifyAdminIsLoggedIn, validateBookUpdateForm, saveUpdateBookFormData)    
     //send this to the api section

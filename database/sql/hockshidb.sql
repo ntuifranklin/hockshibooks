@@ -48,10 +48,14 @@ CREATE TABLE Books (
     author VARCHAR(256) NOT NULL,
     ISBN VARCHAR(32) NOT NULL UNIQUE,
     description TEXT NOT NULL,
+    number_of_pages INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     publication_date DATE,
     language VARCHAR(64),
-    cover_image_url VARCHAR(1024)
+    cover_image_url VARCHAR(1024),
+    cover_image_url_small VARCHAR(1024),
+    cover_image_url_medium VARCHAR(1024),
+    cover_image_url_large VARCHAR(1024)
 );
 
 

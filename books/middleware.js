@@ -39,6 +39,8 @@ const validateBookID = async(req,res,next)=>{
     return res.status(404).json({error:"Book not found with id: "+updateBookId+" not found"})
   }
 
+  res.locals.bookToUpdate=book;
+
   next();
 
 }
@@ -152,11 +154,6 @@ const validateBookUpdateForm = [
     .trim()
     .isLength({ min: 1 })
     .withMessage('Author is required'),
-
-  // ISBN should be a valid string and required
-  body('ISBN')
-  .matches(/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/)
-  .withMessage('Invalid ISBN format'),
   
   // Price should be a decimal number and required
   body('price')

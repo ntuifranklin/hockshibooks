@@ -29,14 +29,9 @@ const validateOTP = [
  *
 
  */
-const verifyLogin= async(req,res,next)=>{
-    
-    let userKey = generateLoggedInUserCacheKey(req.session.userID);
-    
-    let user = await retrieveJSONObjectFromRedisCache(userKey);
-    if (user) {
-        req.session.USER = user;
-        await req.session.save();
+const verifyLogin= async(req,res,next)=>{   
+
+    if (req.session.USER){ 
         return next();
     } else {
         return res.status(403).redirect(`/admin`);

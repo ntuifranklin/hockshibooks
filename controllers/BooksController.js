@@ -1,6 +1,6 @@
+require("dotenv").config()
 const csrf = require('csurf');
 let csrfProtection = csrf({ cookie: true });
-
 const sequelize = require('../config/database');
 const { validationResult } = require('express-validator');
 const { json } = require('body-parser');
@@ -9,8 +9,6 @@ const axios = require('axios');
 const fs=require("fs")
 const path=require("path")
 const multer=require("multer")
-
-    require("dotenv").config()
 
 
 //models

@@ -12,7 +12,8 @@ if (cluster.isPrimary) {
     console.log(`Primary Process ${process.pid} is running`);
    
     // Fork workers.
-    for (let i = 0; i < totalCPUs; i++) {
+    //we are using docker so we need to use just about half of the processors
+    for (let i = 0; i < (totalCPUs + 1)/2; i++) {
       cluster.fork();
     }
    

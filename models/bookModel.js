@@ -36,6 +36,11 @@ Books.init({
         type: DataTypes.TEXT,
         allowNull: false
     },
+    number_of_pages: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
     price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
@@ -43,19 +48,24 @@ Books.init({
     publication_date: {
         type: DataTypes.DATE
     },
-    // language: {
-    //     type: DataTypes.STRING(64)
-    // },
+    language: {
+        type: DataTypes.STRING(32),
+        allowNull: false,
+        defaultValue: 'English'
+    },
     cover_image_url: {
         type: DataTypes.STRING(1024)
     },
-    // genre: {
-    //     type: DataTypes.STRING(64),
-    //     references: {
-    //         model: Genre,
-    //         key: 'genre_id'
-    //     }
-    // }
+    cover_image_url_small: {
+        type: DataTypes.STRING(1024)
+    },
+    cover_image_url_medium: {
+        type: DataTypes.STRING(1024)
+    },
+    cover_image_url_large: {
+        type: DataTypes.STRING(1024)
+    }
+    
 }, {
     sequelize,
     modelName: 'Books',

@@ -210,9 +210,10 @@ If there are errors, render the otpVerification page with an error message.
                         powerUserId:userId
                 }
         }) ;
-        let testUser = await retrieveJSONObjectFromRedisCache(userKey) ;
+        //let testUser = await retrieveJSONObjectFromRedisCache(userKey) ;
         //console.log(`User retrieved from cache: ${JSON.stringify(testUser)}`);
-        req.session.user = loggedInUser ;
+        req.session.USER = loggedInUser ;
+        req.session.user=loggedInUser;
         await req.session.save();
         
         res.status(200).redirect(`/admin/dashboard`) 

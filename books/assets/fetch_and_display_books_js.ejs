@@ -17,7 +17,7 @@
             data.forEach(book => {
                     let bookimage=""
                     if(book.cover_image_url.split(":")[0]=="https") {   
-                        bookimage=book.cover_image_url
+                        bookimage=book.cover_image_url_medium
                     }
                     else{
                         bookimage=`/uploads/${book.cover_image_url}`
