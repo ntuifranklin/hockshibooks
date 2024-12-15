@@ -57,7 +57,7 @@
                                             <div class="myaccount-content">
                                                 <h3 class="title">Orders</h3>
                                                 <div class="myaccount-table table-responsive text-center">
-                                                    <table class="table table-bordered">
+                                                    <table class="table table-bordered table-striped table-hover">
                                                         <thead class="thead-light">
                                                             <tr>
                                                               <th scope="col">order-id</th>
@@ -103,7 +103,7 @@
                                           <div class="myaccount-content">
                                               <h3 class="title">Payments</h3>
                                               <div class="myaccount-table table-responsive text-center">
-                                                  <table class="table table-bordered">
+                                                  <table class="table table-bordered table-striped table-hover">
                                                       <thead class="thead-light">
                                                           
                                                         <tr>
@@ -140,25 +140,24 @@
                                             <div class="myaccount-content">
                                                 <h3 class="title">Books In Inventory</h3>
                                                 <div class="myaccount-table table-responsive text-center">
-                                                    <table class="table table-bordered">
+                                                    <table class="table table-bordered table-striped table-hover">
                                                         <thead class="thead-light">
                                                             
                                                           <tr>
+                                                            <th scope="col">ISBN</th>
                                                             <th scope="col">Title</th>
                                                             <th scope="col">Author</th>
-                                                            <th scope="col">ISBN</th>
                                                             <th scope="col">Price</th>
-                                                            <th scope="col">Qty</th>
-                                                            <th scope="col">Edit</th>
-                                                            <th scope="col">Delete</th>
+                                                            <th scope="col">Qty In Stock</th>
+                                                            <th scope="col">Edit | Delete</th>
                                                           </tr>
                                                         </thead>
                                                         <tbody>                                                                          
                                                           <% for(let i=0; i < books.length; i++) { %>
                                                             <tr>
+                                                              <td><%= books[i].ISBN %></td>
                                                               <th scope="row"><%= books[i].title %></th>
                                                               <td><%= books[i].author %></td>
-                                                              <td><%= books[i].ISBN %></td>
                                                               <td>$<%= books[i].price %></td>
                                                               <td>
                                                                 <%= books[i].Inventory.quantity_available %>
@@ -167,8 +166,7 @@
                                                                   <a href="<%= `/books/update/${books[i].book_id}` %>">
                                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                                   </a>
-                                                                </td>
-                                                                <td>
+                                                                |
                                                                   <a href="<%= `/books/delete/${books[i].book_id}` %>"><i class="fa-solid fa-trash"></i>
                                                                 </a>                                                            
                                                               </td>

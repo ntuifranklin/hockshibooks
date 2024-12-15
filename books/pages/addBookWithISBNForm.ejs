@@ -1,59 +1,122 @@
 <%- include('./partials/pagehead') %>
 <%- include('../../admin/pages/navBar') %>
 <%- include('../../views/partials/breadcrumbs') %>
-    <div class="container">
-       
-    <div class="errors">
-        <% if (msg) { %>
-        <div class="alert alert-danger alert-dismissible fade" data-bs-dismiss="alert" role="alert">
-            <p><%= msg.msg %>!</p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <% } %>
 
-    </div>
+<%- include('../../admin/pages/partials/commonjslibs') %>
 
     <div id="main-wrapper">
         <div class="site-wrapper-reveal border-bottom">
 
             <div class="my-account-page-warpper section-space--ptb_120">
                 <div class="container">
+                    
                     <div class="row">
-                        <div class="col-lg-4 col-md-8 col-sm-12 col-xs-12 m-auto w-50">
+                        <div class="col-lg-8 col-md-9 col-sm-12 col-xs-12 m-auto">
+                            <div id="addBookFormResponseMessages">
+                            
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 m-auto">
                             <div class="myaccount-box-wrapper">
-                                
                                 <div class="tab-content content-modal-box">
                                     <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
                                         <% let post_add_book_with_isbn_route = books_route_name + '/' + add_books_route_name %>
-                                        <form method="post" action="/<%= post_add_book_with_isbn_route %>">
+                                        <form action="#" id="addBookWithISBNForm" class="account-form-box">
                                             <h1>Add Book With ISBN</h1>
                                             <div class="single-input">
                                                 <label for="isbn" class="w-100">ISBN: 
-
                                                 <input type="text"  class="form-control" id="isbn" placeholder="The ISBN can be 10 or 13 caracters long" name="isbn">
 
                                                 </label>
                                             </div>
                                             <div class="single-input">                                                
-                                                    <label for="displayName" class="w-100">price:
-                                                        <input type="number" step=".01"  name="price" value=25.00 class="form-control" id="displayName" placeholder="$25 is the default price">
+                                                    <label for="price" class="w-100">price:
+                                                        <input type="number" step=".01"  id="price" name="price" value=25.00 class="form-control" placeholder="$25 is the default price">
                                                     </label>                                                
                                             </div>
                                             
                                             <div class="single-input">
-                                                <label for="qty" class="w-100">Quantity: 
-                                                    <input type="number" name="qty" value=1 class="form-control" id="qty" placeholder="The number of books">
+                                                <label for="quantity" class="w-100">Quantity: 
+                                                    <input type="number" name="quantity" value=1 class="form-control" id="quantity" placeholder="The number of books">
                                                 </label>
                                             </div>
                                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                             
-                                            <div class="button-box mt-25">
+                                            <div class="button-box mt-100">
                                                 <button type="submit" class="btn btn--full btn--black">Save updates</button>
                                             </div>
+                                            <div class="spinner-border text-dark single-input" role="status">
+                                                    <span class="sr-only">Loading...</span>                                                  
+                                            </div>
                                         </form>
+                                        <script>
+                                            //Script to post a fgorm with ajax asynchrously
+                                            $(document).ready(function(){
+                                                $('.spinner-border').hide();
+                                                let alertcontainerID = document.getElementById('addBookFormResponseMessages');
+                                                $('#addBookWithISBNForm').submit(async function(e){
+                                                    e.preventDefault();
+                                                    $('.spinner-border').show();
+                                                    var form = $(this);
+                                                    var url = "/<%= post_add_book_with_isbn_route %>";
+                                                    var type = "POST";
+                                                    const data = {
+                                                        isbn: $('#isbn').val(),
+                                                        price: $('#price').val(),
+                                                        quantity: $('#quantity').val(),
+                                                        _csrf: '<%= csrfToken %>'
+                                                    };
+                                                    //set header
+                                                    $.ajaxSetup({
+                                                        headers: {
+                                                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                                        }
+                                                    });
+                                                   
+                                                    $.ajax(
+                                                        {
+                                                        url: url,
+                                                        type: type,
+                                                        data: data,
+                                                        success: async function(response){
+                                                            $('.spinner-border').hide();
+                                                            console.log(`Success from server: `,JSON.stringify(response,null,2));
+                                                            let d = await JSON.parse(JSON.stringify(response,null,2));
+                                                            if(d){
+                                                                alertcontainerID.innerHTML =
+                                                                    `<div class="alert alert-success alert-dismissible fade show" data-bs-dismiss="alert"  role="alert">
+                                                                        <p>${d.msg}!</p>
+                                                                        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>` ;                                                                
+                                                            } else {
+                                                                alert(`Sucess: But could not update DOM `);
+                                                            }
+                                                        },
+                                                        error: async function(error){
+                                                            $('.spinner-border').hide();
+                                                            console.log(`Error from: ${JSON.stringify(error,null,2)}`);
+                                                            let d = await JSON.parse(JSON.stringify(error,null,2));
+                                                            if(d.responseJSON){
+                                                                alertcontainerID.innerHTML = 
+                                                                    `<div class="alert alert-danger alert-dismissible fade show" data-bs-dismiss="alert"  role="alert">
+                                                                        <p>An error occured!</p>
+                                                                        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>    
+                                                                        </button>
+                                                                    </div>` ;
+                                                            } else {
+                                                                alert(`Failure: But could not update DOM `);
+                                                            }
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        </script>
                                     </div>
-                                    
-
                                 </div>
                             </div>
                         </div>
@@ -62,26 +125,16 @@
             </div>
 
         </div>
+        <%- include('../../views/partials/footerarea') %>
     </div>
-    <%- include('../../views/partials/footerarea') %>
-</div>
+    <%- include('../../admin/pages/partials/adminMobileMenuOverlay') %>
 
+    <!--====================  scroll top ====================-->
+    <a href="#" class="scroll-top" id="scroll-top">
+        <i class="arrow-top icon-arrow-up"></i>
+        <i class="arrow-bottom icon-arrow-up"></i>
+    </a>
 
-<%- include('../../admin/pages/partials/adminMobileMenuOverlay') %>
-
-  <!--====================  scroll top ====================-->
-  <a href="#" class="scroll-top" id="scroll-top">
-    <i class="arrow-top icon-arrow-up"></i>
-    <i class="arrow-bottom icon-arrow-up"></i>
-  </a>
-    
-<%- include('../../admin/pages/partials/admin_jslibs') %>
-
-
-
-</body>
-
-</html>
 </body>
 </html>
 

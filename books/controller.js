@@ -141,140 +141,132 @@ const addBookWithISBN= async(req,res)=>{
  */
     let isbn=req.body.isbn
     const price=req.body.price || 25
-    const qty=req.body.qty || 1;
-    
-    const isbnLength = isbn.length;
-    if (isbnLength < 10) {
-        isbn = isbn.padStart(10, '0');
-    }
-    if (isbnLength < 13) {
-        isbn = isbn.padStart(13, '0');
-    }
-    isbn = new String(isbn).trim();
-    const errors=validationResult(req) ;
-    //This code will not run if an admin user is not logged in.
+    const qty=req.body.quantity || 1;
+ 
     let user = req.session.USER;
-    if(!errors.isEmpty()){
-        const err=errors.array()[0]
-        res.render("../books/pages/addBookWithISBNForm",{
-            pagetitle:"Add Book with ISBN",
-            user:user,
-            msg:err,
-            books_route_name:"books",
-            add_books_route_name: "addBookWithExternalAPI",
-        })
+    //isbn could be less than 10 or less than 8 characters. lets pad it with 000s
+    
+    const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`;
+    try{
+        const response= await axios.get(url)
 
-    }
-    else{
+        //console.log(`${JSON.stringify(response.data, null,2)}`);
 
-        //isbn could be less than 10 or less than 8 characters. lets pad it with 000s
-        
-        const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`;
-        try{
-            const response= await axios.get(url)
+        const data= response.data[`ISBN:${isbn}`] 
 
-            //console.log(`${JSON.stringify(response.data, null,2)}`);
+        if(data){
+            let desc= await getBookDescription(data.identifiers.openlibrary[0])
+            try {
+                const tmp=await bookModel.findOne({
+                    where:{
+                        ISBN:isbn
+                    }
+                })
+                /* ISBN coul return a valid 13 o a valid 10 isbn numbers */
+                var isbn10_or_13 = isbn;
+                if (typeof data.identifiers.isbn_13 != "undefined")
+                    isbn10_or_13 = data.identifiers.isbn_13[0];
+                else if (typeof data.identifiers.isbn_10 != "undefined")
+                    isbn10_or_13 = data.identifiers.isbn_10[0];
+                
+                    
+                var cover_image_url = "";
+                if (typeof data.cover != "undefined" && typeof data.cover.medium != "undefined")
+                    cover_image_url = data.cover.medium;
+                const seo_friendly_title = generateSeoFriendlyTitle(
+                    bookTitle=data.title, 
+                    authorName=data.authors[0].name,
+                    publicationYear=data.publication_date,
+                    bookISBN=isbn10_or_13
+                );
 
-            const data= response.data[`ISBN:${isbn}`] 
+                if (cover_image_url == ""){
+                    cover_image_url = await createDefaultBookImage(width=300, height=300,imageTitle=seo_friendly_title);
+                }
+                if(!tmp){
+                    let createdBook=await bookModel.create({
+                        seo_friendly_title:seo_friendly_title,
+                        title:data.title,
+                        author:data.authors[0].name,
+                        ISBN:isbn10_or_13,
+                        description: desc,
+                        publication_date:data.publication_date,
+                        cover_image_url:cover_image_url,
+                        price:price
+                    }) 
+    
+                    let inventory = await inventoryModel.create({
+                        book_id:createdBook.book_id ,
+                        quantity_available:qty,
+                        location:"warehouse"
+                    })
 
-            if(data){
-               let desc= await getBookDescription(data.identifiers.openlibrary[0])
-                try {
-                    const tmp=await bookModel.findOne({
+                    return res.status(201).json({
+                        msg:`${createdBook.title} was successfully added`,
+                        success:true,
+                        data:{
+                            book:createdBook,
+                            inventory:inventory
+                        } 
+                    });
+                } else {
+
+                    //book exists. let's check the inventory, and add the book only if the inventory is 0
+                    let inventory = await inventoryModel.findOne({
                         where:{
-                            ISBN:isbn
+                            book_id:tmp.book_id
                         }
                     })
-                    /* ISBN coul return a valid 13 o a valid 10 isbn numbers */
-                    var isbn10_or_13 = isbn;
-                    if (typeof data.identifiers.isbn_13 != "undefined")
-                        isbn10_or_13 = data.identifiers.isbn_13[0];
-                    else if (typeof data.identifiers.isbn_10 != "undefined")
-                        isbn10_or_13 = data.identifiers.isbn_10[0];
-                    
-                        
-                    var cover_image_url = "";
-                    if (typeof data.cover != "undefined" && typeof data.cover.medium != "undefined")
-                        cover_image_url = data.cover.medium;
-                    const seo_friendly_title = generateSeoFriendlyTitle(
-                        bookTitle=data.title, 
-                        authorName=data.authors[0].name,
-                        publicationYear=data.publication_date,
-                        bookISBN=isbn10_or_13
-                    );
+                    //if inventory is 0, update the quantity available to the new quaantity
+                    if(inventory.quantity_available < 1){
+                        inventory.quantity_available=qty;
+                        await inventory.save();
+                        //also update the book price
+                        tmp.price=price;
+                        tmp.save();
 
-                    if (cover_image_url == ""){
-                        cover_image_url = await createDefaultBookImage(width=300, height=300,imageTitle=seo_friendly_title);
-                    }
-                    if(!tmp){
-                        let createdBook=await bookModel.create({
-                            seo_friendly_title:seo_friendly_title,
-                            title:data.title,
-                            author:data.authors[0].name,
-                            ISBN:isbn10_or_13,
-                            description: desc,
-                            publication_date:data.publication_date,
-                            cover_image_url:cover_image_url,
-                            price:price
-                        }) 
-        
-                        let inventory = await inventoryModel.create({
-                            book_id:createdBook.book_id ,
-                            quantity_available:qty,
-                            location:"warehouse"
-                        })
-
-                        return res.status(201).redirect(`/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
-                    } else {
-
-                        //book exists. let's check the inventory, and add the book only if the inventory is 0
-                        let inventory = await inventoryModel.findOne({
-                            where:{
-                                book_id:tmp.book_id
-                            }
-                        })
-                        //if inventory is 0, update the quantity available to the new quaantity
-                        if(inventory.quantity_available < 1){
-                            inventory.quantity_available=qty;
-                            await inventory.save();
-                            //also update the book price
-                            tmp.price=price;
-                            tmp.save();
-
-                            return res.status(201).redirect(`/admin/dashboard?msg=${tmp.title}+quantity+and+price+in+inventory+was+updated+successfully+added&type=success`);
-                        }
-                        else{ 
-
-                            return res.status(500).render("../books/pages/addBookWithISBNForm",{
-                                msg:{
-                                    msg:"a book with this title already exists"
+                        return res.status(201).json({
+                                success:true,
+                                msg:`${tmp.title}'s quantity and price data updated+successfully`,
+                                data:{
+                                    book:tmp,
+                                    inventory:inventory
                                 },
-                                user:user,
-                                books_route_name:"books",
-                                add_books_route_name: "addBookWithExternalAPI",
-                            })
-
-                        }
-
-
-                       
+                                statusCode:201
+                               });
                     }
-                } catch (error) {
-                    console.log(`${error.message}`);
-                    return res.status(500).redirect(`/books/addBookWithExternalAPI?msg=error+when+creating+book&type=danger`);
+                    else{ 
+
+                        return res.status(400).json({
+                            success:false,
+                            error:"a book with this title already exists",
+                            statusCode:400
+                        })
+
+                    }                    
                 }
-                
+            } catch (error) {
+                console.log(`${error.message}`);
+                return res.status(400).json({
+                    success:false,
+                    error:`error when adding book to database: ${error.message}`,
+                    statusCode:400
+                });
             }
-            else{
-
-                return res.status(500).redirect(`/books/addBookWithExternalAPI?msg=error+when+fetching+book+Isbn ${isbn}&type=danger`);
-            }
+        } else {
+            return res.status(404).json({
+                success:false,
+                error:`error when fetching book Isbn ${isbn}`,
+                statusCode:404
+            })            
         }
-        catch(e){
-            console.log(`${e.message}`);
-            return res.status(500).redirect(`/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
-
-        }
+    } catch(e) {
+        console.log(`${e.message}`);
+        return res.status(404).json({
+            success:false,
+            error:`error when fetching book Isbn ${isbn}`,
+            statusCode:404
+        })
     }
 } ;
 
@@ -347,7 +339,7 @@ const searchBook=async (req,res)=>{
 
 
 
-    const deleteBook=async (req,res)=>{
+const deleteBook=async (req,res)=>{
     
         /**
    * Deletes a book and its associated cover image from the server and database.
@@ -396,7 +388,7 @@ const searchBook=async (req,res)=>{
   } ;
 
   
-const updateBook=async (req,res)=>{ 
+const getUpdateBookForm=async (req,res)=>{ 
     let updateBookId=req.params.id?req.params.id:req.body.bookId
     /**
      * Inside the function, it uses the await keyword to asynchronously find a book by its primary key (req.params.id) from the bookModel and includes the associated genreModel and inventoryModel.
@@ -412,21 +404,89 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
     }else{
         error=false
     }
-    let book= await bookModel.findByPk(updateBookId, {include:[
-        {model:inventoryModel}
-
-]},)
-const genre= await genreModel.findAll()
+    let book= await bookModel.findByPk(
+            updateBookId, 
+            {
+            include:[{model:inventoryModel}]
+            },
+    );
     // res.send(book)
-    res.render("pages/updateBook",{
+    res.render("../books/pages/updateBookForm",{
+        user:req.session.USER,
+        pagetitle:"Update Book",
         book:book,
         root_path:process.env.ROOT_PATH,
         image:book.cover_image_url,
-        msg:error
+        msg:error,
+        success:false,
+    });
+} ;
 
-    })
+
+const saveUpdateBookFormData=async(req,res)=>{
+    /**
+     * The saveUpdate function handles updating a book and its associated inventory record. It first retrieves the book and inventory records by the book ID, updates the fields with the new data, deletes the old cover image file if a new file is uploaded, and saves the changes to the database. 
+     */ 
+    try{
+        /**
+         * The function retrieves the book and inventory records from the database using the primary key (bookId). If the book or inventory records are not found, it returns a 404 error.
+         */
+        const book= await bookModel.findByPk(req.body.bookId)
+        const inventory=await inventoryModel.findByPk(req.body.bookId)
+
+       
+            //The function updates the fields of the book and inventory records with the data from the request body.
+        
+            book.set({
+                title :req.body.title,
+                author : req.body.author,
+                language : req.body.language,
+                price :req.body.price,
+                description :req.body.description,
+                publication_date:req.body.date,
+            })
+
+            inventory.set({
+                quantity_available : req.body.quantity,
+                location:req.body.location,
+            })            
+
+        
+            if(req.file){
+                //If a new file is uploaded, the old cover image file is deleted from the file system, and the new file path is set.
+                const coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url);
+                // Delete the cover image file
+                fs.unlink(coverImagePath, async (err) => {
+                    if (err) {
+                        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
+                    }
+                })
+        
+                book.set({cover_image_url:req.file.path.split("/")[2]})            
+           }
+           if(req.body.ISBN != book.ISBN){
+            book.set({ISBN:req.body.ISBN})
+           }
+
+           //The function saves the updated book and inventory records to the database.
+
+           await book.save()
+           await inventory.save()
+
+            //After successful update, the user is redirected to the dashboard with a success message.
+            res.redirect(`/admin/dashboard?msg=item+successfully+updated&type=success`);     
+    
+    }
+    
+    catch(e){
+        console.log(`${e.message}`);
+        return res.status(500).redirect(`/admin/dashboard?msg=server+error&type=danger`);
+    }
+
 
 }
+
+
 
 
 module.exports = {
@@ -437,5 +497,6 @@ module.exports = {
     getAddBookWithISBNForm,
     searchBook,
     deleteBook,
-    updateBook
+    getUpdateBookForm,
+    saveUpdateBookFormData
 }
