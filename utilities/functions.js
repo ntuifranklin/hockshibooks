@@ -38,7 +38,7 @@ const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
     process.exit(1);
   } ;
   
-    //print current settings 
+    /* print current settings 
     console.log("Current settings: ");
     console.log("DB_USER: ", process.env.DB_USER);
     console.log("DB_PSWD: ", process.env.DB_PSWD);
@@ -49,6 +49,7 @@ const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
       please set the environment variable NODE_ENV to either production, 
       testing or development`
     );
+    */
     
 } ;
 
@@ -335,8 +336,8 @@ context.fillStyle = '#000000'; // Black text
 context.fillText(imageTitle, 50, 100);
 
 // Save image to file
-const buffer = canvas.toBuffer('image/png');
-let imageFilename = imageTitle + '.png';
+const buffer = canvas.toBuffer('image/jpeg');
+let imageFilename = imageTitle + '.jpg';
 
 const uploadsDir = path.join(process.env.ROOT_PATH, 'views/uploads');
 fs.writeFileSync(uploadsDir + '/' + imageFilename, buffer);

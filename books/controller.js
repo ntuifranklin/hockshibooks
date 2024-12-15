@@ -8,6 +8,7 @@ const axios = require('axios');
 const fs=require("fs");
 const path=require("path");
 const { getBookDescription, createDefaultBookImage } = require("../utilities/functions");
+const {uploadImageToCloudFlare} = require('../utilities/cloudflare_image_upload');
 const { generateSeoFriendlyTitle } = require("./utilities");
 const booksHtmlView = async(req,res)=>{
 
@@ -150,7 +151,7 @@ const addBookWithISBN= async(req,res)=>{
     try{
         const response= await axios.get(url)
 
-        //console.log(`${JSON.stringify(response.data, null,2)}`);
+        console.log(`${JSON.stringify(response.data, null,2)}`);
 
         const data= response.data[`ISBN:${isbn}`] 
 
@@ -168,21 +169,85 @@ const addBookWithISBN= async(req,res)=>{
                     isbn10_or_13 = data.identifiers.isbn_13[0];
                 else if (typeof data.identifiers.isbn_10 != "undefined")
                     isbn10_or_13 = data.identifiers.isbn_10[0];
-                
-                    
-                var cover_image_url = "";
-                if (typeof data.cover != "undefined" && typeof data.cover.medium != "undefined")
-                    cover_image_url = data.cover.medium;
+
                 const seo_friendly_title = generateSeoFriendlyTitle(
                     bookTitle=data.title, 
                     authorName=data.authors[0].name,
                     publicationYear=data.publication_date,
                     bookISBN=isbn10_or_13
                 );
+                    
+                var cover_image_url = "";
+                let filename_for_cloudflare = "";
+                if (typeof data.cover != "undefined" && typeof data.cover.medium != "undefined"){
+                    cover_image_url = data.cover.medium;
+                    //download the file to local uploads folder using axios, then upload it to cloudflare
+                
+                    try{
+                        filename_for_cloudflare = `${seo_friendly_title}_cover_image.jpg`;
+                        const localPath = path.join(process.env.ROOT_PATH, 'views', 'uploads',`${filename_for_cloudflare}`) ; // Replace with the desired local path
 
-                if (cover_image_url == ""){
-                    cover_image_url = await createDefaultBookImage(width=300, height=300,imageTitle=seo_friendly_title);
+                        let imageResponse = await axios.get(cover_image_url, { responseType: 'stream' });
+
+                        imageResponse.data.pipe(fs.createWriteStream(localPath));
+                        cover_image_url = await uploadImageToCloudFlare(localPath, filename_for_cloudflare);
+
+                    } catch(error){
+                        console.log(`Error downloading image: ${error.message}`);
+                    }
                 }
+                    
+                if (cover_image_url == ""){
+                    try{
+                        
+                        cover_image_url = await createDefaultBookImage(width=300, height=300,imageTitle=seo_friendly_title);
+                        filename_for_cloudflare = `${seo_friendly_title}_cover_image.jpg`;
+                        let cloudflare_response = await uploadImageToCloudFlare("uploads/"+cover_image_url, filename_for_cloudflare);
+                        cloudflare_response = await JSON.parse(JSON.stringify(cloudflare_response));
+                        //console.log(`Cloudflare response: ${JSON.stringify(cloudflare_response, null, 2)}`);
+                        let item_image_json_object = cloudflare_response["result"];
+                        //console.log(`Result of cloudflare response: ${JSON.stringify(item_image_json_object, null, 2)}`);
+                        
+                        let variants = await JSON.parse(JSON.stringify(item_image_json_object["variants"])); 
+                        //variants = await JSON.parse(JSON.stringify(variants)); 
+                        //console.log(`Accessing variants: ${JSON.stringify(variants, null, 2)}`);
+                        //console.log(`Variants.length: ${JSON.stringify(variants.length, null, 2)}`);
+                        
+                        
+                        let filename = item_image_json_object["filename"];
+                        
+                        /*   
+                            `cloudflare_image_id` VARCHAR(64) NOT NULL,
+                            `item_id` VARCHAR(16) NOT NULL,
+                            `filename` VARCHAR(255) DEFAULT NULL,
+                            `variant_110x118` VARCHAR(264) DEFAULT NULL,
+                            `variant_384x320` VARCHAR(264) DEFAULT NULL,
+                            `variant_70x70` VARCHAR(264) DEFAULT NULL,
+                            `date_uploaded` DATETIME DEFAULT CURRENT_TIMESTAMP(),
+                            `date_modified` DATETIME DEFAULT CURRENT_TIMESTAMP(),
+                        */
+                        cloudflare_image_id = item_image_json_object["id"];
+                        
+                        for (let i=0 ; i < variants.length; i++) {
+                            let variant = variants[i] ;
+                            if (variant.includes("300x300"))
+                                cover_image_url = variants[i];
+                            /*
+                            else if (variant.includes("110x118"))
+                                variant_110x118 = variants[i];
+                            else if (variant.includes("384x320"))
+                                variant_384x320 = variants[i];
+                            */
+                        }
+                        
+
+                    } catch(e){
+                        console.log(`Error creating default image: ${e.message}`);
+                    }
+                } ;
+                
+                
+
                 if(!tmp){
                     let createdBook=await bookModel.create({
                         seo_friendly_title:seo_friendly_title,
@@ -218,7 +283,7 @@ const addBookWithISBN= async(req,res)=>{
                         }
                     })
                     //if inventory is 0, update the quantity available to the new quaantity
-                    if(inventory.quantity_available < 1){
+                    if(inventory && inventory.quantity_available && inventory.quantity_available < 1){
                         inventory.quantity_available=qty;
                         await inventory.save();
                         //also update the book price
@@ -234,8 +299,7 @@ const addBookWithISBN= async(req,res)=>{
                                 },
                                 statusCode:201
                                });
-                    }
-                    else{ 
+                    } else { 
 
                         return res.status(400).json({
                             success:false,

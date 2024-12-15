@@ -31,10 +31,6 @@ async function uploadImageToCloudFlare(imagePath,filename_for_cloudflare="filena
 } ;
 
 
-
-exports.uploadImageToCloudFlare = uploadImageToCloudFlare ;
-
-
 async function deleteExistingImageFromCloudFlare(cloudflare_imageID) {
         
     const url = `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1/${cloudflare_imageID}`;
@@ -58,5 +54,7 @@ async function deleteExistingImageFromCloudFlare(cloudflare_imageID) {
 } ;
 
 
-
-exports.deleteExistingImageFromCloudFlare = deleteExistingImageFromCloudFlare ;
+module.exports = {
+    uploadImageToCloudFlare,
+    deleteExistingImageFromCloudFlare
+}
