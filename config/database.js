@@ -8,10 +8,10 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
     port:3306,
     logging:console.log(),
     pool: {
-      max: 500,
-      min: 50,
-      acquire:1000 ,
-      idle: 500
+      max: 1024,
+      min: 64,
+      acquire:1024 ,
+      idle: 512
    }
 
   });
