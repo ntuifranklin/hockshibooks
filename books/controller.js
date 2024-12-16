@@ -141,7 +141,7 @@ const addBookWithISBN= async(req,res)=>{
  * @return {Promise<void>} A promise that resolves when the function is completed.
  */
     let isbn=req.body.isbn
-    const price=req.body.price || 25
+    const price=req.body.price || 25.00;
     const qty=req.body.quantity || 1;
  
     let user = req.session.USER;
@@ -288,7 +288,7 @@ const addBookWithISBN= async(req,res)=>{
                     }                    
                 }
             } catch (error) {
-                console.log(`${error.message}`);
+                console.log(`${error}`);
                 return res.status(400).json({
                     success:false,
                     error:`error when adding book to database: ${error.message}`,

@@ -1,71 +1,8 @@
-<!DOCTYPE html>
-<html class="no-js" lang="zxx">
+<%- include('../../views/partials/pagehead') %>
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Helendo &#8211; Minimalis Furniture eCommerce HTML Template</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Favicon -->
-    <link rel="icon" href="../../assets/images/favicon.ico">
+<%- include('../../views/layout/customerNavBar') %>
 
-    <!-- CSS
-        ============================================ -->
-    
-    <!-- Bootstrap Css -->
-    <link rel="stylesheet" href="../assets/css/vendor/bootstrap.min.css">
-    
-    <!-- Icons Css -->
-    <link rel="stylesheet" href="../assets/css/vendor/linearicons.min.css">
-    <link rel="stylesheet" href="../assets/css/vendor/fontawesome-all.min.css">
-    
-    <!-- Animation Css -->
-    <link rel="stylesheet" href="../assets/css/plugins/animation.min.css">
-    
-    <!-- Slick Slier Css -->
-    <link rel="stylesheet" href="../assets/css/plugins/slick.min.css">
-    
-    <!-- Magnific Popup CSS -->
-    <link rel="stylesheet" href="../assets/css/plugins/magnific-popup.css">
-    
-    <!-- Easyzoom CSS -->
-    <link rel="stylesheet" href="../assets/css/plugins/easyzoom.css">
-    
-    <!-- Main Style CSS -->
-    <link rel="stylesheet" href="../assets/css/style.css">
-
-</head>
-
-<body>
-    <%- include('../layout/customerNavBar') %>
-
-     <!-- breadcrumb-area start -->
-     <div class="breadcrumb-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="row breadcrumb_box  align-items-center">
-                        <div class="col-lg-6 col-md-6 col-sm-6 text-center text-sm-start">
-                            <h2 class="breadcrumb-title">My Account</h2>
-                        </div>
-                        <div class="col-lg-6  col-md-6 col-sm-6">
-                            <!-- breadcrumb-list start -->
-                            <ul class="breadcrumb-list text-center text-sm-end">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                                <li class="breadcrumb-item active">My Account</li>
-                            </ul>
-                            <!-- breadcrumb-list end -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- breadcrumb-area end -->
-
-
-
+<%- include('../../views/partials/breadcrumbs') %>
 
 
     <div id="main-wrapper">
@@ -337,78 +274,19 @@
                     </div>
                 </div>
             </div>
-
+            
         </div>
+        <%- include('../../views/partials/footerarea') %>
+   </div>
 
-        
+    <!--====================  scroll top ====================-->
+    <a href="#" class="scroll-top" id="scroll-top">
+        <i class="arrow-top icon-arrow-up"></i>
+        <i class="arrow-bottom icon-arrow-up"></i>
+    </a>
+    
+<%- include('../../views/partials/commonjslibs'); %>
 
-
-        <%- include('../layout/footer') %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-
-    <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
-
-    <!-- jQuery JS -->
-    <script src="../assets/js/vendor/jquery-3.5.1.min.js"></script>
-    <script src="../assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
-
-    <!-- Bootstrap JS -->
-    <script src="../assets/js/vendor/bootstrap.min.js"></script>
-
-    <!-- Fullpage JS -->
-    <script src="../assets/js/plugins/fullpage.min.js"></script>
-
-    <!-- Slick Slider JS -->
-    <script src="../assets/js/plugins/slick.min.js"></script>
-
-    <!-- Countdown JS -->
-    <script src="../assets/js/plugins/countdown.min.js"></script>
-
-    <!-- Magnific Popup JS -->
-    <script src="../assets/js/plugins/magnific-popup.js"></script>
-
-    <!-- Easyzoom JS -->
-    <script src="../assets/js/plugins/easyzoom.js"></script>
-
-    <!-- ImagesLoaded JS -->
-    <script src="../assets/js/plugins/images-loaded.min.js"></script>
-
-    <!-- Isotope JS -->
-    <script src="../assets/js/plugins/isotope.min.js"></script>
-
-    <!-- YTplayer JS -->
-
-    <!-- Instagramfeed JS -->
-    <!-- <script src="../assets/js/plugins/jquery.instagramfeed.min.js"></script> -->
-
-    <!-- Ajax Mail JS -->
-    <script src="../assets/js/plugins/ajax.mail.js"></script>
-
-    <!-- wow JS -->
-    <script src="../assets/js/plugins/wow.min.js"></script>
 </body>
 
 </html>

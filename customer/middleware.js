@@ -1,6 +1,8 @@
 
 const { body,check,validationResult } = require('express-validator');
 
+const customerModel=require("../models/customerModel")
+
 const validateCustomerSignupForm = [
         body('first_name')
             .isLength({ max: 64 })
@@ -68,17 +70,33 @@ const validateCustomerSignupForm = [
 const validateCustomerOTP = [
       // Check that 'userId' is an integer
 
-    check('userId').isUUID().withMessage('User ID must be a UUID'),
+    //check('customer_id').isUUID().withMessage('User ID must be a UUID'),
         // Check that 'OTP' is exactly 6 digits long
 
     check('OTP').isLength({ min: 6, max: 6 }).withMessage('OTP code must be 6 digits long'),
     (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-          return res.status(400).json({ errors: errors.array() });
+        let customer ;
+        customer = customerModel.findOne({
+            where:{
+            customer_id:req.body.customer_id
+            }
+        });
+        if (!customer) {
+            return res.status(404).redirect('/customer/login?msg=Customer+not+found');
         }
-        next();
+        if(!validationResult(req).isEmpty()){
+            let errMess = '';
+            validationResult(req).errors.forEach((error)=>{
+                errMess += error.msg + '\n';
+            });
+            return res.status(400).redirect('/customer/verifyOTP?msg='+errMess);
+        }
+
+        // Proceed to the next middleware or route handler
+
+      next();
     },
+    
 ]; 
 
 const validateProfileUpdate = [
@@ -179,11 +197,7 @@ const verifyCustomerIsLoggedIn=(req,res,next)=>{
     if (req.session.customer) { // or any other authentication check
         return next();
     } else {
-        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-            return res.status(401).json({ redirectUrl: '/askGeust' });
-        } else {
-            return res.redirect('/askGeust');
-        }
+        return res.redirect('/customer/login');
     }
 
 }

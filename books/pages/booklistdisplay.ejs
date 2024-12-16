@@ -7,9 +7,9 @@
                 <a href="/<%= base_route_name %>/<%= books[i].seo_friendly_title %>" class="product-thumbnail">
 
                 <% if(books[i].cover_image_url.split(":")[0]=="https") { %>
-                    <img  src="<%= books[i].cover_image_url %>" class="img-fluid bookCoverImage" alt="<%= books[i].seo_friendly_title %>"  >
+                    <img  src="<%= books[i].cover_image_url_large %>" class="img-fluid bookCoverImage" alt="<%= books[i].seo_friendly_title %>"  >
                 <% } else { %>
-                    <img  src="/uploads/<%= books[i].cover_image_url %>" class="img-fluid bookCoverImage" alt="<%= books[i].seo_friendly_title %>"  >
+                    <img  src="/uploads/<%= books[i].cover_image_url_large %>" class="img-fluid bookCoverImage" alt="<%= books[i].seo_friendly_title %>"  >
 
                 <% } %>
 

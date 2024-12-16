@@ -30,7 +30,11 @@ module.exports = () => {
    
 
         router.route("/login").get(customerLoginPage).post(customerLoginPagePost)
-
+  
+        router.post("/verifyOTP",validateCustomerOTP,verifyCustomerOTP)
+        router.get("/profile",verifyCustomerIsLoggedIn,Profile)
+        
+        router.post("/updateProfile",validateProfileUpdate,updateProfile)
 
         router.get("/askGuest",showGuestPage)
   
@@ -39,17 +43,13 @@ module.exports = () => {
   
   
   
-        router.post("/verifyOTP",validateCustomerOTP,verifyCustomerOTP)
-  
         router.get("/signup",signupPage)
   
         router.post("/signup",validateCustomerSignupForm,customerSignupPost)
   
         router.get("/logout",logout)
   
-        router.get("/profile",verifyCustomerIsLoggedIn,Profile)
   
-        router.post("/updateProfile",validateProfileUpdate,updateProfile)
 
 
         return router ;
