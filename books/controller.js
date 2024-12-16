@@ -151,7 +151,7 @@ const addBookWithISBN= async(req,res)=>{
     try{
         const response= await axios.get(url)
 
-        console.log(`${JSON.stringify(response.data, null,2)}`);
+        //console.log(`${JSON.stringify(response.data, null,2)}`);
 
         const data= response.data[`ISBN:${isbn}`] 
 
@@ -276,7 +276,7 @@ const addBookWithISBN= async(req,res)=>{
                                     inventory:inventory
                                 },
                                 statusCode:201
-                               });
+                        });
                     } else { 
 
                         return res.status(400).json({
@@ -487,92 +487,58 @@ const saveUpdateBookFormData=async(req,res)=>{
          */
         const book= await bookModel.findByPk(req.body.bookId)
         const inventory=await inventoryModel.findByPk(req.body.bookId)
+            let title = (new String(req.body.title)).trim();
+            let author = (new String(req.body.author)).trim();
+            let language = (new String(req.body.language)).trim();
+            let price = (parseFloat(req.body.price)).toFixed(2);
+            let description = (new String(req.body.description)).trim();
+            let date = req.body.date;
+            let quantity = parseInt(req.body.quantity);
+            let location = (new String(req.body.location)).trim();
 
        
             //The function updates the fields of the book and inventory records with the data from the request body.
             //only update fields that have changed
-            if(req.body.title != book.title){
-                book.set({title:req.body.title.trim()})
+            if(title != book.title){
+                book.set({title:title})
             } ;
-            if(req.body.author != book.author){
-                book.set({author:req.body.author.trim()})
+            if(author != book.author){
+                book.set({author:author})
             };
-            if(req.body.language != book.language){
-                book.set({language:req.body.language.trim()})
+            if(language != book.language){
+                book.set({language:language})
             };
-            if(req.body.price != book.price){
-                book.set({price:req.body.price})
+            if(price != book.price){
+                book.set({price:price})
             };
-            if(req.body.description != book.description){
-                book.set({description:req.body.description.trim()})
+            if(description != book.description){
+                book.set({description:description})
             };
-            if(req.body.date != book.publication_date){
-                book.set({publication_date:req.body.date})
+            if(date != book.publication_date){
+                book.set({publication_date:date})
             };
-            if(req.body.quantity != inventory.quantity_available){
-                inventory.set({quantity_available:req.body.quantity})
+            if(quantity != inventory.quantity_available){
+                inventory.set({quantity_available:quantity})
             };
-            if(req.body.location != inventory.location){
-                inventory.set({location:req.body.location.trim()})
+            if(location != inventory.location){
+                inventory.set({location:location})
             };        
+            //The function saves the updated book and inventory records to the database.
 
-            let localPath = "";
-            //the file name in body is called coverImage
-            /* Access the file in the request body using the req.file property. If a file is uploaded, the function sets the cover image URL of the book record to the new file path. */
+            await book.save()
+            await inventory.save()
+
+            //After successful update, we notify the user
+            return res.status(201).json({
+                success:true,
+                msg:`${book.title}'s+data+updated+successfully`,
+                data:{
+                    book:book,
+                    inventory:inventory
+                },
+                statusCode:201
+            });
             
-            if(req.file){
-                //only unlink all files if files are local
-                
-                if(book.cover_image_url && !book.cover_image_url.startsWith("http")){
-                    //files are local
-                    
-                    //If a new file is uploaded, the old cover image file is deleted from the file system, and the new file path is set.
-                    coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url);
-                    // Delete the cover image file
-                    fs.unlink(coverImagePath, async (err) => {
-                        if (err) {
-                            return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
-                        }
-                    }) 
-                    //If a new file is uploaded, the old cover image file is deleted from the file system, and the new file path is set.
-                    coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url_small);
-                    // Delete the cover image file
-                    fs.unlink(coverImagePath, async (err) => {
-                        if (err) {
-                            return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
-                        }
-                    })
-                     
-                    //If a new file is uploaded, the old cover image file is deleted from the file system, and the new file path is set.
-                    coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url_medium);
-                    // Delete the cover image file
-                    fs.unlink(coverImagePath, async (err) => {
-                        if (err) {
-                            return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
-                        }
-                    })
-
-                    //rename uploaded file to seo_friendly_title
-                    let filename = req.file.path.split("/")[2];
-                    let newFilename = path.join(process.env.ROOT_PATH, 'views','uploads',book.seo_friendly_title);
-                    fs.renameSync(req.file);
-                    book.set({cover_image_url:newFilename.split("/")[3]})  
-
-                } else if(book.cover_image_url) {
-                    //files are remote
-                    book.set({cover_image_url:req.body.coverImage})
-                }
-                
-           }
-          
-
-           //The function saves the updated book and inventory records to the database.
-
-           await book.save()
-           await inventory.save()
-
-            //After successful update, the user is redirected to the dashboard with a success message.
-            res.redirect(`/admin/dashboard?msg=item+successfully+updated&type=success`);     
     
     }
     

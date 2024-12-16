@@ -33,15 +33,17 @@
                                 <div class="easyzoom-style">
                                     <div class="">
                                         <% if(book.cover_image_url.split(":")[0]=="https") { %>
-                                            <a href="<%=`${book.cover_image_url}`%>" class="poppu-img">
-                                            <img  src="<%=`${book.cover_image_url}`%>" class="img-fluid product-images" ></a>
+                                            <a href="<%=`${book.cover_image_url_large}`%>" class="poppu-img">
+                                                <img  src="<%=`${book.cover_image_url_medium}`%>" class="img-fluid product-images" alt="<%= book.seo_friendly_title %>" >
+                                            </a>
 
-                                            <% } else { %>
-                                                <a href="/uploads/<%=`${book.cover_image_url}`%>" class="poppu-img">
-                                              <img  src="/uploads/<%=`${book.cover_image_url}`%>" class="img-fluid product-images"></a>
+                                        <% } else { %>
+                                                <a href="/uploads/<%=`${book.cover_image_url_large}`%>" class="poppu-img">
+                                                    <img  src="/uploads/<%=`${book.cover_image_url_medium}`%>" class="img-fluid product-images" alt="<%= book.seo_friendly_title %>">
+                                                </a>
                                               
                           
-                                              <% } %>
+                                        <% } %>
                                        
                                     </div>
                                 </div>
@@ -87,7 +89,7 @@
                                         <div class="quickview-cart-box">
                                             <div class="quickview-quality">
                                                 <div class="cart-plus-minus">
-                                                    <input class="cart-plus-minus-box" type="text" name="qtybutton" value="1" max="5">
+                                                    <input class="cart-plus-minus-box" type="text" name="qtybutton" value="<%= book.Inventory.quantity_available %>" max="<%= book.Inventory.quantity_available %>">
                                                 </div>
                                             </div>
         
@@ -123,8 +125,7 @@
                             <ul role="tablist" class=" nav">
                                 <li class="active" role="presentation">
                                     <a data-bs-toggle="tab" role="tab" href="#description" class="active">Description</a>
-                                </li>
-                                
+                                </li>      
                             </ul>
                         </div>
                     </div>
@@ -141,11 +142,6 @@
                                                     <p> <%= book.description %></p>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-5 order-md-2 order-1">
-                                                <div class="images">
-                                                    <img src="assets/images/product/single-product-01.webp" class="img-fluid" alt="">
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                     
@@ -154,6 +150,7 @@
                            
                         </div>
                     </div>
+                   
                 </div>
 
                 <div class="related-products section-space--ptb_90">
@@ -174,9 +171,9 @@
                                   <a href="/bookss/<%=`${relatedBooks[i].seo_friendly_title} `%>" class="product-thumbnail">
       
                                     <% if(relatedBooks[i].cover_image_url.split(":")[0]=="https") { %>
-                                      <img  src="<%=`${relatedBooks[i].cover_image_url}`%>" class="img-fluid" alt="Product Images" width="400" height="400" >
+                                      <img  src="<%=`${relatedBooks[i].cover_image_url}`%>" class="img-fluid" alt="<%= relatedBooks[i].seo_friendly_title %>" width="400" height="400" >
                                       <% } else { %>
-                                        <img  src="/uploads/<%=`${relatedBooks[i].cover_image_url}`%>" class="img-fluid" alt="Product Images" width="400" height="400" >
+                                        <img  src="/uploads/<%=`${relatedBooks[i].cover_image_url}`%>" class="img-fluid" alt="<%= relatedBooks[i].seo_friendly_title  %>" width="400" height="400" >
                     
                                     <% } %>
       
@@ -196,7 +193,7 @@
                                   </div>
                               </div>
                               <div class="product-content">
-                                  <h6 class="prodect-title"><a href="/books/<%=`${relatedBooks[i].seo_friendly_title} `%>"><%=relatedBooks[i].title %></a></h6>
+                                  <h6 class="prodect-title"><a href="/books/<%=`${relatedBooks[i].seo_friendly_title} `%>"><%= relatedBooks[i].title %></a></h6>
                                   <div class="prodect-price">
                                       <span class="new-price">$<%=relatedBooks[i].price %></span>
                                   </div>
@@ -217,7 +214,7 @@
 
     </div>
 
-
+    <%- include('../../views/partials/footerarea') %>
 </div>
 
 

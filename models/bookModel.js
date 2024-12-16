@@ -33,7 +33,7 @@ Books.init({
         unique:true
     },
     description: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(1536),
         allowNull: false
     },
     number_of_pages: {

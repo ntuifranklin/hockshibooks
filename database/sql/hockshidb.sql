@@ -47,7 +47,7 @@ CREATE TABLE Books (
     seo_friendly_title VARCHAR(1024) NOT NULL,
     author VARCHAR(256) NOT NULL,
     ISBN VARCHAR(32) NOT NULL UNIQUE,
-    description TEXT NOT NULL,
+    description VARCHAR(1536) NOT NULL,/*1024 + 512 = 1536*/
     number_of_pages INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     publication_date DATE,

@@ -37,7 +37,7 @@
                                     <form action="#" class="account-form-box" id="updateBookForm">
                                         <h1>Update : <%= book.title %></h1>
                                         <div class="form-row">
-                                            <input type="hidden"   value="<%= book.book_id %>"  name="bookId">
+                                            <input type="hidden"  id="bookId" value="<%= book.book_id %>"  name="bookId">
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group single-input">
@@ -88,22 +88,6 @@
                                             </label>
                                         </div>
                                         <div class="single-input">
-                                            <label for="" class="w-100">Cover Image:
-                                                <input type="file"  id="coverImage"  name="coverImage">
-                                                                        
-                                                <% if(book.cover_image_url.split(":")[0]=="https") { %>
-                                                    <a href="<%=`${book.cover_image_url_large}`%>">
-                                                        <img  src="<%=`${book.cover_image_url_small}`%>" class="img-fluid mx-auto w-30 h-20">
-                                                    </a>
-                                                <% } else { %>
-                                                    <a href="/uploads/<%=`${book.cover_image_url_large}`%>">
-                                                    <img  src="/uploads/<%=`${book.cover_image_url_small}`%>" class="img-fluid mx-auto w-30 h-20">
-                                                    </a>
-                                                <% } %>
-
-                                            </label>
-                                        </div>
-                                        <div class="single-input">
 
                                             <label for="decription" class="w-100">Description:
 
@@ -140,6 +124,7 @@
                                                 let formData = new FormData();
                                                 const data = {
                                                     _csrf: '<%= csrfToken %>',
+                                                    bookId: $('#bookId').val(),
                                                     title:$('#title').val(),
                                                     author: $('#author').val(),
                                                     language: $('#language').val(),
@@ -147,9 +132,10 @@
                                                     quantity: $('#quantity').val(),
                                                     location: $('#location').val(),
                                                     date: $('#date').val(),
-                                                    description: $('#description').innerHTML,
-                                                    cover_image_url: $('#coverImage').val(),
+                                                    description: $('#description').val()
+                                                    
                                                 };
+                                                console.log(`Data being sent to server: ${JSON.stringify(data,null,2)}`);
                                                 /*for (let key in Object.keys(data)) {
                                                     formData.append(key, data[key]);
                                                 }*/
