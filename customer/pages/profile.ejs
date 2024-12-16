@@ -91,7 +91,7 @@
                                                                     <td><%= user.Orders[i].order_date %></td>
                                                                     <td><%=user.Orders[i].delivery_status%></td>
                                                                     <td>$<%=user.Orders[i].total_amount%></td>
-                                                                    <td><a href="/orderDetail/<%=user.Orders[i].order_id%>" class="btn btn btn-dark btn-hover-primary btn-sm rounded-0">View</a></td>
+                                                                    <td><a href="/orders/orderDetail/<%=user.Orders[i].order_id%>" class="btn btn btn-dark btn-hover-primary btn-sm rounded-0">View</a></td>
                                                                 </tr>
                                                                 <%}%>
                                                             </tbody>
@@ -101,42 +101,7 @@
                                             </div>
                                             <!-- Single Tab Content End -->
 
-                                            <!-- Single Tab Content Start -->
-
-                                            <!-- <div class="tab-pane fade" id="download" role="tabpanel">
-                                                <div class="myaccount-content">
-                                                    <h3 class="title">Downloads</h3>
-                                                    <div class="myaccount-table table-responsive text-center">
-                                                        <table class="table table-bordered">
-                                                            <thead class="thead-light">
-                                                                <tr>
-                                                                    <th>Product</th>
-                                                                    <th>Date</th>
-                                                                    <th>Expire</th>
-                                                                    <th>Download</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>Haven - Free Real Estate PSD Template</td>
-                                                                    <td>Aug 22, 2018</td>
-                                                                    <td>Yes</td>
-                                                                    <td><a href="#" class="btn btn btn-dark btn-hover-primary rounded-0"><i class="fa fa-cloud-download me-1"></i> Download File</a></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>HasTech - Profolio Business Template</td>
-                                                                    <td>Sep 12, 2018</td>
-                                                                    <td>Never</td>
-                                                                    <td><a href="#" class="btn btn btn-dark btn-hover-primary rounded-0"><i class="fa fa-cloud-download me-1"></i> Download File</a></td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div> -->
-                                           
-                                            <!-- Single Tab Content End -->
-
+                                            
                                             <!-- Single Tab Content Start -->
                                             <div class="tab-pane fade" id="payment-method" role="tabpanel">
                                                 <div class="myaccount-content">
@@ -147,28 +112,13 @@
                                             <!-- Single Tab Content End -->
 
                                             <!-- Single Tab Content Start -->
-                                            <!-- <div class="tab-pane fade" id="address-edit" role="tabpanel">
-                                                <div class="myaccount-content">
-                                                    <h3 class="title">Billing Address</h3>
-                                                    <address>
-                                                        <p><strong>Alex Aya</strong></p>
-                                                        <p>1234 Market ##, Suite 900 <br>
-                                                Lorem Ipsum, ## 12345</p>
-                                                        <p>Mobile: (123) 123-456789</p>
-                                                    </address>
-                                                    <a href="#" class="btn btn btn-dark btn-hover-primary rounded-0"><i class="fa fa-edit me-2"></i>Edit Address</a>
-                                                </div>
-                                            </div> -->
-                                            <!-- Single Tab Content End -->
-
-                                            <!-- Single Tab Content Start -->
 
                                             <div class="tab-pane fade" id="account-info" role="tabpanel">
                                                 <div class="myaccount-content">
                                                     
                                                     <h3 class="title">Account Details</h3>
                                                     <div class="account-details-form">
-                                                        <form action="/updateProfile" method="post">
+                                                        <form action="/customer/updateProfile" method="post">
                                                             <div class="row">
                                                                 <div class="col-lg-6">
                                                                     <div class="single-input-item mb-3">
@@ -202,7 +152,7 @@
                                                                         <% for(let i=0; i < states.length; i++) { %>
                                                                             
                                                                             <option value="<%= states[i].province_state_id %>"><%= states[i].country_code %>-<%= states[i].province_state_name %></option> 
-                                                                            <% } %>
+                                                                        <% } %>
                                                                 </select>
                                                                 </div>
                                                                 <div class="row">

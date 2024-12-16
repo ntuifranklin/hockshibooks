@@ -370,13 +370,13 @@ const updateProfile=async(req,res)=>{
                     
                 }
 
-                console.log(req.body)
+                //console.log(req.body)
                 await customer.save()
-                return res.status(200).redirect(`${process.env.HOST}/profile?type=success&msg=successfully+updated+profile`)
+                return res.status(200).redirect(`/customer/profile?type=success&msg=successfully+updated+profile`)
             }
             else{
 
-                return res.status(200).redirect(`${process.env.HOST}/profile?type=danger&msg=wrong+password`)
+                return res.status(200).redirect(`/customer/profile?type=danger&msg=wrong+password`)
             }
         
         }
