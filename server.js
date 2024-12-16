@@ -63,7 +63,7 @@ const {
 const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME } = require('./utilities/universal_web_constants');
 
 const request_rate_limiter = rateLimit({
-	windowMs: 30 * 60 * 1000, // 30 minutes
+	windowMs: 60 * 60 * 1000, // 60 minutes
 	limit: 1000, // Limit each IP to 1000 requests per `window` (here, per 30 minutes).
 	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
@@ -139,7 +139,7 @@ async function startNewHockshiServer(){
 	//generate a unique web visitor user id for each user
 	app.use(setUniqueUserID);
 	app.use((req, res, next) => {
-				
+		//await req.session.destroy();
 		res.locals = app.locals ;
 		req.locals = app.locals ;
 		res.locals.csrfToken = req.csrfToken();
