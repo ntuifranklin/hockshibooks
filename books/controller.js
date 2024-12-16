@@ -146,8 +146,17 @@ const addBookWithISBN= async(req,res)=>{
  
     let user = req.session.USER;
     //isbn could be less than 10 or less than 8 characters. lets pad it with 000s
-    
+    /*
+    //these api below are the new way of accessing the book information and cover image on open library
+    let imageSizeSmall = 'S' ;
+    let imageSizeMedium = 'M' ;
+    let imageSizeLarge = 'L' ;
+    let chosenImageSize = imageSizeMedium;
+    let imageUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-${chosenImageSize}.jpg`;
+    let newBookApiUrl = `https://openlibrary.org/isbn/${isbn}.json`;
+    */
     const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`;
+
     try{
         const response= await axios.get(url)
 
