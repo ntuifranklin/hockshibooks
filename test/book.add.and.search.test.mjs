@@ -94,7 +94,7 @@ describe('search book functionality ',async () => {
     }
     expect(otpCode).to.exist; 
 
-    csrfToken = extractCsrfToken(postResponse);
+    //csrfToken = extractCsrfToken(postResponse);
     // Step 4: Send POST request to verify OTP
     const otpResponse = await agent
       .set('csrf-token', csrfToken)
@@ -104,7 +104,7 @@ describe('search book functionality ',async () => {
     //expect(otpResponse).to.have.cookie('connect.sid');
     //console.log('otp response: ',otpResponse);
     
-    //csrfToken = extractCsrfToken(otpResponse);
+    csrfToken = extractCsrfToken(otpResponse);
     for(let isbni of isbns){
         
       agent
