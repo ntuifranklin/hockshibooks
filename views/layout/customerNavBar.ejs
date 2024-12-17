@@ -133,14 +133,40 @@
                 <div class="mobile-menu-contact-info section-space--mt_60">
                     <h6>Contact Us</h6>
                     <p>
+                        <i class="icon_pin"></i>
                         <%= companyName %> 
                         <%= companyCity  %> 
                         <%= companyState  %>, 
                         <%= companyZip %> 
-                        <br> 
-                        <%= customerBusinessEmail %>
+                        <br>                        
+                        <a href="#" id='customerNavBarAnchorEmailLink' class="hover-style-link">
+                            <i class="icon_mail"></i>&nbsp;Email Us
+                        </a>
                         <br>
-                        <%= companyPhoneNumber %>
+                        <a href="#" class="hover-style-link" id="customerNavBarAnchorPhoneNumberLink"><i class="icon_phone"></i>&nbsp;Call Us</a>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                let phoneNumberTag = document.querySelector('#customerNavBarAnchorPhoneNumberLink')
+                                function revealPhoneNumberInCustomerNavBar(){
+                                    
+                                    //let allKeys = Object.keys(this);
+                                    //console.log(`this keys: ${JSON.stringify(allKeys)}`);
+                                    phoneNumberTag.href = 'tel:' + '<%= companyPhoneNumber %>';
+                                    phoneNumberTag.innerHTML = '<i class="icon_phone"></i>&nbsp;<%= companyPhoneNumber %>';
+                                    
+                                }
+                                phoneNumberTag.addEventListener('click',revealPhoneNumberInCustomerNavBar) ;
+                                phoneNumberTag.addEventListener('mouseover',revealPhoneNumberInCustomerNavBar) ;
+                                let emailTag = document.querySelector('#customerNavBarAnchorEmailLink')
+                                function revealEmailInCustomerNavBar(){
+                                    
+                                    emailTag.href = 'mailto:' + '<%= customerBusinessEmail %>';
+                                    emailTag.innerHTML = '<i class="icon_mail"></i>&nbsp;<%= customerBusinessEmail %>';
+                                } ;
+                                emailTag.addEventListener('click',revealEmailInCustomerNavBar) ;
+                                emailTag.addEventListener('mouseover',revealEmailInCustomerNavBar) ;
+                            });
+                        </script>
                     </p>
                 </div>
 

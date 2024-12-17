@@ -385,7 +385,7 @@ const searchBook=async (req,res)=>{
               return res.status(200).render("../books/pages/search",{
                 pagetitle:"Search Books",
                 "books":books,
-                "pagetitle":"Search Books",
+                
                 base_route_name:"books",
                 api_route_name:"api",
                 custumer:customer,
@@ -395,7 +395,7 @@ const searchBook=async (req,res)=>{
             res.status(200).redirect(`/`)
         }
     
-    };
+};
 
 
 

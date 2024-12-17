@@ -69,24 +69,8 @@
                             <div class="policy-section mb-20">
                                 <h5>8. Contact Us</h5>
                                 <p>For questions or concerns, reach out to us at:</p>
-                                <ul>
-                                    <li>Email: <%= customerBusinessEmail %></li>                                    
-                                    <script>
-                                        document.addEventListener('DOMContentLoaded', function() {
-                                            function revealPhoneNumberPolicyPage(){
-                                                let phoneNumberTag = document.querySelector('#listTagPhoneNumber')
-                                                
-                                                
-                                                phoneNumberTag.innerHTML = '<i class="icon_phone"></i>: <%= companyPhoneNumber %>';
-                                                
-                                            }
-                                            document.querySelector('#listTagPhoneNumber').addEventListener('click',revealPhoneNumberPolicyPage) ;
-                                            document.querySelector('#listTagPhoneNumber').addEventListener('mouseover',revealPhoneNumberPolicyPage) ;
-                                        });
-                                    </script>
-                                    <li id="listTagPhoneNumber"><i class="icon_phone"></i> Click or Hover to reveal</li>
-                                    <li>Address: <%= companyAddress %></li>
-                                </ul>
+                               
+                                <%- include('../../views/partials/small_contact_info') %>
                             </div>
                         </div>
                     </div>
@@ -98,7 +82,7 @@
 
     <%- include('../../views/partials/footerarea') %>
 </div>
-
+<%- include('../../views/partials/commonjslibs'); %>
 
 
 </body>

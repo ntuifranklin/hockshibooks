@@ -1,0 +1,50 @@
+
+                         
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let phoneNumberTag = document.querySelector('.listTagPhoneNumber')
+        if (typeof revealPhoneNumberTermsAndConditionPage !== "function") {
+            function revealPhoneNumberTermsAndConditionPage(){            
+            
+                phoneNumberTag.href = 'tel:' + '<%= companyPhoneNumber %>';
+                phoneNumberTag.innerHTML = '<%= companyPhoneNumber %>';
+            };
+            phoneNumberTag.addEventListener('click',revealPhoneNumberTermsAndConditionPage) ;
+            phoneNumberTag.addEventListener('mouseover',revealPhoneNumberTermsAndConditionPage) ;
+        } ;      
+        
+
+        let tac_AnchorEmailLink = document.querySelector('.termsPolicyAnchorEmailLink');
+        if (typeof revealEmailInTermsAndConditionPage !== "function") {
+            
+            function revealEmailInTermsAndConditionPage(){
+                
+                tac_AnchorEmailLink.href = 'mailto:' + '<%= customerBusinessEmail %>';
+                tac_AnchorEmailLink.innerHTML = '<%= customerBusinessEmail %>';
+            } ;
+            tac_AnchorEmailLink.addEventListener('click',revealEmailInTermsAndConditionPage) ;
+            tac_AnchorEmailLink.addEventListener('mouseover',revealEmailInTermsAndConditionPage) 
+
+        }
+    });
+</script>
+<ul class="footer-widget__list">
+        
+    <li>
+        <i class="icon_phone"></i>&nbsp;
+        <a href="#" class="listTagPhoneNumber">Call Us</a>
+    </li>    
+    <li>                                        
+        <i class="icon_mail"></i>&nbsp;
+        <a href="#" class="hover-style-link termsPolicyAnchorEmailLink">Email Us</a>
+    </li>
+    <li>
+        <i class="icon_pin"></i>&nbsp;
+        
+        <%= companyName %>&nbsp;
+        <%= companyCity %>&nbsp; 
+        <%= companyState %>, 
+        <%= companyZip %>
+    </li>
+
+</ul>

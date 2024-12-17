@@ -1,0 +1,21 @@
+
+<form method="post" action="/customer/login" class="account-form-box">
+    <h6>Login your account</h6>
+    <div class="single-input">
+        <input type="text" placeholder="Email" name="email">
+    </div>
+    <div class="single-input">
+        <input type="password" placeholder="Password" name="password">
+    </div>
+    <!-- <div class="checkbox-wrap mt-10">
+        <label class="label-for-checkbox inline mt-15">
+            <input class="input-checkbox" name="rememberme" type="checkbox" id="rememberme" value="forever"> <span>Remember me</span>
+        </label>
+        <a href="#" class=" mt-10">Lost your password?</a>
+    </div> -->
+
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="button-box mt-25">
+        <button type="submit" class="btn btn--full btn--black">Log in</button>
+    </div>
+</form>

@@ -1,4 +1,10 @@
-
+    <!-- 
+        This page is slowing down google page speed analyzer. 
+        The recommended solution is to 
+        <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="styles.css"></noscript>
+        for each file that is slowing down the page.
+    -->
     <!-- Bootstrap Css -->
     <link rel="stylesheet" href="/assets/css/vendor/bootstrap.min.css">
     
@@ -19,4 +25,5 @@
     <link rel="stylesheet" href="/assets/css/plugins/easyzoom.css">
     
     <!-- Main Style CSS -->
-    <link rel="stylesheet" href="/assets/css/style.min.css">
+    <link rel="preload" href="/assets/css/stylered.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/assets/css/stylered.css"></noscript>

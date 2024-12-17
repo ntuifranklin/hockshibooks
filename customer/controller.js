@@ -12,6 +12,27 @@ const {LOGGED_IN_CUSTOMER_VARIABLE_NAME} = require('../utilities/universal_web_c
 const { generateLoggedInCustomerCacheKey } = require("./utilities");
 const { saveJSONObjectToRedisCache,deleteDataFromRedisCache } = require("../middleware/redis");
 
+let states = null ; 
+let country = null; 
+
+async function loadStatesAndCountries(){
+    if (states != null && country != null) {
+        return;
+    };
+    states=await provinceStateModel.findAll({
+        order: [
+            ['province_state_name', 'ASC'],
+            ['country_code', 'ASC'],
+        ],
+    });
+    country=await CountryModel.findAll({
+        order: [
+            ['country_name', 'ASC'],
+        ],
+    });
+    
+}
+
 const customerLoginPage= async (req,res)=>{
     /**
  * Renders the customer login page with a success status code and a message indicating whether the login was successful or not.
@@ -20,16 +41,9 @@ const customerLoginPage= async (req,res)=>{
  * @param {Object} res - The response object used to render the customer login page.
  * @return {Object} The rendered customer login page with a success status code and a message indicating whether the login was successful or not.
  */
-    const states=await provinceStateModel.findAll({
-        order: [
-            ['province_state_name', 'ASC'],
-        ],
-    });
-    const country=await CountryModel.findAll({
-        order: [
-            ['country_name', 'DESC'],
-        ],
-    });
+
+    await loadStatesAndCountries();
+
     return res.render("../customer/pages/customerLogin",{
         pagetitle:"Login Page",
         msg:req.query.msg?req.query.msg:false,
@@ -48,19 +62,11 @@ const customerLoginPagePost = async (req,res)=>{
  * @param {Object} res - The response object used to render the customer login page or redirect to the customer OTP verification page.
  * @return {Promise<void>} - Returns a Promise that resolves with the rendered customer login page or redirects to the customer OTP verification page.
  */
-    const states=await provinceStateModel.findAll({
-        order: [
-            ['province_state_name', 'ASC'],
-        ],
-    });
-    const country=await CountryModel.findAll({
-        order: [
-            ['country_name', 'DESC'],
-        ],
-    });
+    
     const email=req.body.email;
     let customer_id;
     try {
+            await loadStatesAndCountries();
             const customer = await customerModel.findOne({
                 where: {
                     email: email,
@@ -68,7 +74,7 @@ const customerLoginPagePost = async (req,res)=>{
                 }
             });                                                   
             if(!customer){
-                    console.log(`user non existent`);
+                    //console.log(`user non existent`);
                     res.status(401).render("../customer/pages/customerLogin",{
                             pagetitle:"Login Page",
                             msg:"please check your email and password again",
@@ -94,16 +100,16 @@ const customerLoginPagePost = async (req,res)=>{
                             })
                     }
                     else{
-                            console.log(`user existent but wrong password`);
-                            res.status(401).render("../customer/pages/customerLogin",{
-                                    pagetitle:"Login Page",
-                                    msg:"please check your email and password again",
-                                    errors:false,
-                                    countries:country,
-                                    states:states,
-                                    Sucessmsg:req.query.Sucessmsg?req.query.Sucessmsg:false,
+                        console.log(`user existent but wrong password`);
+                        res.status(401).render("../customer/pages/customerLogin",{
+                                pagetitle:"Login Page",
+                                msg:"please check your email and password again",
+                                errors:false,
+                                countries:country,
+                                states:states,
+                                Sucessmsg:req.query.Sucessmsg?req.query.Sucessmsg:false,
 
-                            })
+                        })
                     }
             }
           }  
@@ -129,7 +135,7 @@ const verifyCustomerOTP=(async(req,res)=>{
                 otp:OTP
         }
     })
-    let  customer= await customerModel.findOne({
+    let customer= await customerModel.findOne({
         where:{
             customer_id:customer_id
         }
@@ -141,29 +147,21 @@ const verifyCustomerOTP=(async(req,res)=>{
      * If no OTP record is found, render the otpVerification page with an "invalid OTP record" message.
      */
     if(!otpRecord){
-            
-            return res.status(401).render(`../customer/pages/customerOtpVerification`,{
-                    pagetitle:"OTP Verification",
-                    customer_id:customer_id,
-                    username:false,
-                    email:customer.email,
-                    msg:"invalid OTP record",
-                    successmsg:false
-
-            })
-    }
-    /**
-     * If the OTP record is found but expired, render the otpVerification page with an "OTP expired" message.
-     */
-    else if(otpRecord.expiration_time < new Date()){
-
-            res.status(401).render(`../customer/pages/customerOtpVerification`,{
-                    pagetitle:"OTP Verification",    
-                    userId:userId,
-                    email:customer.email,
-                    msg:"OTP expired",
-
-            })
+        return res.redirect(`/customer/login?msg=invalid+OTP+record`);
+        
+    } else if(otpRecord.expiration_time < new Date()){
+        /**
+         * If the OTP record is found but expired, render the otpVerification page with an "OTP expired" message.
+         */
+        //still destroy the otp found regardless
+        
+        await customerOtpModel.destroy({
+            where:{
+                    customerId:customer_id
+            }
+        });
+        return res.status(401).redirect(`/customer/login?msg=OTP+expired`);
+        
     }else{
             /**
              * If the OTP is valid and not expired:
@@ -186,12 +184,12 @@ const verifyCustomerOTP=(async(req,res)=>{
             
             
             await customerOtpModel.destroy({
-                    where:{
-                            customerId:customer_id
-                    }
+                where:{
+                        customerId:customer_id
+                }
             });
             req.session.customer = customer;
-            res.locals.customer = customer ;
+            //res.locals.customer = customer ;
             await req.session.save();           
             
             return res.status(200).redirect(`/customer/profile`) 
@@ -230,16 +228,7 @@ const signupPage= async(req,res)=>{
  * @return {Promise<void>} - A promise that resolves when the view is rendered.
  */
 
-    const states=await provinceStateModel.findAll({
-        order: [
-            ['province_state_name', 'ASC'],
-        ],
-    });
-    const country=await CountryModel.findAll({
-        order: [
-            ['country_name', 'DESC'],
-        ],
-    });
+    await loadStatesAndCountries();
 
     return res.render("../customer/pages/customerSignup",{
         pagetitle:"Signup Page",
@@ -326,7 +315,7 @@ If the email is not in use, creates a new customer record in the database and re
 }
 
 const showCustomerProfile=async(req,res)=>{
-    
+    await loadStatesAndCountries();
     let customer = req.session.customer;
     const customerInformation= await customerModel.findOne(
     {
@@ -336,13 +325,13 @@ const showCustomerProfile=async(req,res)=>{
         }]
     })
     
-    const states=await provinceStateModel.findAll()
+    //const states=await provinceStateModel.findAll()
     const current_state=await provinceStateModel.findOne({
         where:{
             province_state_id:customerInformation.state_province
         }
     })
-    const country=await CountryModel.findAll()
+    //const country=await CountryModel.findAll()
     // req.session.customer.customer_id
     const user={...customerInformation.dataValues,current_state:{...current_state.dataValues},}
 
@@ -355,6 +344,7 @@ const showCustomerProfile=async(req,res)=>{
     }
     //console.log(user)
     return res.render("../customer/pages/profile",{
+        pagetitle:"Profile Page",
         customer:customerInformation,
         user:user,
         states:states,
@@ -375,7 +365,7 @@ const updateCustomerProfile=async(req,res)=>{
       return showCustomerProfile(req,res)
     } else {
         try{
-
+            await loadStatesAndCountries();
             const customer= await customerModel.findOne(
                 {where:{customer_id:userId} }
             
@@ -520,13 +510,13 @@ const processGuestUser=async (req,res)=>{
             return showForm(req,res)
           }
 
-
     }
     
 }
 
 
 module.exports= {
+    loadStatesAndCountries,
     customerLoginPage,
     customerLoginPagePost,
     verifyCustomerOTP,

@@ -35,7 +35,7 @@ module.exports = () => {
         router.post("/verifyOTP",validateCustomerOTP,verifyCustomerOTP) ;
         router.get("/profile",verifyCustomerIsLoggedIn,showCustomerProfile);
         
-        router.post("/profile",validateProfileUpdate,updateCustomerProfile);
+        router.post("/profile",verifyCustomerIsLoggedIn,validateProfileUpdate,updateCustomerProfile);
 
         router.get("/askGuest",showGuestPage);
   
