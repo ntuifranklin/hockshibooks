@@ -1,4 +1,4 @@
-
+<style type="text/css">
 :root,[data-bs-theme=light] {
     --bs-blue: #0d6efd;
     --bs-indigo: #6610f2;
@@ -292,3 +292,130 @@ code {
 ::-webkit-search-decoration {
     -webkit-appearance: none
 }
+
+.display-1 {
+    font-size: calc(1.625rem + 4.5vw);
+    font-weight: 300;
+    line-height: 1.2
+}
+
+@media (min-width: 1200px) {
+    .display-1 {
+        font-size:5rem
+    }
+}
+
+.display-2 {
+    font-size: calc(1.575rem + 3.9vw);
+    font-weight: 300;
+    line-height: 1.2
+}
+
+@media (min-width: 1200px) {
+    .display-2 {
+        font-size:4.5rem
+    }
+}
+
+.display-3 {
+    font-size: calc(1.525rem + 3.3vw);
+    font-weight: 300;
+    line-height: 1.2
+}
+
+.list-inline-item:not(:last-child) {
+    margin-right: .5rem
+}
+
+.initialism {
+    font-size: .875em;
+    text-transform: uppercase
+}
+
+.blockquote {
+    margin-bottom: 1rem;
+    font-size: 1.25rem
+}
+
+.blockquote>:last-child {
+    margin-bottom: 0
+}
+
+.blockquote-footer {
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    font-size: .875em;
+    color: #6c757d
+}
+
+.blockquote-footer::before {
+    content: "— "
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto
+}
+
+.img-thumbnail {
+    padding: .25rem;
+    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    max-width: 100%;
+    height: auto
+}
+
+.figure {
+    display: inline-block
+}
+
+.figure-img {
+    margin-bottom: .5rem;
+    line-height: 1
+}
+
+.figure-caption {
+    font-size: .875em;
+    color: var(--bs-secondary-color)
+}
+
+.container,.container-fluid,.container-lg,.container-md,.container-sm,.container-xl,.container-xxl {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    width: 100%;
+    padding-right: calc(var(--bs-gutter-x) * .5);
+    padding-left: calc(var(--bs-gutter-x) * .5);
+    margin-right: auto;
+    margin-left: auto
+}
+
+:root {
+    --bs-breakpoint-xs: 0;
+    --bs-breakpoint-sm: 576px;
+    --bs-breakpoint-md: 768px;
+    --bs-breakpoint-lg: 992px;
+    --bs-breakpoint-xl: 1200px;
+    --bs-breakpoint-xxl: 1400px
+}
+
+
+.row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x))
+}
+
+.row>* {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    padding-right: calc(var(--bs-gutter-x) * .5);
+    padding-left: calc(var(--bs-gutter-x) * .5);
+    margin-top: var(--bs-gutter-y)
+}
+</style>
