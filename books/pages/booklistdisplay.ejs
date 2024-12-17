@@ -13,9 +13,9 @@
                     */
                 %>
                 <% if(books[i].cover_image_url.split(":")[0]=="https") { %>
-                    <img  src="<%= books[i].cover_image_url_large %>" class="img-fluid bookCoverImage" alt="<%= books[i].seo_friendly_title %>" width="311" height="475">
+                    <img  src="<%= books[i].cover_image_url_large %>" class="img-fluid" alt="<%= books[i].seo_friendly_title %>" width="311" height="475">
                 <% } else { %>
-                    <img  src="/uploads/<%= books[i].cover_image_url_large %>" class="img-fluid bookCoverImage" alt="<%= books[i].seo_friendly_title %>"  width="311" height="475">
+                    <img  src="/uploads/<%= books[i].cover_image_url_large %>" class="img-fluid" alt="<%= books[i].seo_friendly_title %>"  width="311" height="475">
 
                 <% } %>
 
