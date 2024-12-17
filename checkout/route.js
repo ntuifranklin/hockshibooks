@@ -11,7 +11,7 @@ module.exports = () => {
     router.get('/',askShippingInfo)
     router.post('/',shippingInfoValidation,checkout)
     router.get('/stripe_public_key', showStripePublicKey);
-    router.get("/success",successPayment)
+    router.get("/successPayment",successPayment)
     return router;
 
 };

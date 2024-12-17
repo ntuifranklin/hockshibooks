@@ -2,7 +2,7 @@
 const { body,check,validationResult } = require('express-validator');
 
 const customerModel=require("../models/customerModel")
-
+const {showCustomerProfile} = require('./controller');
 const validateCustomerSignupForm = [
         body('first_name')
             .isLength({ max: 64 })
@@ -60,7 +60,9 @@ const validateCustomerSignupForm = [
             (req, res, next) => {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
-                  return res.status(400).json({ errors: errors.array() });
+                    const err = errors.array()
+                    req.body.errors=err
+                  return showCustomerProfile(req, res);
                 }
                 next();
             }
@@ -110,16 +112,6 @@ const validateProfileUpdate = [
         .notEmpty().withMessage('Last Name is required')
         .isLength({ min: 2 }).withMessage('Last Name must be at least 2 characters long'),
 
-    // Email Address: Required, must be a valid email format
-    check('email')
-        .notEmpty().withMessage('Email Address is required')
-        .isEmail().withMessage('Please enter a valid email address'),
-
-    // Phone Number: Required, must be a valid phone number (example for Cameroon)
-    check('phone')
-        .notEmpty().withMessage('Phone Number is required')
-        .matches(/^[0-9\-\+]{9,15}$/).withMessage('Please enter a valid phone number'),
-
     // State/Province: Required, can be any string
     check('state_province')
         .notEmpty().withMessage('State/Province is required'),
@@ -147,22 +139,20 @@ const validateProfileUpdate = [
         .optional({ checkFalsy: true })
         .isLength({ min: 6 }).withMessage('New Password must be at least 6 characters long'),
     
-    // Confirm Password: Required if newPassword is present, must match newPassword
-    // check('confirmPassword')
-    //     .custom((value, { req }) => {
-    //         if (req.body.newPassword && value !== req.body.newPassword) {
-    //             throw new Error('Passwords do not match');
-    //         }
-    //         return true;
-    //     })
-
+   
     (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-          return res.status(400).json({ errors: errors.array() });
+        //const errors = validationResult(req);
+        if(!validationResult(req).isEmpty()){
+            let errMess = '';
+            validationResult(req).errors.forEach((error)=>{
+                errMess += error.msg + '\n';
+            });
+            return res.status(400).redirect('/customer/profile?msg='+errMess);
         }
         next();
     },
+    
+    
 ];
 
 // Middleware to validate form inputs
@@ -185,7 +175,7 @@ const verifyGuestEmail = [
     },
   ];
   
-const verifyCustomerIsLoggedIn=(req,res,next)=>{
+const verifyCustomerIsLoggedIn=async (req,res,next)=>{
     /**
  * Verifies if a user is logged in and redirects them to the guest page if not.
  *

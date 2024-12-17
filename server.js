@@ -61,6 +61,7 @@ const {
 	initializeRedisClient
 } = require('./middleware/redis');
 const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME } = require('./utilities/universal_web_constants');
+const { setResponseLocalsCustomer } = require("./customer/utilities");
 
 const request_rate_limiter = rateLimit({
 	windowMs: 60 * 60 * 1000, // 60 minutes
@@ -121,6 +122,12 @@ async function startNewHockshiServer(){
 	//Terms and conditions
 	app.locals.minimumUserAge = process.env.MINIMUM_USER_AGE;
 	app.locals.companyJurisdiction = process.env.COMPANY_JURISDICTION;
+
+	/* 
+	 when customer logs in, this variable will serve as
+	 a place holder for the logged in customer's data 
+	 */
+	app.locals.customer = null ;
 	app.use(bodyParser.urlencoded({extended: true}));
 
 	//app.use(dynamicCookie)	
@@ -135,6 +142,7 @@ async function startNewHockshiServer(){
 	app.use(cookieParser())
 
 	app.use(csrfProtection);
+	
 	
 	//generate a unique web visitor user id for each user
 	app.use(setUniqueUserID);
@@ -156,6 +164,7 @@ async function startNewHockshiServer(){
 		 then returns it faster instead of requesting it each time.
 	*/
 	app.use('/',routes());
+	app.use(setResponseLocalsCustomer);
 	app.listen(port, () => {
 		console.log(`One hockshi worker server listening on port ${port}`);
 	}) ;

@@ -1,26 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Successful payment</title>
-</head>
-<body>
-
-   <p>your payment was a success , you will be redirected to the home page in 7s </p>
-
-
-
-   <script>
-    window.addEventListener("DOMContentLoaded",async()=>{
-        localStorage.clear()
-
-        await window.setTimeout(() => {
-          window.location.href = '/'; 
-        }, 7000)})
+<%- include('../../views/partials/pagehead') %>
+<%- include('../../views/layout/customerNavBar') %>
+<%- include('../../views/partials/breadcrumbs') %>
     
+  <div id="main-wrapper">
+        <div>
+          <p>Your payment was a success , you will be redirected to the home page in 20s </p>
 
-   </script>
+
+
+        </div>
+        <%- include('../../views/partials/footerarea') %>
+  </div>
+
+    <!--====================  scroll top ====================-->
+    <a href="#" class="scroll-top" id="scroll-top">
+        <i class="arrow-top icon-arrow-up"></i>
+        <i class="arrow-bottom icon-arrow-up"></i>
+    </a>
     
+  <script>
+  window.addEventListener("DOMContentLoaded",async()=>{
+      localStorage.clear()
+
+      await window.setTimeout(() => {
+        window.location.href = '/customer/profile'; 
+      }, 20000)})
+  
+
+  </script>
+<%- include('../../views/partials/commonjslibs'); %>
+
 </body>
+
 </html>

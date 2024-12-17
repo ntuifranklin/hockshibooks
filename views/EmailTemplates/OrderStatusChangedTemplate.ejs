@@ -1,10 +1,14 @@
 <html class="no-js" lang="zxx">
 
 <head>
+    <title><%= emailTitle %></title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+
+  <%- include('../partials/defaultcommoncss') %>
     <!-- Favicon -->
 
 
@@ -26,8 +30,8 @@
                     </div>
                     <div class="tab-content content-modal-box" style="margin-top: 30px;">
                       <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
-                        <h1 style="font-size: 32px; color: #333; text-align: center; margin-bottom: 20px; font-weight: bold;">ORDER STATUS CHANGE</h1>
-                        <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 30px;">dear <b> <%=customerName || "geust user"%></b>, </p>
+                        <h1 style="font-size: 32px; color: #333; text-align: center; margin-bottom: 20px; font-weight: bold;">Order Status Change</h1>
+                        <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 30px;">dear <b> <%=customerName || "guest user"%></b>, </p>
                         <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 30px;">  the status of your order with the id <b> <%=orderId%> </b> has been changed to <b><%= status %></b>
                         </p>
       

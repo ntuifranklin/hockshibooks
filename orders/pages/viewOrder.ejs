@@ -1,0 +1,113 @@
+<%- include('../../views/partials/pagehead') %>
+
+<%- include('../../views/layout/customerNavBar') %>
+
+<%- include('../../views/partials/breadcrumbs') %>
+
+
+    
+    <div id="main-wrapper">
+        <h1>Order information </h1>
+        <h2>order Id: <%= order.order_id %> </h2>
+
+        <div class="profile-section">
+          
+            <div class="profile-fields">
+                <div class="input-group">
+                    <label for="firstName">customer name:</label>
+                    <p type="text" id="firstName" ><%=order.Customer.first_name || "Guest user" %> <%=order.Customer.last_name|| "" %> </p>
+                </div>
+                <div class="input-group">
+                    <label for="lastName">customer email:</label>
+                    <p type="text" id="lastName" value="Coop"><%=order.Customer.email %></p>
+                </div>
+                <div class="input-group">
+                    <label for="lastName">customer phone:</label>
+                    <p type="text" id="lastName" value="Coop"><%=order.Customer.phone|| " " %></p>
+                </div>
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="email">status: </label>
+
+            <div class="flex">
+
+                <p type="email" class="status <%=order.delivery_status%>"><%= order.delivery_status %></p>
+
+                <div class="actions">
+                    <a href="/order/changeToProcessing/<%= order.order_id %>" class="button Processing">change to processing</a>
+                    <a href="/order/changeToShipped/<%= order.order_id %>" class="button Shipped">change to shipped</a>
+                    <a href="/order/changeToDelivered/<%= order.order_id %>" class="button Delivered">change to delivered</a>
+                </div>
+            </div>
+            
+        </div>
+        <div class="input-group">
+            <label for="phoneNumber">delivery address</label>
+            <div class="container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>shipping address</th>
+                            <th>shipping city</th>
+                            <th>state/province</th>
+                            <th>country</th>
+                            <th>postal code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><%=order.shipping_address %></td>
+                            <td><%= order.shipping_city %></td>
+                            <td ><%=order.shipping_state_province%></td>
+                            <td><%=order.shipping_country%></td>
+                            <td><%=order.shipping_postal_code%></td>
+                        </tr>                           
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="dob">Items Ordered</label>
+            <div class="container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>book name </th>
+                            <th>author</th>
+
+                            <th>unit price</th>
+                            <th>qauntity ordered</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i=0; i < orderI.length;i++){  %>
+                            <tr>
+                                <td><%=orderI[i].Book.title%></td>
+                                <td><%=orderI[i].Book.author%></td>
+                                <td>$<%=orderI[i].item_price%></td>
+                                <td><%=orderI[i].quantity%></td>
+                                <td>$<%=orderI[i].subtotal%></td>                                
+                                
+                            </tr>
+                        <% } %>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <%- include('../../views/partials/footerarea') %>
+   </div>
+
+    <!--====================  scroll top ====================-->
+    <a href="#" class="scroll-top" id="scroll-top">
+        <i class="arrow-top icon-arrow-up"></i>
+        <i class="arrow-bottom icon-arrow-up"></i>
+    </a>
+    
+<%- include('../../views/partials/commonjslibs'); %>
+
+</body>
+
+</html>

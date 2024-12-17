@@ -8,6 +8,10 @@ const bcrypt = require('bcrypt');
 const {validationResult} =  require('express-validator');
 const {generateAndSendOTP} =  require('../utilities/functions')
 
+const {LOGGED_IN_CUSTOMER_VARIABLE_NAME} = require('../utilities/universal_web_constants');
+const { generateLoggedInCustomerCacheKey } = require("./utilities");
+const { saveJSONObjectToRedisCache,deleteDataFromRedisCache } = require("../middleware/redis");
+
 const customerLoginPage= async (req,res)=>{
     /**
  * Renders the customer login page with a success status code and a message indicating whether the login was successful or not.
@@ -90,7 +94,7 @@ const customerLoginPagePost = async (req,res)=>{
                             })
                     }
                     else{
-                        console.log(`user existent but wrong password`);
+                            console.log(`user existent but wrong password`);
                             res.status(401).render("../customer/pages/customerLogin",{
                                     pagetitle:"Login Page",
                                     msg:"please check your email and password again",
@@ -125,7 +129,7 @@ const verifyCustomerOTP=(async(req,res)=>{
                 otp:OTP
         }
     })
-    const customer= await customerModel.findOne({
+    let  customer= await customerModel.findOne({
         where:{
             customer_id:customer_id
         }
@@ -164,22 +168,57 @@ const verifyCustomerOTP=(async(req,res)=>{
             /**
              * If the OTP is valid and not expired:
 
-Set up the user session with req.session.user.
-Destroy the OTP record from the database to prevent reuse.
-Redirect the user to the dashboard.
-                */
-            req.session.customer = await JSON.parse(JSON.stringify(customer));
+                Set up the user session with req.session.user.
+                Destroy the OTP record from the database to prevent reuse.
+                Redirect the user to the dashboard.
+            */
+            let userID = req.session.userID;
+            let redisCustomerKey = generateLoggedInCustomerCacheKey(userID);
+            let writeOptions =
+            {
+                
+                EX: 900, // 15 minutes, 3600 is 1h , while 43200 is 12h
+                //XX: true, // write the data even if the key already exists
+            } ;
+            
+            customer = await JSON.parse(JSON.stringify(customer));
+            await saveJSONObjectToRedisCache(redisCustomerKey, customer, writeOptions);
+            
             
             await customerOtpModel.destroy({
                     where:{
                             customerId:customer_id
                     }
             });
-            await req.session.save();
+            req.session.customer = customer;
+            res.locals.customer = customer ;
+            await req.session.save();           
             
             return res.status(200).redirect(`/customer/profile`) 
     }
-}) 
+}) ;
+
+const customerLogout=async (req,res)=>{
+    /**
+ * The customerLogout function is used to log out signed-in users.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+   
+        /*
+        the customerLogout function is used to logout signed in users.
+
+        It checks if the user is signed in by looking for the user property in the req.session object. If the user is not signed in, it responds with a status code of 404 and a message saying "user not signed in". If the user is signed in, it deletes the user property from the req.session object and redirects the user to the root URL of the admin section of the application (${process.env.HOST}/admin/).
+        
+        */
+        let userID = req.session.userID;
+        let redisCustomerKey = generateLoggedInCustomerCacheKey(userID); 
+        await deleteDataFromRedisCache(redisCustomerKey); 
+        await req.session.destroy();
+        res.status(200).redirect(`/customer/login`) 
+}
+
 const signupPage= async(req,res)=>{
 
     /**
@@ -286,31 +325,37 @@ If the email is not in use, creates a new customer record in the database and re
     }
 }
 
-const Profile=async(req,res)=>{
-
+const showCustomerProfile=async(req,res)=>{
+    
     let customer = req.session.customer;
-    const userInformation= await customerModel.findOne(
-        {where:{customer_id:customer.customer_id},
-        
+    const customerInformation= await customerModel.findOne(
+    {
+        where:{customer_id:customer.customer_id},
         include:[{
             model:orderModel
         }]
-    },
-    
-    )
-
+    })
     
     const states=await provinceStateModel.findAll()
     const current_state=await provinceStateModel.findOne({
         where:{
-            province_state_id:userInformation.state_province
+            province_state_id:customerInformation.state_province
         }
     })
     const country=await CountryModel.findAll()
     // req.session.customer.customer_id
-    const user={...userInformation.dataValues,current_state:{...current_state.dataValues},}
+    const user={...customerInformation.dataValues,current_state:{...current_state.dataValues},}
+
+    if (req.body.errors) {
+        req.body.errors = req.body.errors.map((error) => {
+            return {
+                msg: error.msg,
+            };
+        });
+    }
     //console.log(user)
     return res.render("../customer/pages/profile",{
+        customer:customerInformation,
         user:user,
         states:states,
         country:country,
@@ -321,15 +366,14 @@ const Profile=async(req,res)=>{
     
    
 }
-const updateProfile=async(req,res)=>{
+const updateCustomerProfile=async(req,res)=>{
     const errors=validationResult(req)
     if(!errors.isEmpty()){
         const err = errors.array()
         req.body.errors=err
 
-      return Profile(req,res)
-    }
-    else{
+      return showCustomerProfile(req,res)
+    } else {
         try{
 
             const customer= await customerModel.findOne(
@@ -387,25 +431,6 @@ const updateProfile=async(req,res)=>{
     }
 }
 
-
-const logout=async (req,res)=>{
-    /**
- * The logout function is used to log out signed-in users.
- *
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- */
-   
-        /*
-        the logout function is used to logout signed in users.
-
-        It checks if the user is signed in by looking for the user property in the req.session object. If the user is not signed in, it responds with a status code of 404 and a message saying "user not signed in". If the user is signed in, it deletes the user property from the req.session object and redirects the user to the root URL of the admin section of the application (${process.env.HOST}/admin/).
-        
-        */ 
-        
-        await req.session.destroy();
-        res.status(200).redirect(`/customer/login`) 
-}
 
 const showGuestPage=(req,res)=>{
     /**
@@ -507,9 +532,9 @@ module.exports= {
     verifyCustomerOTP,
     signupPage,
     customerSignupPost,
-    Profile,
-    updateProfile,
-    logout,
+    showCustomerProfile,
+    updateCustomerProfile,
+    customerLogout,
     showGuestPage,
     showForm,
     processGuestUser

@@ -108,14 +108,23 @@
                             <a href="/cart/view">Shopping Cart</a>                            
                         </li>
 
+                        <% //console.log('Customer in customer Nav Bar: ', JSON.stringify(customer, null, 2) ); %>
+                        <% if( customer != null  && customer.customer_id != null) { %>
+                            <li class="has-children">
+                                <a href="/customer/profile">Profile</a>
+                                
+                            </li>
+                            <li class="has-children">
+                                <a href="/customer/logout">Logout</a>
+                            </li>
+                        <% } else { %>
                         <li class="has-children">
-                            <a href="/customer/login">Login</a>
-                            
+                            <a href="/customer/login">Login</a>                            
                         </li>
                         <li class="has-children">
-                            <a href="/customer/signup">Signup</a>
-                            
+                            <a href="/customer/signup">Signup</a>                            
                         </li>
+                        <% }  %>
                         
 
                     </ul>

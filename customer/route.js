@@ -10,9 +10,9 @@ const {
     verifyCustomerOTP,
     signupPage,
     customerSignupPost,
-    logout,
-    Profile,
-    updateProfile
+    customerLogout,
+    showCustomerProfile,
+    updateCustomerProfile
 
 } = require('./controller');
 
@@ -29,25 +29,23 @@ require('dotenv').config();
 module.exports = () => {
    
 
-        router.route("/login").get(customerLoginPage).post(customerLoginPagePost)
+        router.get("/login", customerLoginPage); 
+        router.post("/login", customerLoginPagePost) ;
   
-        router.post("/verifyOTP",validateCustomerOTP,verifyCustomerOTP)
-        router.get("/profile",verifyCustomerIsLoggedIn,Profile)
+        router.post("/verifyOTP",validateCustomerOTP,verifyCustomerOTP) ;
+        router.get("/profile",verifyCustomerIsLoggedIn,showCustomerProfile);
         
-        router.post("/updateProfile",validateProfileUpdate,updateProfile)
+        router.post("/profile",validateProfileUpdate,updateCustomerProfile);
 
-        router.get("/askGuest",showGuestPage)
+        router.get("/askGuest",showGuestPage);
   
-        router.route("/showForm").get(showForm).post(processGuestUser)
+        router.route("/showForm").get(showForm).post(processGuestUser);
   
+        router.get("/signup",signupPage);
   
+        router.post("/signup",validateCustomerSignupForm,customerSignupPost);
   
-  
-        router.get("/signup",signupPage)
-  
-        router.post("/signup",validateCustomerSignupForm,customerSignupPost)
-  
-        router.get("/logout",logout)
+        router.get("/logout",customerLogout);
   
   
 

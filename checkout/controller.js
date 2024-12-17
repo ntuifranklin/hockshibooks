@@ -13,7 +13,7 @@ const{sendCustomerNewOrderEmailNotofication} = require("../utilities/functions")
 const { generateUniqueCartSessionRedisCacheKey } = require("../cart/utilities");
 const { retrieveJSONObjectFromRedisCache, deleteDataFromRedisCache } = require("../middleware/redis");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
+let customer;
 const askShippingInfo = async(req, res) => {
     /**
      * Renders the checkout page view with the shipping information form.
@@ -64,7 +64,7 @@ const checkout = async(req,res)=>{
     */
     try {
         
-        let shippingInfo=req.body.shippingInfo ;
+        //let shippingInfo=req.body.shippingInfo ;
         //get the cart items from redis session cache
                
         const cartKey = generateUniqueCartSessionRedisCacheKey(req.session.userID);
@@ -138,27 +138,27 @@ const checkout = async(req,res)=>{
             }
                     
         }
-
+        await req.session.save();
         //console.log(`Purcahse Items: \n\t: ${JSON.stringify(lineItems, null, 2)}`);
         
-        let stripePaymentSession = await stripe.checkout.sessions.create({
+        await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: lineItems,
             mode: 'payment',    
             shipping_address_collection: {'allowed_countries': ['US','CA']},
             customer_creation: 'always',
-            success_url: `${process.env.WEBSITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.WEBSITE_URL}/checkout/successPayment?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.WEBSITE_URL}/checkout`,
         })      
         //save the stripe payment intent session in the web session
-        let stpPaymentString = JSON.stringify(stripePaymentSession);
-        let stp = await JSON.parse(stpPaymentString); 
-        req.session.stripePaymentSession = stp;
+        //let stpPaymentString = JSON.stringify(stripePaymentSession);
+        //let stp = await JSON.parse(stpPaymentString); 
+        //req.session.stripePaymentSession = stp;
         //save the shipping info in the web session
-        req.session.shippingInfo = shippingInfo;
-        req.session.lineItems = lineItems;
-        await req.session.save();
-        res.json({ id: stripePaymentSession.id });
+        //req.session.shippingInfo = shippingInfo;
+        //req.session.lineItems = lineItems;
+        
+        //res.json({ id: stripePaymentSession.id });
         //console.log(`Stripe Payment Session Details Returned: \n\t: ${JSON.stringify(stripePaymentSession, null, 2)}`);
     } catch (error) {
         console.error(error);
@@ -198,7 +198,7 @@ const  successPayment = async(req,res)=>{
     try{
         //get the customer email from stripe session
         //const stripePaymentSession = req.session.stripePaymentSession;
-        const shippingInfo = req.session.shippingInfo;
+        //const shippingInfo = req.session.shippingInfo;
         
         const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
         const customerRetrieved = await stripe.customers.retrieve(session.customer);
@@ -298,7 +298,12 @@ const  successPayment = async(req,res)=>{
         await req.session.save();
         //send email to customer
         sendCustomerNewOrderEmailNotofication(order, orderToSendAsEmail, customer);
-        return res.status(200).render("../checkout/pages/successPage")
+        customer = req.session.customer;
+        return res.status(200).render("../checkout/pages/successPage",{
+            pagetitle:"Payment Success",
+            order:order,
+            items:orderToSendAsEmail
+        })
     }
     catch(err){
         console.log(err)

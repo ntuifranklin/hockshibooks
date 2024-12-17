@@ -11,6 +11,7 @@ const CountryModel = require("../models/countryModel");
 const bookModel = require("../models/bookModel") ;
 const inventoryModel = require("../models/inventory");
 const { generateUniqueCartSessionRedisCacheKey } = require("./utilities");
+let customer ;
 const viewCart= async(req,res)=>{
     /**
  * Renders the cart page view.
@@ -23,12 +24,14 @@ const viewCart= async(req,res)=>{
     const states=await provinceStateModel.findAll()
     const country=await CountryModel.findAll()
 
+    customer = req.session.customer;    
 
     return res.render("../cart/pages/viewCart",{
         pagetitle:"Your Shopping Cart",
         cartPage:true,
         states:states,
-        country:country
+        country:country,
+        customer:customer
     })
 }
 const getCartItems=async (req,res)=>{

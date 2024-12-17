@@ -11,7 +11,11 @@ const axios= require("axios");
 const { Email } = require('./email');
 const ejs = require('ejs');
 const { createCanvas, loadImage } = require('canvas');
-
+const {
+  ORDER_STATUS_PROCESSING,
+  ORDER_STATUS_SHIPPED,
+  ORDER_STATUS_DELIVERED
+} = require('./universal_web_constants');
 require("dotenv").config()
 
 function setDatabaseEnvironment() {
@@ -164,16 +168,23 @@ const sendStatusChangedMessage=async(order,status, orderToSendAsEmail=[], custom
 
   try{
       
-    let templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'orderCompletedMessage.ejs');
+    let templatePath;
+    if (status === ORDER_STATUS_PROCESSING || 
+      status === ORDER_STATUS_DELIVERED || 
+      status === ORDER_STATUS_SHIPPED) {
+      templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'orderStatusChangedTemplate.ejs');
+    } else {  
+      throw new Error('Invalid order status');
+    } ;
     //console.log(`\tTemplate path: ${templatePath}`);
     templatePath = path.normalize(templatePath);
     //console.log(`\tTemplate path: ${templatePath}`);
     const html = await ejs.renderFile(templatePath,{
-        emailTitle: 'A new order was made',
+        emailTitle: 'Order Status Changed',
         customerName: `${customer.first_name}`,
         orderId: `${order.order_id}`,
     });
-    await email.sendEmail(customer.email, 'A New Order Was Made', html) ;
+    await email.sendEmail(customer.email, 'Order Status Change', html) ;
     //console.log(`Email sent successfully in ${__filename} : ${JSON.stringify(html)}`);
 
   }

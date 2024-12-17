@@ -20,7 +20,7 @@ const docsRoute = require('../agreementdocs/route');
 const checkoutRoute = require('../checkout/route');
 
 //orders route
-const ordersRoute = require('./OrdersRoute');
+const ordersRoute = require('../orders/route');
 
 const customerRoute = require('../customer/route');
 const {

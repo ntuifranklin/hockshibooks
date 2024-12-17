@@ -10,6 +10,8 @@ const path=require("path");
 const { getBookDescription, createDefaultBookImage } = require("../utilities/functions");
 const {uploadImageToCloudFlare} = require('../utilities/cloudflare_image_upload');
 const { generateSeoFriendlyTitle } = require("./utilities");
+
+let customer = null ;
 const booksHtmlView = async(req,res)=>{
 
     //dir_where_node_started/books_folder/pages_folder
@@ -110,6 +112,7 @@ const oneBookDetailsHtmlView= async (req,res)=>{
         description:`${book.description}`, 
         keywords: `${bookTitle}, ${author}, ${book.description}` 
     };
+    customer = req.session.customer ;
     //console.log(`${JSON.stringify(customBookSeo, null, 2)}`);
     res.render("../books/pages/oneBookDetails",{
         book:book,
@@ -118,7 +121,8 @@ const oneBookDetailsHtmlView= async (req,res)=>{
         release_date:"",
         books_route_name:"books",
         add_books_route_name: "addBookWithExternalAPI",
-        customBookSeo: customBookSeo
+        customBookSeo: customBookSeo,
+        customer:customer
     })
 };
 
@@ -375,12 +379,17 @@ const searchBook=async (req,res)=>{
                 ]
               });
     
+              let customer = req.session.customer ;
+              
     
               return res.status(200).render("../books/pages/search",{
+                pagetitle:"Search Books",
                 "books":books,
                 "pagetitle":"Search Books",
                 base_route_name:"books",
-                api_route_name:"api"
+                api_route_name:"api",
+                custumer:customer,
+                
             })
         }catch(e){
             res.status(200).redirect(`/`)
