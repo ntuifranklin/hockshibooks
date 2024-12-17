@@ -12,7 +12,7 @@
 
     async function renderBooks (data){
             var bookList = await document.getElementById('booksContainer');
-            bookList.innerHTML = '';
+            //bookList.innerHTML = '';
 
             data.forEach(book => {
                     let bookimage=""
@@ -23,9 +23,10 @@
                         bookimage=`/uploads/${book.cover_image_url}`
                     }
                 const bookItem = document.createElement('div');
-                bookItem.classList.add('col-lg-4');
+                
                 bookItem.classList.add('col-sm-6');
                 bookItem.classList.add('col-md-4');
+                bookItem.classList.add('col-lg-2');
                 /*
                     medium open library image dimensions
                     width="180" height="274"
