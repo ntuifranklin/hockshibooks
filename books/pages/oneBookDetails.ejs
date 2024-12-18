@@ -10,51 +10,61 @@
     <div class="site-wrapper-reveal">
 
         <div class="single-product-wrap section-space--pt_90 border-bottom">
-            <div class="book-details loading">
-                <div class="book-image animated-background"></div>
-                <div class="book-info">
-                    <div class="title animated-background"></div>
-                    <div class="author animated-background"></div>
-                    <div class="price animated-background"></div>
-                    <div class="availability animated-background"></div>
-                    <div class="isbn animated-background"></div>
-                    <div class="description animated-background"></div>
-                    <div class="add-to-cart animated-background"></div>
-                </div>
-            </div>
+            
             <div class="container ">
+                
+                <% //if loading open api image, then we can load the large format. %>
+                <% //else if loading local image we load medium format to save data transfer %>
+                <% let anchorBookCoverUrl ; %>
+                <% let imgSrcCoverUrl ; %> 
+                <% let stringCoverUrl = book.cover_image_url ; %>                                                      
+
+                <% if(stringCoverUrl.split(":")[0].startsWith("http")) { %>
+
+                    <%  anchorBookCoverUrl = book.cover_image_url_large;%>
+                    <%  imgSrcCoverUrl = book.cover_image_url_large ;%> 
+
+                <% } else { %>
+                    
+                    <%  anchorBookCoverUrl = `/uploads/${book.cover_image_url_medium}`;%>
+                    <%  imgSrcCoverUrl = `/uploads/${book.cover_image_url_medium}` ;%>                                                     
+  
+                <% } %>
                 <div class="row">
                     <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
-
                         <!-- Product Details Left -->
                         <div class="product-details-left">
-                            <div class="product-details-images-2 slider-lg-image-2">
+                            <div class="product-details-images-2 slider-lg-image-2 slick-initialized slick-slider">
+                                <div class="slick-list draggable">
+                                    <div class="slick-track" style="opacity: 1; width: 4851px; transform: translate3d(-1617px, 0px, 0px);">
+                                        <div class="slick-slide slick-current slick-active" data-slick-index="0" aria-hidden="false" style="width: 539px;">
+                                            <div>
+                                                <div class="easyzoom-style" style="width: 100%; display: inline-block;">
+                                                    <div class="easyzoom easyzoom--overlay is-ready">
+                                                        <a href="<%=  anchorBookCoverUrl %>" class="poppu-img" tabindex="0">
+                                                            <img class="img-fluid" src="<%= imgSrcCoverUrl %>" alt="<%= book.seo_friendly_title %>" >
+                                                        </a>                                                       
+                                                    </div>
+                                                </div>  
+                                            </div>
+                                        </div>
+                                        <div id="" class="slick-slide slick-cloned" data-slick-index="1" aria-hidden="true" style="width: 539px;" tabindex="-1">
+                                            <div>
+                                                <div class="easyzoom-style" style="width: 100%; display: inline-block;">
+                                                    <div class="easyzoom easyzoom--overlay">
+                                                        <a href="<%=  anchorBookCoverUrl %>" class="poppu-img" tabindex="-1">
+                                                            <img class="img-fluid" src="<%= imgSrcCoverUrl %>" alt="<%= book.seo_friendly_title %>" >
+                                                        </a>                                                       
+                                                    </div>
+                                                </div>  
+                                            </div>
 
-                                <div class="easyzoom-style">
-                                    <div class="">
-                                        <% if(book.cover_image_url.split(":")[0]=="https") { %>
-                                            <a href="<%=`${book.cover_image_url_large}`%>" class="poppu-img">
-                                                <img  src="<%=`${book.cover_image_url_medium}`%>" class="img-fluid product-images" alt="<%= book.seo_friendly_title %>" >
-                                            </a>
-
-                                        <% } else { %>
-                                                <a href="/uploads/<%=`${book.cover_image_url_large}`%>" class="poppu-img">
-                                                    <img  src="/uploads/<%=`${book.cover_image_url_medium}`%>" class="img-fluid product-images" alt="<%= book.seo_friendly_title %>">
-                                                </a>
-                                              
-                          
-                                        <% } %>
-                                       
+                                        </div>
                                     </div>
-                                </div>
-                                
-                               
-                                
-                            </div>
-                           
+                                </div> 
+                            </div>                           
                         </div>
                         <!--// Product Details Left -->
-
                     </div>
                     <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
                         <div class="product-details-content ">
@@ -141,6 +151,18 @@
                                                     <h5 class="mb-10">Detail</h5>
                                                     <p> <%= book.description %></p>
                                                 </div>
+                                            </div>
+                                            <div class="col-lg-5 order-md-2 order-1">
+                                                <div class="images">
+                                                <% if(book.cover_image_url.split(":")[0]=="https") { %>                                                    
+                                                    <img class="img-fluid" src="<%=`${book.cover_image_url_medium}`%>"  alt="<%= book.seo_friendly_title %>" >                                                    
+
+                                                <% } else { %>                                                        
+                                                    <img class="img-fluid" src="/uploads/<%=`${book.cover_image_url_medium}`%>"  alt="<%= book.seo_friendly_title %>">                                                                                               
+                                
+                                                <% } %>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>

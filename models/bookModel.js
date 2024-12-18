@@ -36,6 +36,16 @@ Books.init({
         type: DataTypes.STRING(1536),
         allowNull: false
     },
+    book_condition: {
+        type: DataTypes.STRING(32),
+        allowNull: false,
+        defaultValue: 'Good'
+    },
+    format: {
+        type: DataTypes.STRING(32),
+        allowNull: false,
+        defaultValue: 'Paperback'
+    },
     number_of_pages: {
         type: DataTypes.INTEGER,
         allowNull: false,
