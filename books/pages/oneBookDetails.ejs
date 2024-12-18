@@ -45,6 +45,7 @@
                     <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
                         <!-- Product Details Left -->
                         <div class="product-details-left">
+                            <!-- 
                             <div class="product-details-images-2 slider-lg-image-2 slick-initialized slick-slider">
                                 <div class="slick-list draggable">
                                     <div class="slick-track" style="opacity: 1; width: 4851px; transform: translate3d(-1617px, 0px, 0px);">
@@ -69,11 +70,19 @@
                                                     </div>
                                                 </div>  
                                             </div>
-
                                         </div>
                                     </div>
                                 </div> 
-                            </div>                           
+                            </div>   
+                            -->
+                            
+                            <div class="easyzoom-style">
+                                <div class="">
+                                    <a href="<%=  anchorBookCoverUrl %>" class="poppu-img" tabindex="0">
+                                        <img class="img-fluid" src="<%= imgSrcCoverUrl %>" alt="<%= book.seo_friendly_title %>" >
+                                    </a>                                 
+                                </div>
+                            </div>                        
                         </div>
                         <!--// Product Details Left -->
                     </div>
@@ -127,14 +136,8 @@
                                         <p  class="btn--lg btn--black font-weight--reguler text-white">Out of Stock</p>
 
                                     <%}%>
-                                </div>
-                                
-
-                            </div>
-
-                           
-                           
-
+                                </div>  
+                            </div> 
                         </div>
                     </div>
                 </div>
@@ -164,14 +167,10 @@
                                                 </div>
                                             </div>
                                             <div class="col-lg-5 order-md-2 order-1">
-                                                <div class="images">
-                                                <% if(book.cover_image_url.split(":")[0]=="https") { %>                                                    
-                                                    <img class="img-fluid" src="<%=`${book.cover_image_url_medium}`%>"  alt="<%= book.seo_friendly_title %>" >                                                    
-
-                                                <% } else { %>                                                        
-                                                    <img class="img-fluid" src="/uploads/<%=`${book.cover_image_url_medium}`%>"  alt="<%= book.seo_friendly_title %>">                                                                                               
-                                
-                                                <% } %>
+                                                <div class="images">                                               
+                                                    <a href="<%=  anchorBookCoverUrl %>" class="poppu-img">
+                                                        <img class="img-fluid" src="<%= imgSrcCoverUrl %>" alt="<%= book.seo_friendly_title %>" >
+                                                    </a> 
                                                 </div>
 
                                             </div>
