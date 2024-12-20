@@ -37,7 +37,7 @@ checkUploadDir();
 //set stripe keys to use
 setStripeKeysToUse();
 
-
+const cors = require('cors');
 const site_secret = process.env.SITE_SECRET;
 let dynamicCookie =  {
     sameSite: 'none',
@@ -98,10 +98,16 @@ async function startNewHockshiServer(){
 		
 		app.set('trust proxy', 0) // trust first proxy
 		dynamicCookie.secure = false; // we do not need to serve secure cookies
-		dynamicCookie.sameSite = 'strict';
+		dynamicCookie.sameSite = 'none';
 		dynamicCookie.httpOnly = false;
 	} ;
-
+	const corsOptions = {
+		// List of trusted domains: imagedelivery.net(cloudlflare image api), cloudflare.com, stripe.com
+		origin: ['https://hockshi.com','https://stripe.com','https://*.stripe.com', 'https://imagedelivery.net', 'https://cloudflare.com'], 
+		methods: ['GET', 'POST', 'PUT', 'DELETE'], // List of accepted http methods
+		allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-HTTP-Method-Override', 'Accept'], // List of accepted http headers
+	};
+	app.use(cors(corsOptions));
 	app.locals.companyName = process.env.COMPANY_NAME;
 	app.locals.companyCity = process.env.COMPANY_CITY;
 	app.locals.companyState = process.env.COMPANY_STATE;

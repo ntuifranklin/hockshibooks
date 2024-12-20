@@ -9,7 +9,7 @@ const shippingInfoValidation = require('./middleware');
 module.exports = () => {
     
     router.get('/',askShippingInfo)
-    router.post('/',shippingInfoValidation,checkout)
+    router.post('/',checkout)
     router.get('/stripe_public_key', showStripePublicKey);
     router.get("/successPayment",successPayment)
     return router;

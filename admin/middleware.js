@@ -31,7 +31,7 @@ const validateOTP = [
  */
 const verifyLogin= async(req,res,next)=>{   
 
-    if (req.session.USER){ 
+    if (await adminIsLoggedInTrueOrFalse(req,res,next)){ 
         return next();
     } else {
         return res.status(403).redirect(`/admin`);
@@ -39,6 +39,13 @@ const verifyLogin= async(req,res,next)=>{
     //next();
 } ;
 
+const adminIsLoggedInTrueOrFalse = async (req,res,next)=>{
+    if (req.session.USER) { // or any other authentication check
+        return true;
+    } else {
+        return false;
+    };
+}
 const redirectToAdminDashboardIfLoggedIn= (req,res,next)=>{
     if (isAdminUserIsLoggedInAndSavedInCache()){
         return res.status(200).redirect(`/admin/dashboard`);
@@ -50,5 +57,6 @@ const redirectToAdminDashboardIfLoggedIn= (req,res,next)=>{
 module.exports={
     verifyLogin,
     validateOTP,
-    redirectToAdminDashboardIfLoggedIn
+    redirectToAdminDashboardIfLoggedIn,
+    adminIsLoggedInTrueOrFalse
 }

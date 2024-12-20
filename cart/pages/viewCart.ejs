@@ -1,7 +1,9 @@
     <%- include('../../views/partials/pagehead') %>
     <%- include('../../views/layout/customerNavBar') %>
     <%- include('../../views/partials/breadcrumbs') %>
-        
+    <script src="https://js.stripe.com/v3/"></script>
+    <%- include('../../views/partials/commonjslibs'); %>
+    <%- include('../../views/partials/cartpagecssonly'); %>
 
 <div id="main-wrapper">
     <div class="site-wrapper-reveal border-bottom">
@@ -9,24 +11,20 @@
         <!-- cart start -->
         <div class="cart-main-area  section-space--ptb_90">
             <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-md-12 col-sm-12">
-                        <div class="animation  hidden">
-                            <div class="containered">
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                            </div>
-                            <p>Processing, Please Wait ...</p>
-                        </div>
+                
+                <div class="animation  hidden d-none">
+                    <div class="containered">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
                     </div>
-
+                    <p>Processing, Please Wait ...</p>
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
                         <% //form below goes no where %>
-                        <form>
+                        <form action="#">
                             <div class="table-content table-responsive cart-table-content header-color-gray">
                                 <table>
                                     <thead>
@@ -35,6 +33,7 @@
                                             <th class="product-name">Product</th>
                                             <th class="product-price"> Price</th>
                                             <th>Quantity</th>
+                                            <th>Total</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -44,24 +43,17 @@
                                 </table>
                             </div>
                         </form>
-                        <div class="shopping-update-area row">
-
-                            <div class="continue-shopping-butotn col-6 col-md-8 col-sm-12 mt-30">
-                                <a href="/books" class="btn btn--lg btn--black"><i class="icon-arrow-left"></i> Continue Shopping </a>
-                            </div>
-                            <!--
-                            <div class="update-cart-button col-6 text-end mt-30">
-                                <a href="#" class="btn btn--lg btn--border_1">Update cart</a>
-                            </div>
-                            -->
-
-                        </div>
                         <div class="cart-buttom-area">
                             <div class="row">
-                                <div class="col-lg-6">
-                                    
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="discount-code section-space--mt_60">
+                                        <h6 class="mb-30">Coupon Discount</h6>
+                                        <p>Enter your coupon code if you have one.</p>
+                                        <input type="text" name="name" placeholder="Coupon code">
+                                        <button class="coupon-btn btn btn--lg btn--border_1" type="submit">Apply coupon</button>
+                                    </div>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-6 col-md-6 col-sm-12">
                                     <div class="cart_totals section-space--mt_60 ms-md-auto">
                                         <div class="grand-total-wrap">
                                             <div class="grand-total-content">
@@ -76,14 +68,64 @@
                                             </div>
                                         </div>
                                         <div class="grand-btn mt-30">
-                                            <a href="/checkout"  class="btn--black btn--full text-center btn--lg" id="reveal">                                                
-                                                    Proceed to checkout  
-                                            </a>
+                                            <form action="/checkout" id="checkout" method="POST">
+                                                <div class="spinner-border text-dark" role="status">
+                                                    <span class="sr-only">Processing...</span>                                                  
+                                                </div>  
+                                                <div class="btn--full text-center">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <button type="submit" class="btn--black btn--full text-center btn--lg" id="checkout">                                                
+                                                        Proceed to checkout  
+                                                    </button>
+                                                </div>                                                                                        
+                                       
+                                            </form>
+                                            <script>
+                                                /*
+                                                $(document).ready(function(){
+                                                    $(".spinner-border").hide();
+                                                    $('#checkout').submit(async function(e){
+                                                        e.preventDefault();
+                                                        let csrfToken = $('meta[name="csrf-token"]').attr('content');
+                                                        //console.log(`csrf token: ${csrfToken}`);
+                                                        //alert(`csrf token: ${csrfToken}`);
+                                                        $(".spinner-border").show();
+                                                        let url = "/checkout";
+                                                        let data = {
+                                                            _csrf:  csrfToken
+                                                        };
+                                                        $.ajaxSetup({
+                                                            headers: {
+                                                                'X-CSRF-TOKEN': csrfToken
+                                                            }
+                                                        });
+                                                        $.post(url, data, function(response){
+                                                            if(response.redirectUrl){
+                                                                window.location.href = response.redirectUrl;
+                                                            }
+                                                        });
+                                                    });
+                                                });                                                
+                                                */
+                                            </script>
                                             
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        
+                        <div class="shopping-update-area row">
+
+                            <div class="continue-shopping-butotn col-lg-4 col-md-6 col-sm-12 mt-30">
+                                <a href="/books" class="btn btn--lg btn--black"><i class="icon-arrow-left"></i> Continue Shopping </a>
+                            </div>
+                            <!--
+                            <div class="update-cart-button col-6 text-end mt-30">
+                                <a href="#" class="btn btn--lg btn--border_1">Update cart</a>
+                            </div>
+                            -->
+
                         </div>
 
                     </div>
@@ -167,12 +209,13 @@
                             </label>
                         </div>
                     </div>
-                </td>                    
-                <td class="product-remove">
-                    
+                </td>
+                <td class="price-total">
+                    <span class="amount">$${item.price}</span>
+                </td>                   
+                <td class="product-remove">                    
                     <i class="icon-cross2" id="delete-item" data-product-id="${item.book_id}" onclick="sendToCart(category='books',productIDToUpdate='${item.book_id}', source='', alertIndex='', action='r')">
-                    </i>
-                    
+                    </i>                    
                 </td>`;
             cartItemsContainer.appendChild(itemElement);
         });
@@ -266,122 +309,21 @@
 
     });
         
-    
-    const checkoutBtn=document.getElementById("checkout")
-    checkoutBtn.addEventListener("submit",async (e) => {
-
-        e.preventDefault()
-        if(cartLength===0){
-            alert("you shopping cart is empty, please add some books in your cart")
-        }
-        else{
-                
-            const shippingInfo = {
-                address: document.getElementById('address').value,
-                city: document.getElementById('city').value,
-                state: document.getElementById('state').value,
-                country: document.getElementById('country').value,
-                postalCode: document.getElementById('postalCode').value
-            };
-            console.log(shippingInfo)
-
-            document.querySelector(".animation").classList.remove("hidden")
-            document.getElementById("body").classList.add("body_style")
-            
-            const stripe = Stripe('pk_test_51PBfXMI23B1KGZBvr0u1jx8rYbAi3Tl8wz2DGvGy2lWSK1Vh2YZAaFYwn41tHjwE3WbTB6Dg9ElN73VQvqnLNxaA00XmhuFpMT');
-
-            try {
-                /**
-             * This function sends a POST request to the '/checkout' endpoint with the user's cart items and shipping information.
-             * It then handles the response from the server accordingly.
-             * If the response status is 401, it redirects the user to the login page.
-             * If there are errors in the response, it displays the error messages on the page.
-             * Otherwise, it redirects the user to the Stripe Checkout page.
-             *
-             * @return {Promise<void>} This function does not return anything.
-             */
-                //const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-
-                const response = await fetch('/checkout', {
-                    method: 'POST',
-                    headers: {
-                        "X-CSRF-Token":"<%=csrfToken%>",
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        //items: cartItems,
-                        shippingInfo:shippingInfo
-                    })
-                }); 
-
-            
-
-                const data = await response.json();
-                if (response.status === 401) {
-                    document.querySelector(".animation").classList.add("hidden")
-                    document.getElementById("body").classList.remove("body_style")
-                    window.location.href = data.redirectUrl;
-                } 
-                else if(data.errors){
-                    document.querySelector(".animation").classList.add("hidden")
-                    document.getElementById("body").classList.remove("body_style")
-                    data.errors.forEach(error => {
-                        document.getElementById(`${error.path.split(".")[1]}Error`).innerText = error.msg;
-                    });
-
-                } else {
-                    document.querySelector(".animation").classList.remove("hidden")
-                    document.getElementById("body").classList.add("body_style")
-
-                    // Redirect to the Stripe Checkout page
-                    const { error } = await stripe.redirectToCheckout({
-                        sessionId: data.id,
-                    });
-
-                    if (error) {
-                        console.error(error);
-                    }
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
-
-    })
-    
-    /*
-    const reveal= document.getElementById("reveal")
-
-    reveal.addEventListener("click",()=>{
         
-        if(cartLength===0){
-            alert("you shopping cart is empty, please add some books in your cart")
-        } else {
-            const rev=document.querySelector(".checkout-wrap")
-            rev.classList.remove("hidden")
-            window.scrollTo(0,1311)
-        }
-    })
-    */
-
-
-    
 
     selectBoxs.forEach(box=>{
-        // Iterate over each select box in the array
-// Add an event listener for the "change" event on each select box
-// Retrieve the cart items from localStorage and parse them as JSON, defaulting to an empty array if not found
-// Get the product ID from the data attribute of the changed select box
-// Get the available quantity of the product from the data attribute
-// Find the product in the cart items array using the product ID
-// If the product exists in the cart
-// Check if the selected quantity exceeds the available stock
-// Prevent the default change action and alert the user
-// Update the quantity of the product in the cart
-// Update the cart items in localStorage with the modified cart items array
-// Update the order summary on the UI
+    // Iterate over each select box in the array
+    // Add an event listener for the "change" event on each select box
+    // Retrieve the cart items from localStorage and parse them as JSON, defaulting to an empty array if not found
+    // Get the product ID from the data attribute of the changed select box
+    // Get the available quantity of the product from the data attribute
+    // Find the product in the cart items array using the product ID
+    // If the product exists in the cart
+    // Check if the selected quantity exceeds the available stock
+    // Prevent the default change action and alert the user
+    // Update the quantity of the product in the cart
+    // Update the cart items in localStorage with the modified cart items array
+    // Update the order summary on the UI
 
             box.addEventListener("change",async(e)=>{
                 //let cartItems =await JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -404,34 +346,117 @@
         })
     })
 
-    window.addEventListener("load",()=>{
-        // Add an event listener for the "load" event on the window object
-        // This code will execute when the page has fully loaded
-
-        // Select the element with the class "loading-container" for the loading animation
-        // Select the element with the class "container-container" for the products display
-
-        // Add the "move" class to the loading animation element to start or change its animation
-        // Remove the "hidden" class from the products element to make it visible
-
-        const animation= document.querySelector(".loading-container")
-        const products=document.querySelector(".container-container")
-
-        animation.classList.add("move")
-        //products.classList.remove("hidden")
-    })
-
+    window.addEventListener("load", async () => {
+        //hide spinner by default
+        $(".spinner-border").hide();
+        const getCartItems = async() => {
+            
+            return await fetch('/cart/items')
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error fetching cart items:', error);
+            });
+    
+    
+        } ;
+    
+        let cartLength=0
+        let cartItems=[] ;
+        cartItems = await getCartItems();
+        cartLength=cartItems.length || 0 ;
+        //console.log(`Cart gotten from server: ${JSON.stringify(cartItems)}`);
+        
+        const checkoutBtn=document.getElementById("checkout")
+        checkoutBtn.addEventListener("submit",async (e) => {
+            $(".spinner-border").show();
+            e.preventDefault()
+            if(cartLength===0){
+                alert("you shopping cart is empty, please add some items in your cart");
+                $(".spinner-border").hide();
+            }
+            else{
+                document.getElementById("body").classList.add("body_style")
+                const stripe_public_key_data = await fetch('/checkout/stripe_public_key',
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                }).then(response => response.json()) ;
+                //console.log(`Stripe public key obtained: ${JSON.stringify(stripe_public_key_data)}`);
+                const stripe = Stripe(stripe_public_key_data.stripe_public_key);
+    
+                try {
+                    /**
+                 * This function sends a POST request to the '/checkout' endpoint with the user's cart items and shipping information.
+                 * It then handles the response from the server accordingly.
+                 * If the response status is 401, it redirects the user to the login page.
+                 * If there are errors in the response, it displays the error messages on the page.
+                 * Otherwise, it redirects the user to the Stripe Checkout page.
+                 *
+                 * @return {Promise<void>} This function does not return anything.
+                 */
+                    //const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    
+                    const response = await fetch('/checkout', {
+                        method: 'POST',
+                        headers: {
+                            "X-CSRF-Token":"<%= csrfToken %>",
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            //items: cartItems,
+                            _csrf: '<%= csrfToken %>'
+                        })
+                    }); 
+    
+                    const data = await response.json();
+                    
+                    if (response.status === 401) {
+                        console.log(`status is 401 data returned from stripe: ${JSON.stringify(data, null, 2)}`);
+                        document.querySelector(".spinner-border").classList.add("hidden")
+                        document.getElementById("body").classList.remove("body_style")
+                        window.location.href = data.redirectUrl;
+                    } 
+                    else if(data.errors){
+                        console.log(`data.errors is true returned from stripe: ${JSON.stringify(data, null, 2)}`);
+                        document.querySelector(".spinner-border").classList.add("hidden")
+                        document.getElementById("body").classList.remove("body_style")
+                        data.errors.forEach(error => {
+                            document.getElementById(`${error.path.split(".")[1]}Error`).innerText = error.msg;
+                        });
+    
+                    } else {
+                        document.querySelector(".animation").classList.remove("hidden")
+                        document.getElementById("body").classList.add("body_style")
+                        $(".spinner-border").hide();
+                        
+                        // Redirect to the Stripe Checkout page
+                        const { error } = await stripe.redirectToCheckout({
+                            sessionId: data.id,
+                        });
+    
+                        if (error) {
+                            console.error(error);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+    
+    
+        })
+        
+    });
+        
 </script>
 
 <% //code below contains function that add, substracts or deletes in cart asynchronously %>
 <%- include('./partials/post_product_to_update_cart_js') %>
-<%- include('../../views/partials/commonjslibs'); %>
-<!-- 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
--->
+
 
 </body>
 </html>

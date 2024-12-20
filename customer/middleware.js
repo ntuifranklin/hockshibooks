@@ -184,19 +184,26 @@ const verifyCustomerIsLoggedIn=async (req,res,next)=>{
  * @param {function} next - The next middleware function in the stack.
  * @return {void}
  */
-    if (res.locals.customer || req.session.customer) { // or any other authentication check
+    if (await customerIsLoggedInTrueOrFalse(req, res, next)) { // or any other authentication check
         return next();
     } else {
         return res.redirect('/customer/login');
     }
-
 }
 
+const customerIsLoggedInTrueOrFalse = async (req,res,next)=>{
+    if (res.locals.customer || req.session.customer) { // or any other authentication check
+        return true;
+    } else {
+        return false;
+    };
+}
 
 module.exports = {
     validateCustomerSignupForm,
     validateCustomerOTP,
     validateProfileUpdate,
     verifyGuestEmail,
-    verifyCustomerIsLoggedIn
+    verifyCustomerIsLoggedIn,
+    customerIsLoggedInTrueOrFalse
 }

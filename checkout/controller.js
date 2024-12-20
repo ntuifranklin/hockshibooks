@@ -138,10 +138,10 @@ const checkout = async(req,res)=>{
             }
                     
         }
-        await req.session.save();
+        
         //console.log(`Purcahse Items: \n\t: ${JSON.stringify(lineItems, null, 2)}`);
         
-        await stripe.checkout.sessions.create({
+        let stripePaymentSession = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: lineItems,
             mode: 'payment',    
@@ -157,8 +157,11 @@ const checkout = async(req,res)=>{
         //save the shipping info in the web session
         //req.session.shippingInfo = shippingInfo;
         //req.session.lineItems = lineItems;
+        req.session.stripePaymentSession = stripePaymentSession ;
+        await req.session.save();
+        res.json({ id: stripePaymentSession.id });
         
-        //res.json({ id: stripePaymentSession.id });
+        //res.redirect(303, session.url);
         //console.log(`Stripe Payment Session Details Returned: \n\t: ${JSON.stringify(stripePaymentSession, null, 2)}`);
     } catch (error) {
         console.error(error);
@@ -200,8 +203,8 @@ const  successPayment = async(req,res)=>{
         //const stripePaymentSession = req.session.stripePaymentSession;
         //const shippingInfo = req.session.shippingInfo;
         
-        const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
-        const customerRetrieved = await stripe.customers.retrieve(session.customer);
+        const stripePaymentSession = await stripe.checkout.sessions.retrieve(req.query.session_id);
+        const customerRetrieved = await stripe.customers.retrieve(stripePaymentSession.customer);
 
         //console.log(`Customer ${JSON.stringify(customerRetrieved, null, 2)}`);
 
@@ -235,7 +238,7 @@ const  successPayment = async(req,res)=>{
         const order = await orderModel.create({
             customer_id:  customer.customer_id, // Has to be changed to session.customer
             order_date: new Date(),
-            total_amount: session.amount_total / 100,
+            total_amount: stripePaymentSession.amount_total / 100,
             payment_status: 'Pending',
             shipping_address: customerRetrieved.shipping.address.line1 + ' ' +  customerRetrieved.shipping.address.line2 ,
             shipping_city: customerRetrieved.shipping.address.city,
@@ -283,9 +286,9 @@ const  successPayment = async(req,res)=>{
         const payments= await paymentModel.create({
             order_id: order.order_id,
             payment_date: new Date(),
-            payment_method: session.payment_method_types[0],
+            payment_method: stripePaymentSession.payment_method_types[0],
             amount: order.total_amount,
-            transaction_id: session.id
+            transaction_id: stripePaymentSession.id
         },
         {transaction:t});
         await t.commit();
