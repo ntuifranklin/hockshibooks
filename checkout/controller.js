@@ -142,7 +142,7 @@ const checkout = async(req,res)=>{
         //console.log(`Purcahse Items: \n\t: ${JSON.stringify(lineItems, null, 2)}`);
         
         let stripePaymentSession = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
+            payment_method_types: ['card', 'klarna', 'alipay','us_bank_account'],
             line_items: lineItems,
             mode: 'payment',    
             shipping_address_collection: {'allowed_countries': ['US','CA']},
@@ -207,6 +207,8 @@ const  successPayment = async(req,res)=>{
         const customerRetrieved = await stripe.customers.retrieve(stripePaymentSession.customer);
 
         //console.log(`Customer ${JSON.stringify(customerRetrieved, null, 2)}`);
+        
+        console.log(`Customer ${JSON.stringify(stripePaymentSession, null, 2)}`);
 
         //stripe session data should have been saved in the session
         //start transaction with sequelize
@@ -233,18 +235,19 @@ const  successPayment = async(req,res)=>{
             {transaction:t});
 
         }
-        //customer could already exist and they are shipping to a different address
-        //so therefore use the address provided by stripe
+        //customer could already exist and they are shipping to a different customer address
+        //so therefore use the address provided by stripe for this transaction
+        let thisStripeShippingDetails = stripePaymentSession.shipping_details;
         const order = await orderModel.create({
             customer_id:  customer.customer_id, // Has to be changed to session.customer
             order_date: new Date(),
             total_amount: stripePaymentSession.amount_total / 100,
             payment_status: 'Pending',
-            shipping_address: customerRetrieved.shipping.address.line1 + ' ' +  customerRetrieved.shipping.address.line2 ,
-            shipping_city: customerRetrieved.shipping.address.city,
-            shipping_state_province: customerRetrieved.shipping.address.state,
-            shipping_country: customerRetrieved.address.country,
-            shipping_postal_code: customerRetrieved.shipping.address.postal_code,
+            shipping_address: thisStripeShippingDetails.name + ' ' +  thisStripeShippingDetails.address.line1 + ' ' + thisStripeShippingDetails.address.line2,
+            shipping_city: thisStripeShippingDetails.address.city,
+            shipping_state_province: thisStripeShippingDetails.address.state,
+            shipping_country: thisStripeShippingDetails.address.country,
+            shipping_postal_code: thisStripeShippingDetails.address.postal_code,
             delivery_status: 'Processing'
         },
         {transaction:t});

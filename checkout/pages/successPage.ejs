@@ -3,12 +3,27 @@
 <%- include('../../views/partials/breadcrumbs') %>
     
   <div id="main-wrapper">
-        <div>
-          <p>Your payment was a success , you will be redirected to the home page in 20s </p>
+        
+          
+          <script>
+            let count = 20 ;
+            setInterval(() => {
+              count--
+              document.getElementById('countdown').innerHTML = count
+            }, 1000);
+          </script>
+          <div class="alert alert-success" role="alert">
+            <p>
+              Your payment was a success , you will be redirected to the home page in 
+              
+              <div id="countdown">
+                20
+              </div>s
+             
+            </p>
+          </div>
 
-
-
-        </div>
+        
         <%- include('../../views/partials/footerarea') %>
   </div>
 
