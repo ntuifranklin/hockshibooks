@@ -158,16 +158,8 @@ describe('search book functionality ',async () => {
     }
    
   }) ;
-  
 
-
-
-
-
-
-
-
-  it("It should not add a list of isbns to the database if the price is a string or any value that is not a float",async ()=>{
+  it("It should not add a list of isbns to the database if the price or quantity is a string or any value that is not a float or integer respectively",async ()=>{
     
     
     let res = await agent.get('/admin');
@@ -256,29 +248,6 @@ describe('search book functionality ',async () => {
     }
    
   }) ;
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   it("It should not add a list of isbns to the database if the book format or book condition is not an accepted valid value",async ()=>{
     
@@ -371,6 +340,213 @@ describe('search book functionality ',async () => {
     }
    
   }) ;
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  it("It should not add a list of isbns to the database if any of the required fields is missing",async ()=>{
+    
+    
+    let res = await agent.get('/admin');
+    let csrfToken = extractCsrfToken(res);
+
+
+    // Validate response (Example: checking status)
+    expect(res).to.have.status(200);
+
+    // Step 2: Send POST request to /admin with the CSRF token and valid credentials
+    let postResponse =  await agent
+    .set('csrf-token', csrfToken)
+    .post('/admin')
+    .send({ ...validUser, _csrf: csrfToken });
+
+    // Validate response (Example: checking status)
+    expect(postResponse).to.have.status(200);
+
+    // Step 3: Generate and send OTP
+    let emailResult = await  generateAndSendOTP(validUser.userId, validUser.email, otpModel);
+    //console.log(`OTP code is ${emailResult}`);
+    let otpCode = emailResult;
+
+    if (!otpCode) {
+      throw new Error('OTP code not found in email');
+    }
+    expect(otpCode).to.exist; 
+
+    //csrfToken = extractCsrfToken(postResponse);
+    // Step 4: Send POST request to verify OTP
+    const otpResponse = await agent
+      .set('csrf-token', csrfToken)
+      .post('/admin/verifyOtp')
+      .send({ userId: validUser.userId, OTP: otpCode, _csrf: csrfToken })
+
+    //expect(otpResponse).to.have.cookie('connect.sid');
+    //console.log('otp response: ',otpResponse);
+    
+    csrfToken = extractCsrfToken(otpResponse);
+    //add books with random words for book condition and format
+    for(let isbni of isbns){
+      //generate one random word with faker, for book condition
+      //if the random word is a valid book condition, then the server should accept, else reject
+      let book_condition = faker.lorem.word();
+      let format = faker.lorem.word();  
+      //add with qunatity missing      
+      agent
+      .post("/books/addBookWithExternalAPI")
+      .set('csrf-token', csrfToken)
+      .send({
+        isbn:isbni,
+        _csrf: csrfToken, 
+        //quantity:3,
+        book_condition:book_condition,
+        format:format,
+        price:6.99
+      } ).then((err,isbnResponse)=>{
+        if(err){
+          console.log(err)
+        }
+              //console.log(Object.keys(isbnResponse))
+        if(validBookConditions.includes(book_condition) && validBookFormats.includes(format)){
+          expect(isbnResponse).to.have.status(200);
+        } else {
+          expect(isbnResponse).to.not.have.status(200);
+          
+        } ;
+        expect(isbnResponse).to.be.json; //because we are using ajax in the form
+      });
+
+      //add with price missing
+      agent
+      .post("/books/addBookWithExternalAPI")
+      .set('csrf-token', csrfToken)
+      .send({
+        isbn:isbni,
+        _csrf: csrfToken, 
+        quantity:3,
+        book_condition:book_condition,
+        format:format,
+        //price:6.99
+      } ).then((err,isbnResponse)=>{
+        if(err){
+          console.log(err)
+        }
+              //console.log(Object.keys(isbnResponse))
+        if(validBookConditions.includes(book_condition) && validBookFormats.includes(format)){
+          expect(isbnResponse).to.have.status(200);
+        } else {
+          expect(isbnResponse).to.not.have.status(200);
+          
+        } ;
+        expect(isbnResponse).to.be.json; //because we are using ajax in the form
+      });
+      //add with format missing
+      agent
+      .post("/books/addBookWithExternalAPI")
+      .set('csrf-token', csrfToken)
+      .send({
+        isbn:isbni,
+        _csrf: csrfToken, 
+        quantity:3,
+        book_condition:book_condition,
+        //format:format,
+        price:6.99
+      } ).then((err,isbnResponse)=>{
+        if(err){
+          console.log(err)
+        }
+              //console.log(Object.keys(isbnResponse))
+        if(validBookConditions.includes(book_condition) && validBookFormats.includes(format)){
+          expect(isbnResponse).to.have.status(200);
+        } else {
+          expect(isbnResponse).to.not.have.status(200);
+          
+        } ;
+        expect(isbnResponse).to.be.json; //because we are using ajax in the form
+      });
+      //add with book condition missing
+      agent
+      .post("/books/addBookWithExternalAPI")
+      .set('csrf-token', csrfToken)
+      .send({
+        isbn:isbni,
+        _csrf: csrfToken, 
+        quantity:3,
+        //book_condition:book_condition,
+        format:format,
+        price:6.99
+      } ).then((err,isbnResponse)=>{
+        if(err){
+          console.log(err)
+        }
+              //console.log(Object.keys(isbnResponse))
+        if(validBookConditions.includes(book_condition) && validBookFormats.includes(format)){
+          expect(isbnResponse).to.have.status(200);
+        } else {
+          expect(isbnResponse).to.not.have.status(200);
+          
+        } ;
+        expect(isbnResponse).to.be.json; //because we are using ajax in the form
+      });
+      //add with isbn missing
+      agent
+      .post("/books/addBookWithExternalAPI")
+      .set('csrf-token', csrfToken)
+      .send({
+        //isbn:isbni,
+        _csrf: csrfToken, 
+        quantity:3,
+        book_condition:book_condition,
+        format:format,
+        price:6.99
+      } ).then((err,isbnResponse)=>{
+        if(err){
+          console.log(err)
+        }
+              //console.log(Object.keys(isbnResponse))
+        if(validBookConditions.includes(book_condition) && validBookFormats.includes(format)){
+          expect(isbnResponse).to.have.status(200);
+        } else {
+          expect(isbnResponse).to.not.have.status(200);
+          
+        } ;
+        expect(isbnResponse).to.be.json; //because we are using ajax in the form
+      });
+
+    } ;
+    
+    //now search
+    for(let isbni of isbns){
+        
+      agent
+      .post("/books/search")
+      .set('csrf-token', csrfToken)
+      .send({query:isbni,_csrf: csrfToken} ).then((err,isbnSearchResponse)=>{
+        if(err){
+          console.log(err)
+        }
+              //console.log(Object.keys(isbnResponse))
+        expect(isbnSearchResponse).to.have.status(200);
+        expect(isbnSearchResponse).to.be.html; //because we are calling from the command line
+        
+      });
+
+      
+    }
+   
+  }) ;
+
+
+
+
 })
 
 process.on('SIGINT', () => {
