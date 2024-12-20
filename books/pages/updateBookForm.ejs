@@ -7,105 +7,151 @@
     <div class="site-wrapper-reveal border-bottom">
 
         <div class="my-account-page-warpper section-space--ptb_120">
-            <div class="container">
+            <div class="container">              
                 
                 <div class="row">
-                    <div class="col-lg-8 col-md-9 col-sm-12 col-xs-12 m-auto">
-                        <div id="updateBookFormResponseMessages">
+                    <div class="col-12">
                         
-                        </div>
+                        <h2>Update Book : <%= book.title %></h2>
+                        
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-5 mx-auto w-100 d-flex justify-content-center align-items-center ">
+                    <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 m-auto">
                         <% if(book.cover_image_url.split(":")[0]=="https") { %>
-                            <img  src="<%=`${book.cover_image_url_medium}`%>" class="img-fluid mx-auto w-30 h-20">
+                            <img  src="<%=`${book.cover_image_url_large}`%>" class="img-fluid mx-auto w-30 h-20">
                         <% } else { %>
-                            <img  src="/uploads/<%=`${book.cover_image_url_medium}`%>" class="img-fluid mx-auto w-30 h-20">
+                            <img  src="/uploads/<%=`${book.cover_image_url_large}`%>" class="img-fluid mx-auto w-30 h-20">
             
                         <% } %>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-6 col-md-7 m-auto">
+                    <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12 m-auto">
                         <div class="myaccount-box-wrapper">
                          
                             <div class="tab-content content-modal-box">
                               
                                 <div class="tab-pane fade show active"  >
 
-                                    <form action="#" class="account-form-box" id="updateBookForm">
-                                        <h1>Update : <%= book.title %></h1>
-                                        <div class="form-row">
+                                    <form action="#" class="account-form-box" id="updateBookForm">                                        
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-auto">
+                                                <div id="updateBookFormResponseMessages">
+                                                
+                                                </div>
+                                            </div>                                        
                                             <input type="hidden"  id="bookId" value="<%= book.book_id %>"  name="bookId">
                                         </div>
-                                        <div class="form-row">
-                                            <div class="form-group single-input">
+                                        <div class="row">
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                 <label  class="w-100">Title:
 
                                                     <input type="text"  id="title" placeholder="Book Title" value="<%= book.title %>" name="title">
 
                                                 </label>
                                             </div>
-                                            <div class="form-group single-input">
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                 <label for="" class="w-100">Author Name:
 
                                                     <input type="text"  id="author" placeholder="Book Author" value="<%= book.author %>" name="author">
                                                 </label>
                                             </div>
-                                        </div>
-                                        <div class="single-input">
-                                            <label for="" class="w-100">Language:
-
-                                                <input type="text"  id="language" placeholder="language" name="language" value="<%= book.language %>">
-                                            </label>
-
-                                        </div>
-                                        <div class="single-input">
-                                            <label for="" class="w-100">Unit Price:
-                                                <input type="number"  step=".01" id="price" placeholder="Price" name="price" value="<%= book.price %>">
-                                            </label>
-
-                                        </div>
-                                        <div class="single-input">
-                                            <label for="" class="w-100">Quantity Available:
-                                                <input type="number"  id="quantity" placeholder="Quantity Available" name="quantity" value="<%= book.Inventory.quantity_available %>">
-                                            </label>
-                                        </div>
-                                        
-                                        <div class="single-input">
-                                            <label for="" class="w-100">
-                                                Location:
-                                                <input type="text"  id="location" placeholder="Location" name="location" value="<%= book.Inventory.location %>">
-                                            </label>
-
-                                        </div>
-                                        <div class="single-input">
-                                            <label for="" class="w-100">Publication Date:
-
-                                                <input type="date" class="form-control" id="date" name="date" value="<%= book.publication_date %>">
-
-                                            </label>
-                                        </div>
-                                        <div class="single-input">
-
-                                            <label for="decription" class="w-100">Description:
-
-                                                <textarea class="w-100" id="description" name="description" resize=true rows="12"  width="1000px">
-                                                    <%= book.description %>
-                                                </textarea>
-                                            </label>
-
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label for="" class="w-100">Language:
+    
+                                                    <input type="text"  id="language" placeholder="language" name="language" value="<%= book.language %>">
+                                                </label>
+    
+                                            </div>
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label for="" class="w-100">Unit Price:
+                                                    <input type="number"  step=".01" id="price" placeholder="Price" name="price" value="<%= book.price %>">
+                                                </label>
+    
+                                            </div>
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label for="" class="w-100">Quantity Available:
+                                                    <input type="number"  id="quantity" placeholder="Quantity Available" name="quantity" value="<%= book.Inventory.quantity_available %>">
+                                                </label>
+                                            </div>                                            
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label for="" class="w-100">
+                                                    Location:
+                                                    <input type="text"  id="location" placeholder="Location" name="location" value="<%= book.Inventory.location %>">
+                                                </label>
+    
+                                            </div>
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label for="" class="w-100">Publication Date:
+    
+                                                    <input type="date" class="form-control" id="date" name="date" value="<%= book.publication_date %>">
+    
+                                                </label>
+                                            </div>
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label for="" class="w-100">Number of Pages:    
+                                                    <input type="number" class="form-control" id="number_of_pages" name="number_of_pages" value="<%= book.number_of_pages %>">
+                                                </label>
+                                            </div>
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label for="book_condition" class="w-100">Condition: 
+                                                    <select name="book_condition" id="book_condition" class="form-control">
+                                                        <% let selected = "";%>
+                                                        <% for(let book_condition of accepted_book_conditions) {%>
+                                                            <%
+                                                                
+                                                                if(book_condition == book.book_condition){
+                                                                    selected = "selected";
+                                                                } else {
+                                                                    selected = "";
+                                                                }
+                                                            
+                                                            %>
+                                                            <option value="<%= book_condition %>" "<%= selected %>">
+                                                                <%= book_condition %>
+                                                            </option>
+                                                        <% }%>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                            <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                <label for="format" class="w-100">Format: 
+                                                    <select name="format" id="format" class="form-control">
+                                                        <% let format_selected = ""; %>
+                                                        <% for(let book_format of accepted_book_formats) {%>
+                                                            <%
+                                                            
+                                                            if(book_format == book.format){
+                                                                format_selected = "selected";
+                                                            } else {
+                                                                format_selected = "";
+                                                            }
+                                                        
+                                                            %>
+                                                            <option value="<%= book_format %>" "<%= format_selected %>"><%= book_format %></option>
+                                                        <% }%>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                            <div class="single-input col-lg-12 col-md-12 col-sm-12 col-xs-12">    
+                                                <label for="decription" class="w-100">Description:
+    
+                                                    <textarea class="w-100" id="description" name="description" resize=true rows="12"  width="1000px">
+                                                        <%= book.description %>
+                                                    </textarea>
+                                                </label>    
+                                            </div>
                                         </div>
                                     
 
-                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                        <div class="button-box mt-25">
-                                            <button type="submit" class="btn btn--full btn--black">Save updates</button>
-                                        </div>
-                                        <div class="spinner-border text-dark" role="status" id="updateBookSpinner">
-                                                <span class="sr-only">Loading...</span>                                                  
-                                        </div>
+                                       <div class="row align-items-center">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <div class="button-box mt-25">
+                                                <button type="submit" class="btn btn--full btn--black">Save updates</button>
+                                            </div>
+                                            <div class="spinner-border text-dark" role="status" id="updateBookSpinner">
+                                                    <span class="sr-only">Loading...</span>                                                  
+                                            </div>
+                                       </div>
                                     </form>
 
                                     
@@ -132,6 +178,8 @@
                                                     quantity: $('#quantity').val(),
                                                     location: $('#location').val(),
                                                     date: $('#date').val(),
+                                                    book_condition: $('#book_condition').val(),
+                                                    format: $('#format').val(),
                                                     description: $('#description').val()
                                                     
                                                 };

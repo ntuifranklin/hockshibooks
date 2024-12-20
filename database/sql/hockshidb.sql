@@ -14,8 +14,6 @@ DROP TABLE IF EXISTS otpTable;
 
 
 DROP TABLE IF EXISTS powerUsers;
-
-
 DROP TABLE IF EXISTS Order_Items;
 DROP TABLE IF EXISTS Payment;
 DROP TABLE IF EXISTS Orders;
@@ -30,7 +28,6 @@ DROP TABLE IF EXISTS Genres;
 DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS categories;
 
-
 -- Customers Table
 
 
@@ -39,6 +36,12 @@ CREATE TABLE Genres (
     name VARCHAR(128) NOT NULL
 );
 
+INSERT INTO Genres (genre_id, name) VALUES 
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Science, Math, and Engineering'),
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Computer and Technology'),
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Finance'),
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Personal Development'),
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Business');
 
 -- Books Table
 CREATE TABLE Books (
@@ -596,8 +599,6 @@ LEFT JOIN Books as b
 ON i.book_id = b.book_id;
 
 
-INSERT INTO Genres (genre_id, name) VALUES ('1', 'Science'),('2', 'Fiction'),('3', 'Non-Fiction');
--- INSERT INTO powerUsers (email,password,role) VALUES ('juniorhoza56@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
 INSERT INTO powerUsers ( email,password,role) VALUES ( 'franklinwebdev704@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
 
 -- password = plaintextpassword

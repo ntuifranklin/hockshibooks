@@ -131,6 +131,12 @@ const validateAddBookWithISBNForm = [
     .isInt()
     .withMessage('Quantity must be an integer'),
      // Middleware to check for validation errors
+  body('book_condition')
+    .isIn(bookModel.getAttributes().book_condition.values)
+    .withMessage(`Invalid book condition. Accepted values are: ${bookModel.getAttributes().book_condition.values}`),
+  body('format')
+    .isIn(bookModel.getAttributes().format.values)
+    .withMessage(`Invalid format. Accepted values are: ${bookModel.getAttributes().format.values}`),
     (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -138,7 +144,6 @@ const validateAddBookWithISBNForm = [
       }
       next();
     },
-
 ];
 
 // Middleware to validate form inputs
@@ -186,14 +191,24 @@ const validateBookUpdateForm = [
     .trim()
     .isLength({ max: 5000 })
     .withMessage('Description is too long'),
+  body('number_of_pages')
+    .isInt()
+    .withMessage('Number of pages must be an integer'),
+  body('book_condition')
+    .isIn(bookModel.getAttributes().book_condition.values)
+    .withMessage(`Invalid book condition. Accepted values are: ${bookModel.getAttributes().book_condition.values}`),
+  body('format')
+    .isIn(bookModel.getAttributes().format.values)
+    .withMessage(`Invalid format. Accepted values are: ${bookModel.getAttributes().format.values}`),
+   
 
-    (req, res, next) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      next();
-    },
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
 ];
 
 module.exports= {

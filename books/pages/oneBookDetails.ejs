@@ -92,24 +92,27 @@
                             <h5 class="font-weight--reguler mb-10"><%=book.title%></h5>
 
                             <h3 class="price">$<%=book.price%></h3>
-
-
-
                             <div class="quickview-peragraph mt-10">
                                 <p>By <%=book.author%></p>
                             </div>
-
-
-
                             <div class="product_meta mt-30">
                                 <div class="sku_wrapper item_meta">
                                     <span class="label"> ISBN: </span>
                                     <span class="sku"> <%=book.ISBN %> </span>
                                 </div>
-                               
-                               
                             </div>
-
+                            <div class="product_meta mt-30">
+                                <div class="sku_wrapper item_meta">
+                                    <span class="label"> Condition: </span>
+                                    <span class="sku"> <%=book.book_condition %> </span>
+                                </div>  
+                            </div>
+                            <div class="product_meta mt-30">
+                                <div class="sku_wrapper item_meta">
+                                    <span class="label"> Format: </span>
+                                    <span class="sku"> <%=book.format %> </span>
+                                </div>
+                            </div>
 
                             <div class="quickview-action-wrap mt-30">
 
@@ -149,7 +152,10 @@
                             <ul role="tablist" class=" nav">
                                 <li class="active" role="presentation">
                                     <a data-bs-toggle="tab" role="tab" href="#description" class="active">Description</a>
-                                </li>      
+                                </li>    
+                                <li role="presentation">
+                                    <a data-bs-toggle="tab" role="tab" href="#details">Additional Details</a>
+                                </li>  
                             </ul>
                         </div>
                     </div>
@@ -162,7 +168,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-lg-7 order-md-1 order-2">
                                                 <div class="details mt-30">
-                                                    <h5 class="mb-10">Detail</h5>
+                                                    <h5 class="mb-10">Description</h5>
                                                     <p> <%= book.description %></p>
                                                 </div>
                                             </div>
@@ -172,14 +178,45 @@
                                                         <img class="img-fluid" src="<%= imgSrcCoverUrl %>" alt="<%= book.seo_friendly_title %>" >
                                                     </a> 
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
                                     
                                 </div>
                             </div>
-                           
+                            <!-- End Single Content -->
+                            <div class="product_tab_content tab-pane" id="details" role="tabpanel">
+                                <div class="pro_feature">
+                                    <table class="shop_attributes">
+                                        <tbody>
+                                            <tr>
+                                                <th>Format: </th>
+                                                <td><%= book.format %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Author: </th>
+                                                <td><%= book.author %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Condition: </th>
+                                                <td><%= book.book_condition%></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Number of pages: </th>
+                                                <td><%= book.number_of_pages %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Publication Date:</th>
+                                                <td><%= book.publication_date %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Language: </th>
+                                                <td><%= book.language %></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                    

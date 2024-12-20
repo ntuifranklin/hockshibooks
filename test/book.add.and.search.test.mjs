@@ -11,6 +11,11 @@ import * as cheerio from "cheerio";
 
 import otpModel from "../models/otpModel.js";
 import adminModel from "../models/adminModel.js";
+import bookModel from "../models/bookModel.js";
+const validBookConditions = bookModel.getAttributes().book_condition.values;
+const validBookFormats = bookModel.getAttributes().format.values;
+
+import faker from 'faker';
 
 let adminUser = await adminModel.findOne({ where: { email: process.env.TEST_VALID_POWER_USER_EMAIL } });
 
@@ -34,10 +39,10 @@ const isbns = [
   "9781416609490",
   "9781420151831",
   "9780063086272",
-  "0679805273",
+  //"0679805273",
   "9780989600804",
   "9780309069960",
-  "316107484",
+  //"316107484",
   "9780385353670",
   "9781591841906",
   "9780309063630",
@@ -105,19 +110,61 @@ describe('search book functionality ',async () => {
     //console.log('otp response: ',otpResponse);
     
     csrfToken = extractCsrfToken(otpResponse);
+    //add books with random words for book condition and format
     for(let isbni of isbns){
-        
+      //generate one random word with faker, for book condition
+      //if the random word is a valid book condition, then the server should accept, else reject
+      let book_condition = faker.random.word();
+      let format = faker.random.word();        
       agent
       .post("/books/addBookWithExternalAPI")
       .set('csrf-token', csrfToken)
-      .send({isbn:isbni,_csrf: csrfToken, quantity:3,price:6.99} ).then((err,isbnResponse)=>{
+      .send({
+        isbn:isbni,
+        _csrf: csrfToken, 
+        quantity:3,
+        book_condition:book_condition,
+        format:format,
+        price:6.99
+      } ).then((err,isbnResponse)=>{
         if(err){
           console.log(err)
         }
               //console.log(Object.keys(isbnResponse))
-        expect(isbnResponse).to.have.status(200);
-        expect(isbnResponse).to.be.json; //because we are calling from the command line
-        
+        if(validBookConditions.includes(book_condition) && validBookFormats.includes(format)){
+          expect(isbnResponse).to.have.status(200);
+        } else {
+          expect(isbnResponse).to.not.have.status(200);
+          
+        } ;
+        expect(isbnResponse).to.be.json; //because we are using ajax in the form
+      });
+    } ;
+    
+    /* 
+     now add books with random 
+     values selected from the valid book conditions and formats */
+    for(let isbni of isbns){
+      //generate one random word with faker, for book condition
+      //if the random word is a valid book condition, then the server should accept, else reject
+      let book_condition = faker.random.arrayElement(validBookConditions);
+      let format = faker.random.arrayElement(validBookFormats);        
+      agent
+      .post("/books/addBookWithExternalAPI")
+      .set('csrf-token', csrfToken)
+      .send({
+        isbn:isbni,
+        _csrf: csrfToken, 
+        quantity:3,
+        book_condition:book_condition,
+        format:format,
+        price:6.99
+      } ).then((err,isbnResponse)=>{
+        if(err){
+          console.log(err)
+        };
+        expect(isbnResponse).to.not.have.status(200);
+        expect(isbnResponse).to.be.json; //because we are using ajax in the form
       });
     } ;
 

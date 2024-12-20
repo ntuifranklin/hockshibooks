@@ -31,14 +31,18 @@ DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS categories;
 
 
--- Customers Table
-
-
+-- Genres Table
 CREATE TABLE Genres (
     genre_id VARCHAR(64) PRIMARY KEY,
     name VARCHAR(128) NOT NULL
 );
 
+INSERT INTO Genres (genre_id, name) VALUES 
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Science, Math, and Engineering'),
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Computer and Technology'),
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Finance'),
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Personal Development'),
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Business');
 
 -- Books Table
 CREATE TABLE Books (
@@ -47,13 +51,18 @@ CREATE TABLE Books (
     seo_friendly_title VARCHAR(1024) NOT NULL,
     author VARCHAR(256) NOT NULL,
     ISBN VARCHAR(32) NOT NULL UNIQUE,
-    description TEXT NOT NULL,
+    description VARCHAR(1536) NOT NULL,/*1024 + 512 = 1536*/
+    book_condition ENUM('New','Like New','Good','Fair','Poor') NOT NULL DEFAULT 'Like New',
+    format ENUM('Hardcover','Paperback','Ebook') NOT NULL DEFAULT 'Paperback',
+    number_of_pages INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     publication_date DATE,
     language VARCHAR(64),
-    cover_image_url VARCHAR(1024)
+    cover_image_url VARCHAR(1024),
+    cover_image_url_small VARCHAR(1024),
+    cover_image_url_medium VARCHAR(1024),
+    cover_image_url_large VARCHAR(1024)
 );
-
 
 
 -- Promotions Table
@@ -312,7 +321,7 @@ LEFT JOIN Books as b
 ON i.book_id = b.book_id;
 
 
-INSERT INTO Genres (genre_id, name) VALUES ('1', 'Science'),('2', 'Fiction'),('3', 'Non-Fiction');
+
 -- INSERT INTO powerUsers (email,password,role) VALUES ('juniorhoza56@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
 INSERT INTO powerUsers ( email,password,role) VALUES ( 'franklinwebdev704@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
 

@@ -37,12 +37,12 @@ Books.init({
         allowNull: false
     },
     book_condition: {
-        type: DataTypes.STRING(32),
+        type: DataTypes.ENUM('New','Like New','Good','Fair','Poor'),
         allowNull: false,
         defaultValue: 'Good'
     },
     format: {
-        type: DataTypes.STRING(32),
+        type: DataTypes.ENUM('Hardcover','Paperback','Ebook'),
         allowNull: false,
         defaultValue: 'Paperback'
     },

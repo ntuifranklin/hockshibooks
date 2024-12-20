@@ -22,6 +22,17 @@ const booksHtmlView = async(req,res)=>{
     })
 }
 
+let validBookFormats = null ; 
+let validBookConditions = null ; 
+function getValidBookFormatsAndConditions() {
+
+    if (validBookFormats != null && validBookConditions != null){
+        return {validBookFormats, validBookConditions};
+    };
+    validBookConditions =  bookModel.getAttributes().book_condition.values;
+    validBookFormats =  bookModel.getAttributes().format.values;
+    return {validBookConditions, validBookFormats};
+};
 const allBooksDumpApi=async(req,res)=>{
     try {
         const page = parseInt(req.query.page) || 1;
@@ -336,11 +347,17 @@ const getAddBookWithISBNForm=(req,res)=>{
 
     //This code will not run if an admin user is not logged in.
     let user = req.session.USER;
+    
+    let c = getValidBookFormatsAndConditions();
+    validBookFormats = c.validBookFormats;
+    validBookConditions = c.validBookConditions;
     res.status(200).render("../books/pages/addBookWithISBNForm",{
         pagetitle:"Add Book with ISBN",
         user:user,
         msg:false,
         books_route_name:"books",
+        accepted_book_conditions:validBookConditions,
+        accepted_book_formats:validBookFormats,
         add_books_route_name: "addBookWithExternalAPI",
 
     })
@@ -483,12 +500,18 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
     if (!book){
         return res.status(404).redirect('/admin/dashboard?msg=book+not+found&type=danger');
     }
+    
+    
+    let c = getValidBookFormatsAndConditions();
+    validBookFormats = c.validBookFormats;
+    validBookConditions = c.validBookConditions;
     return res.render("../books/pages/updateBookForm",{
         user:req.session.USER,
         pagetitle:"Update Book",
         book:book,
-        root_path:process.env.ROOT_PATH,
         image:book.cover_image_url,
+        accepted_book_conditions:validBookConditions,
+        accepted_book_formats:validBookFormats,
         msg:error,
         success:false,
     });
@@ -509,10 +532,13 @@ const saveUpdateBookFormData=async(req,res)=>{
             let author = (new String(req.body.author)).trim();
             let language = (new String(req.body.language)).trim();
             let price = (parseFloat(req.body.price)).toFixed(2);
-            let description = (new String(req.body.description)).trim();
             let date = req.body.date;
             let quantity = parseInt(req.body.quantity);
             let location = (new String(req.body.location)).trim();
+            let book_condition = (new String(req.body.book_condition)).trim();
+            let format = (new String(req.body.format)).trim();
+            let number_of_pages = parseInt(req.body.number_of_pages);
+            let description = (new String(req.body.description)).trim();
 
        
             //The function updates the fields of the book and inventory records with the data from the request body.
@@ -531,6 +557,15 @@ const saveUpdateBookFormData=async(req,res)=>{
             };
             if(description != book.description){
                 book.set({description:description})
+            };
+            if(book_condition != book.book_condition){
+                book.set({book_condition:book_condition})
+            };
+            if(format != book.format){
+                book.set({format:format})
+            };
+            if(number_of_pages != book.number_of_pages){
+                book.set({number_of_pages:number_of_pages})
             };
             if(date != book.publication_date){
                 book.set({publication_date:date})

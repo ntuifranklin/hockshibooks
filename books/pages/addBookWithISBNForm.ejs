@@ -11,44 +11,66 @@
                 <div class="container">
                     
                     <div class="row">
-                        <div class="col-lg-8 col-md-9 col-sm-12 col-xs-12 m-auto">
-                            <div id="addBookFormResponseMessages">
-                            
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 m-auto">
                             <div class="myaccount-box-wrapper">
                                 <div class="tab-content content-modal-box">
                                     <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
                                         <% let post_add_book_with_isbn_route = books_route_name + '/' + add_books_route_name %>
                                         <form action="#" id="addBookWithISBNForm" class="account-form-box">
-                                            <h1>Add Book With ISBN</h1>
-                                            <div class="single-input">
-                                                <label for="isbn" class="w-100">ISBN: 
-                                                <input type="text"  class="form-control" id="isbn" placeholder="The ISBN can be 10 or 13 caracters long" name="isbn">
-
-                                                </label>
+                                            <h1>Add Book to Inventory</h1>
+                                            
+                                            <div class="row align-items-center">
+                                                <div class="col-lg-8 col-md-9 col-sm-12 col-xs-12 m-auto">
+                                                    <div id="addBookFormResponseMessages">
+                                                    
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="single-input">                                                
-                                                    <label for="price" class="w-100">price:
+                                            <div class="row align-items-center">
+                                                <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <label for="isbn" class="w-100">ISBN: 
+                                                    <input type="text"  class="form-control" id="isbn" placeholder="The ISBN can be 10 or 13 caracters long" name="isbn">
+    
+                                                    </label>
+                                                </div>
+                                                <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <label for="book_condition" class="w-100">Condition: 
+                                                        <select name="book_condition" id="book_condition" class="form-control">
+                                                            <% for(let book_condition of accepted_book_conditions) {%>
+                                                                <option value="<%= book_condition %>"><%= book_condition %></option>
+                                                            <% }%>
+                                                        </select>
+                                                    </label>
+                                                </div>
+                                                <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <label for="format" class="w-100">Format: 
+                                                        <select name="format" id="format" class="form-control">
+                                                            <% for(let format of accepted_book_formats) {%>
+                                                                <option value="<%= format %>"><%= format %></option>
+                                                            <% }%>
+                                                        </select>
+                                                    </label>
+                                                </div>       
+                                                <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">                                                
+                                                    <label for="price" class="w-100">Price:
                                                         <input type="number" step=".01"  id="price" name="price" value="25.00" class="form-control" placeholder="$25 is the default price">
                                                     </label>                                                
+                                                </div>
+                                                
+                                                <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <label for="quantity" class="w-100">Quantity: 
+                                                        <input type="number" name="quantity" value=1 class="form-control" id="quantity" placeholder="The number of books">
+                                                    </label>
+                                                </div>                                         
                                             </div>
-                                            
-                                            <div class="single-input">
-                                                <label for="quantity" class="w-100">Quantity: 
-                                                    <input type="number" name="quantity" value=1 class="form-control" id="quantity" placeholder="The number of books">
-                                                </label>
-                                            </div>
-                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                            
-                                            <div class="button-box mt-100">
-                                                <button type="submit" class="btn btn--full btn--black">Save updates</button>
-                                            </div>
-                                            <div class="spinner-border text-dark single-input" role="status">
-                                                    <span class="sr-only">Loading...</span>                                                  
+                                            <div class="row align-items-center">    
+                                                <div class="button-box mt-25">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <button type="submit" class="btn btn--full btn--black">Save updates</button>
+                                                </div>
+                                                <div class="spinner-border text-dark" role="status">
+                                                        <span class="sr-only">Loading...</span>                                                  
+                                                </div>                                             
                                             </div>
                                         </form>
                                         <script>
@@ -64,6 +86,8 @@
                                                     var type = "POST";
                                                     const data = {
                                                         isbn: $('#isbn').val(),
+                                                        book_condition: $('#book_condition').val(),
+                                                        format: $('#format').val(),
                                                         price: $('#price').val(),
                                                         quantity: $('#quantity').val(),
                                                         _csrf: '<%= csrfToken %>'
