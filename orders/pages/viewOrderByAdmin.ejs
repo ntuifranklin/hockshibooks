@@ -1,0 +1,179 @@
+<%- include('../../views/partials/pagehead') %>
+
+<%- include('../../admin/pages/navBar') %>
+
+<%- include('../../views/partials/breadcrumbs') %>
+
+
+   <!-- START NEW LOOK -->
+   <div id="main-wrapper">
+
+    <div class="site-wrapper-reveal border-bottom">
+
+        <div class="my-account-page-warpper section-space--ptb_120">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <!-- My Account Page Start -->
+                        <div class="myaccount-page-wrapper">
+                            <div class="row">
+
+                                <!-- My Account Tab Menu Start -->
+                                <div class="col-lg-3 col-md-4">
+                                    <div class="myaccount-tab-menu nav" role="tablist">
+                                        <a href="#customer_details" class="active" data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1"><i class="fa fa-dashboard"></i>
+                                            Customer Details</a>
+                                        <a href="#order_status" data-bs-toggle="tab" aria-selected="true" role="tab" class=""><i class="fa fa-"></i> Order Status</a>
+                                        <a href="#order_details" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab"><i class="fa-solid fa-list"></i> Order Details</a>
+                                        <a href="#payment-method" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab"><i class="fa fa-credit-card"></i> Payment Method</a>
+                                        <a href="#shipping_address" data-bs-toggle="tab" aria-selected="false" tabindex="-1" role="tab"><i class="fa fa-map-marker"></i> Shipping</a>
+                                        
+                                        <a href="/admin/dashboard"><i class="fa fa-dashboard"></i> Admin Home</a>
+                                        <a href="/admin/logout"><i class="fa fa-sign-out"></i> Admin Logout</a>
+                                    </div>
+                                </div>
+                                <!-- My Account Tab Menu End -->
+
+                                <!-- My Account Tab Content Start -->
+                                <div class="col-lg-9 col-md-8">
+                                    <div class="tab-content" id="myaccountContent">                                        
+
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade active show" id="customer_details" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <h3 class="title">Customer Details </h3>
+                                                <div class="myaccount-table table-responsive text-center">
+                                                    <table class="table table-bordered">
+                                                        
+                                                        <tbody>
+                                                            <tr>
+                                                                <th>Customer Name:</th>
+                                                                <td><%=order.Customer.first_name || "Guest user" %> <%=order.Customer.last_name|| "" %></td>                                                                
+                                                            </tr>
+                                                            <tr>
+                                                                <th>Customer Email: </th>
+                                                                <td><%=order.Customer.email %></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>Customer Phone: </th>
+                                                                <td><%=order.Customer.phone %></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Single Tab Content End -->
+
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade" id="order_status" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <h3 class="title">Order Status</h3>
+                                                <div class="myaccount-table table-responsive text-center">
+                                                    
+                                                    <table class="table table-bordered">                                                       
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><%= order.delivery_status %></td>                                                                
+                                                            </tr>
+                                                            <tr>
+                                                                <td><a href="/order/changeToProcessing/<%= order.order_id %>" class="button Processing">Change to processing</a></td>
+                                                                
+                                                            </tr>
+                                                            <tr>
+                                                                <td><a href="/order/changeToShipped/<%= order.order_id %>" class="button Shipped">Change to shipped</a></td>
+                                                                
+                                                            </tr>
+                                                            <tr>
+                                                                <td><a href="/order/changeToDelivered/<%= order.order_id %>" class="button Delivered">Change to delivered</a></td>                                                                
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Single Tab Content End -->
+
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade" id="order_details" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <h3 class="title">Order Details</h3>
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Book title</th>
+                                                            <th>Author</th>
+                                                            <th>Unit price</th>
+                                                            <th>Quantity Ordered</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% for(let i=0; i < orderI.length;i++){  %>
+                                                            <tr>
+                                                                <td><%=orderI[i].Book.title%></td>
+                                                                <td><%=orderI[i].Book.author%></td>
+                                                                <td>$<%=orderI[i].item_price%></td>
+                                                                <td><%=orderI[i].quantity%></td>
+                                                                <td>$<%=orderI[i].subtotal%></td>                                
+                                                                
+                                                            </tr>
+                                                        <% } %>
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <!-- Single Tab Content End -->
+
+                                        <!-- Single Tab Content Start -->
+                                        <div class="tab-pane fade" id="shipping_address" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <h3 class="title">Shipping Address</h3>
+                                                
+                                                <address>
+                                                    <p><strong><%=order.Customer.first_name || "Guest user" %> <%=order.Customer.last_name|| "" %></strong></p>
+                                                    <p>
+                                                        <%= order.shipping_address %><br>
+                                                        <%= order.shipping_state_province %>,
+                                                        <%= order.shipping_country %>&nbsp;
+                                                        <%= order.shipping_postal_code %>
+                                                    </p>
+                                                    <p>Mobile: <%= order.Customer.phone %></p>
+                                                </address>
+                                                
+                                            </div>
+                                        </div>
+                                        <!-- Single Tab Content End -->
+
+                                       
+
+                                    </div>
+                                </div>
+                                <!-- My Account Tab Content End -->
+
+                            </div>
+                        </div>
+                        <!-- My Account Page End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <%- include('../../views/partials/footerarea') %>
+   </div>
+   <!-- END NEW LOOK -->
+
+    <!--====================  scroll top ====================-->
+    <a href="#" class="scroll-top" id="scroll-top">
+        <i class="arrow-top icon-arrow-up"></i>
+        <i class="arrow-bottom icon-arrow-up"></i>
+    </a>
+    
+<%- include('../../views/partials/commonjslibs'); %>
+
+</body>
+
+</html>

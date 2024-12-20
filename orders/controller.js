@@ -39,10 +39,11 @@ const viewOrder=async(req,res)=>{
                 {model:BooksModel}
             ]
         })
-       
-        return res.status(200).render("../orders/pages/viewOrder",{
+        let user = req.session.user; ;
+        return res.status(200).render("../orders/pages/viewOrderByAdmin",{
             order:order,
-            orderI:orderItems
+            orderI:orderItems,
+            user:user
         })
 
 

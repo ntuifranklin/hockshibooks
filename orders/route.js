@@ -9,7 +9,7 @@ const {customerIsLoggedInOrAdminUserIsLoggedIn,requestHasOrderIDParameter} = req
 
 module.exports = () => {
     
-router.get("/viewOrder/:id",requestHasOrderIDParameter,customerIsLoggedInOrAdminUserIsLoggedIn,viewOrder)
+router.get("/view/:id",requestHasOrderIDParameter,customerIsLoggedInOrAdminUserIsLoggedIn,viewOrder)
 router.get("/changeToProcessing/:id",requestHasOrderIDParameter,verifyAdminUserIsLoggedIn,changeToProcessing)
 router.get("/changeToShipped/:id",requestHasOrderIDParameter,verifyAdminUserIsLoggedIn,changeToShipped)
 router.get("/changeToDelivered/:id",requestHasOrderIDParameter,verifyAdminUserIsLoggedIn,changeToDelivered)

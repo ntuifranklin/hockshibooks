@@ -75,18 +75,21 @@
                                                           <% for(let i=0; i < orders.length; i++) { %>
 
                                                             <tr>
-                                                              <th scope="row"><%= orders[i].order_id %></th>
-                                                              <td><%= orders[i].Customer.first_name ||"geust" %> <%= orders[i].Customer.last_name|| "" %></td>
-                                                              <td><%= orders[i].Customer.email %></td>
-                                                              <td>$<%= orders[i].total_amount %></td>
-                                                              <td><%= orders[i].delivery_status %></td>
-                                                              <td><%= orders[i].order_date %></td>
-                                                              <td>
-                                                                <a href="<%= `/order/viewOrder/${orders[i].order_id}` %>" class="btn btn btn-dark btn-hover-primary btn-sm rounded-0">
-                                                                    <i class="fa-solid fa-folder-open"></i>
-                                                                </a>
-                                                              </td>
-
+                                                                <th scope="row">
+                                                                    <a href="<%= `/order/view/${orders[i].order_id}` %>">
+                                                                        <%= orders[i].order_id %>
+                                                                    </a>
+                                                                </th>
+                                                                <td><%= orders[i].Customer.first_name ||"geust" %> <%= orders[i].Customer.last_name|| "" %></td>
+                                                                <td><%= orders[i].Customer.email %></td>
+                                                                <td>$<%= orders[i].total_amount %></td>
+                                                                <td><%= orders[i].delivery_status %></td>
+                                                                <td><%= orders[i].order_date %></td>
+                                                                <td>
+                                                                    <a href="<%= `/order/view/${orders[i].order_id}` %>" class="btn btn btn-dark btn-hover-primary btn-sm rounded-0">
+                                                                        <i class="fa-solid fa-folder-open"></i>
+                                                                    </a>
+                                                                </td>
                                                             </tr>
                                                           <% } %>
                                                             
