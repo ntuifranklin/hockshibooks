@@ -142,7 +142,7 @@ const checkout = async(req,res)=>{
         //console.log(`Purcahse Items: \n\t: ${JSON.stringify(lineItems, null, 2)}`);
         
         let stripePaymentSession = await stripe.checkout.sessions.create({
-            payment_method_types: ['card', 'klarna', 'alipay','us_bank_account'],
+            payment_method_types: ['card', 'alipay','us_bank_account','paypal'],
             line_items: lineItems,
             mode: 'payment',    
             shipping_address_collection: {'allowed_countries': ['US','CA']},
