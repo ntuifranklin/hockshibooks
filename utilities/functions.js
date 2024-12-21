@@ -230,6 +230,7 @@ const sendCustomerNewOrderEmailNotofication=async(order, orderToSendAsEmail=[], 
       shippingPostalCode: order.shipping_postal_code,
       totalAmount: order.total_amount,
       companyName: process.env.COMPANY_NAME,
+      askGuestToCreateAccountLink: process.env.WEBSITE_URL + "/customer/askGuest",
       termsAndConditionsLink: process.env.WEBSITE_URL + "/docs/terms-and-conditions",
       privacyPolicyLink: process.env.WEBSITE_URL + "/docs/policy",
   };

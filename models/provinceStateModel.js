@@ -20,6 +20,10 @@ const ProvinceState = sequelize.define('ProvinceState', {
         type: DataTypes.STRING(128),
         allowNull: false,
     },
+    province_state_code: {
+        type: DataTypes.STRING(8),
+        allowNull: false,
+    }
 }, {
     timestamps: false,
     tableName: 'Provinces_States'

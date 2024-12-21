@@ -197,9 +197,9 @@ const updateCartInRedisSessionCache = async (req, res) => {
 
             var responseText = "";
             if (newQuantity == 1) {
-                responseText = "Item added to wish list";
+                responseText = "Item added to cart successfully";
             } else {
-                responseText = `Item quantity increased to ${newQuantity}`;
+                responseText = `Item quantity in cart increased to ${newQuantity}`;
             }
 
             let newUpdate = await readDataFromRedisCache(cartKey);

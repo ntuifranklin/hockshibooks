@@ -137,9 +137,9 @@
                                                             <fieldset>
                                                                 <legend>Address change</legend>
                                                                 <div class="single-input-item mb-3">
-                                                                    <label for="current-pwd" class="required mb-1">state/Province </label>
+                                                                    <label for="current-pwd" class="required mb-1">State/Province </label>
                                                                     <select name="state_province" id="state_province" `>
-                                                                        <option value="<%=user.current_state.province_state_id%>" selected> current state/Province: <%=user.current_state.country_code%>-<%=user.current_state.province_state_name%></option>
+                                                                        <option value="<%= user.current_state.province_state_id%>" selected> current state/Province: <%=user.current_state.country_code%>-<%=user.current_state.province_state_name%></option>
                                                                         <!-- <option selected="false" value="<%=user.current_state.province_state_id%>">states</option> -->
                                                                         <% for(let i=0; i < states.length; i++) { %>
                                                                             

@@ -42,7 +42,7 @@ const Customer = sequelize.define('Customer', {
         type: DataTypes.STRING(128),
         allowNull: true,
     },
-    state_province: {
+    state_province_id: {
         type: DataTypes.STRING(128),
         allowNull: true,
     },

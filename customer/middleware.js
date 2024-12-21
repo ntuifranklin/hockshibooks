@@ -192,7 +192,7 @@ const verifyCustomerIsLoggedIn=async (req,res,next)=>{
 }
 
 const customerIsLoggedInTrueOrFalse = async (req,res,next)=>{
-    if (res.locals.customer || req.session.customer) { // or any other authentication check
+    if (res.locals.customer || await req.session.customer) { // or any other authentication check
         return true;
     } else {
         return false;

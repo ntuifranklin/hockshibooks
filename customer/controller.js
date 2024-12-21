@@ -193,9 +193,13 @@ const verifyCustomerOTP=(async(req,res)=>{
                         customerId:customer_id
                 }
             });
+            
+            req.session.customer_id = customer_id;
+            
+            await req.session.save();       
             req.session.customer = customer;
-            //res.locals.customer = customer ;
-            await req.session.save();           
+            res.locals.customer = customer ;
+            await req.session.save();       
             
             return res.status(200).redirect(`/customer/profile`) 
     }
@@ -294,7 +298,7 @@ If the email is not in use, creates a new customer record in the database and re
         
         let {country_code}= await provinceStateModel.findOne({
             where:{
-                province_state_id:info.state_province
+                province_state_id:info.state_province_id
             }
         })
 
@@ -305,40 +309,69 @@ If the email is not in use, creates a new customer record in the database and re
             password:info.password,
             street_address:info.street_address,
             city:info.city,
-            state_province:info.state_province,
+            state_province_id:info.state_province_id,
             country:country_code,
             postal_zipcode:info.postal_zipcode,
             phone:info.phone
 
-        })
+        });
+       req.session.customer_id = customer.customer_id;
+       //await req.session.save();
+       req.session.customer = customer;
+       await req.session.save();
        return res.status(200).redirect(`/customer/login?type=success&Sucessmsg=successfully+signed+up`) 
-    }
-
-        
+    }       
 
     }
 }
 
 const showCustomerProfile=async(req,res)=>{
     await loadStatesAndCountries();
-    let customer = req.session.customer;
-    const customerInformation= await customerModel.findOne(
-    {
-        where:{customer_id:customer.customer_id},
-        include:[{
-            model:orderModel
-        }]
-    })
+    let customer = await req.session.customer;
+    let customer_id = await req.session.customer_id;
+    console.log(`customer: `, customer);
+    console.log(`customer_id: `, customer_id);
+    let customerInformation; 
+    if (!customer && customer_id) {
+        customerInformation = await customerModel.findOne(
+            {
+                where:{customer_id:customer_id},
+                include:[{
+                    model:orderModel
+                }]
+            })
+    } else if (customer && customer.customer_id) {
+        customerInformation = await customerModel.findOne(
+            {
+                where:{customer_id:customer.customer_id},
+                include:[{
+                    model:orderModel
+                }]
+            })
+
+    } else {
+        return res.status(404).redirect(`/customer/login?msg=neither+customer+id+nor+customer+object+found`);
+    }
+    //first select the state, two state code and country code for the customer
     
     //const states=await provinceStateModel.findAll()
     const current_state=await provinceStateModel.findOne({
         where:{
-            province_state_id:customerInformation.state_province
+            province_state_id:customerInformation.state_province_id,
+            country_code:customerInformation.country
         }
     })
     //const country=await CountryModel.findAll()
     // req.session.customer.customer_id
-    const user={...customerInformation.dataValues,current_state:{...current_state.dataValues},}
+    console.log(`customerInformation: `, customerInformation);
+    console.log(` current_state: `,current_state);
+    let user;
+    if (current_state) {
+        user = {...customerInformation.dataValues,current_state:{...current_state.dataValues},}
+    } else {
+        user = customerInformation;
+    }
+
 
     if (req.body.errors) {
         req.body.errors = req.body.errors.map((error) => {
@@ -356,7 +389,8 @@ const showCustomerProfile=async(req,res)=>{
         country:country,
         errors:req.body.errors?req.body.errors:false,
         msg:req.query.msg?req.query.msg:false,
-        type:req.query.type?req.query.type:false
+        type:req.query.type?req.query.type:false,
+        current_state:current_state,
     })
     
    
@@ -628,29 +662,41 @@ const processGuestUser=async (req,res)=>{
             let user = await customerModel.findOne({ where: { email:email } });
       
             if (!user) {
-              // Create a guest user
-              user = await customerModel.create({ email:email, guest: true });
+              // Create a confirmed user
+              user = await customerModel.create({ email:email, guest: false });
               // Generate and store OTP
               let userId=user.customer_id
               user_email=user.email
               guest=user.guest
              
              await generateAndSendOTP(user.customer_id,user.email,customerOtpModel)
-
+             req.session.customer = user;
+             await req.session.save();
              res.render("../customer/pages/customerOtpVerification",{
                 username:"",
                 email:user_email,
-                userId:userId,
+                customer_id:userId,
                 msg:req.body.msg?req.body.msg:false
 
              })
                 
               // Send OTP via email
       
+            } else if (user.guest) {
+                req.session.customer = user;
+                await req.session.save();
+                // Generate and store OTP
+                await generateAndSendOTP(user.customer_id,user.email,customerOtpModel)
+                res.render("../customer/pages/customerOtpVerification",{
+                    username:"",
+                    email:user.email,
+                    customer_id:user.customer_id,
+                    msg:req.body.msg?req.body.msg:false
+                 });
+
+
             } else {
                 req.body.msg="this email is already registered"
-                
-
                 return showForm(req,res)
             }
           } catch (error) {

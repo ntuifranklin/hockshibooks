@@ -142,7 +142,7 @@ const checkout = async(req,res)=>{
         //console.log(`Purcahse Items: \n\t: ${JSON.stringify(lineItems, null, 2)}`);
         
         let stripePaymentSession = await stripe.checkout.sessions.create({
-            payment_method_types: ['card', 'alipay','us_bank_account','paypal'],
+            payment_method_types: ['card'],
             line_items: lineItems,
             mode: 'payment',    
             shipping_address_collection: {'allowed_countries': ['US','CA']},
@@ -208,7 +208,7 @@ const  successPayment = async(req,res)=>{
 
         //console.log(`Customer ${JSON.stringify(customerRetrieved, null, 2)}`);
         
-        console.log(`Customer ${JSON.stringify(stripePaymentSession, null, 2)}`);
+        //console.log(`Customer ${JSON.stringify(stripePaymentSession, null, 2)}`);
 
         //stripe session data should have been saved in the session
         //start transaction with sequelize
@@ -218,15 +218,23 @@ const  successPayment = async(req,res)=>{
         if (existingCustomer) {
             customer = existingCustomer;
         }  else {
-            
+            /* select the country code and province_state_code from provinceStateModel, and set the customers province_state_id */
+            const provinceState = await provinceStateModel.findOne({
+                where: {
+                    //import Op from sequelize
+                    
+                    province_state_code: customerRetrieved.shipping.address.state
+                }
+            });
             customer= await customerModel.create({
                 first_name:customerRetrieved.name,
-                last_name:customerRetrieved.name,
+                last_name:"",
                 email:customerRetrieved.email,
                 password:"",
+                guest:true,
                 street_address:customerRetrieved.shipping.address.line1,
                 city:customerRetrieved.shipping.address.city,
-                state_province:customerRetrieved.shipping.address.state,
+                state_province_id:provinceState.province_state_id,
                 country:customerRetrieved.address.country,
                 postal_zipcode:customerRetrieved.shipping.address.postal_code,
                 phone:customerRetrieved.phone
