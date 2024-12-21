@@ -199,11 +199,27 @@ const customerIsLoggedInTrueOrFalse = async (req,res,next)=>{
     };
 }
 
+const validateCustomerResetPasswordForm = [
+    body('email').
+    isEmail().withMessage('Email must be valid'),
+    (req, res, next) => {
+        if(!validationResult(req).isEmpty()){
+            let errMess = '';
+            validationResult(req).errors.forEach((error)=>{
+                errMess += error.msg + '\n';
+            });
+            return res.status(400).redirect('/customer/resetPassword?msg='+errMess);
+        }
+        next();
+    }
+];
+
 module.exports = {
     validateCustomerSignupForm,
     validateCustomerOTP,
     validateProfileUpdate,
     verifyGuestEmail,
+    validateCustomerResetPasswordForm,
     verifyCustomerIsLoggedIn,
     customerIsLoggedInTrueOrFalse
 }

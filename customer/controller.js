@@ -4,9 +4,11 @@ const provinceStateModel=require("../models/provinceStateModel")
 const customerModel=require("../models/customerModel")
 const customerOtpModel=require("../models/customerOtpModel")
 const orderModel=require("../models/ordersModel")
+const CustomerPasswordResetRequestModel = require('../models/customerPasswordResetRequestModel');
+
 const bcrypt = require('bcrypt');
 const {validationResult} =  require('express-validator');
-const {generateAndSendOTP} =  require('../utilities/functions')
+const {generateAndSendOTP, sendCustomerResetPasswordEmail} =  require('../utilities/functions')
 
 const {LOGGED_IN_CUSTOMER_VARIABLE_NAME} = require('../utilities/universal_web_constants');
 const { generateLoggedInCustomerCacheKey } = require("./utilities");
@@ -51,6 +53,7 @@ const customerLoginPage= async (req,res)=>{
         countries:country,
         states:states,
         Sucessmsg:req.query.Sucessmsg?req.query.Sucessmsg:false,
+        success:req.query.success?req.query.success:false
 
     })
 }
@@ -82,6 +85,7 @@ const customerLoginPagePost = async (req,res)=>{
                             countries:country,
                             states:states,
                             Sucessmsg:req.query.Sucessmsg?req.query.Sucessmsg:false,
+                            success:false
 
                     })
             }
@@ -108,6 +112,7 @@ const customerLoginPagePost = async (req,res)=>{
                                 countries:country,
                                 states:states,
                                 Sucessmsg:req.query.Sucessmsg?req.query.Sucessmsg:false,
+                                success:false
 
                         })
                     }
@@ -421,7 +426,154 @@ const updateCustomerProfile=async(req,res)=>{
     }
 }
 
+const customerResetPasswordForm=async(req,res)=>{
+    /**
+ * Renders the customer password reset form.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {void}
+    */
+    res.render("../customer/pages/customerResetPasswordForm",{
+        pagetitle:"Reset Your Account Password",
+        msg:req.query.msg?req.query.msg:false,
+        errors:req.body.errors?req.body.errors:false,
+        success:req.query.success?req.query.success:false,
+    });
+}
 
+/* 
+process the reset password by checking that the email 
+provided is a customer's valid email.
+Then generating a token and send it to the customer email as a url
+*/
+
+const processCustomerResetPasswordForm=async(req,res)=>{
+    /**
+ * Processes the customer password reset form.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {Promise<void>} - A promise that resolves when the function is complete.
+ */
+
+    const errors=validationResult(req)
+    if(!errors.isEmpty()){
+        const err = errors.array()
+        req.body.errors=err
+
+      return customerResetPasswordForm(req,res)
+    } else {
+        try{
+            const {email}=req.body
+            let customer= await customerModel.findOne({
+                where:{
+                    email:email
+                }
+            })
+            if(!customer){
+                return res.status(404).redirect(`/customer/resetPassword?msg=invalid+email`)
+            }
+            else{
+                let token= await CustomerPasswordResetRequestModel.create({
+                    customer_id:customer.customer_id,
+                    expires_at: new Date(Date.now() + 3600000)
+                })
+                //send the token to the customer email
+                if(token){
+                    await sendCustomerResetPasswordEmail(customer,`${process.env.WEBSITE_URL}/customer/resetPassword/${token.token}`, token.expires_at);
+                    console.log(`email sent : ${process.env.WEBSITE_URL}/customer/resetPassword/${token.token}`)
+                    return res.status(200).redirect(`/customer/resetPassword?success=true&msg=check+your+email+for+the+reset+password+link`);
+                } else {
+                    return res.status(404).redirect(`/customer/resetPassword?success=false&msg=error+occured`);
+                }
+                
+            }
+        }
+        catch(e){
+            console.log(e)
+        }
+    }
+}
+
+const processCustomerResetPasswordToken=async(req,res)=>{
+    /**
+ * Processes the customer password reset token.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @return {Promise<void>} - A promise that resolves when the function is complete.
+ */
+
+    const {token}=req.params
+    let resetRequest= await CustomerPasswordResetRequestModel.findOne({
+        where:{
+            token:token
+        }
+    })
+    if(!resetRequest){
+        return res.status(404).redirect(`/customer/resetPassword?msg=invalid+token`)
+    }
+    else if(resetRequest.expires_at < new Date()){
+        return res.status(404).redirect(`/customer/resetPassword?msg=expired+token`)
+    }
+    else{
+        return res.status(200).render("../customer/pages/customerNewPasswordForm",{
+            pagetitle:"Reset Password",
+            msg:req.query.msg?req.query.msg:false,
+            errors:req.body.errors?req.body.errors:false,
+            customer_id:resetRequest.customer_id,
+            success:req.query.success?req.query.success:false,
+            token:token
+        })
+    }
+}
+
+const processNewPasswordFromCustomerResetPasswordForm=async(req,res)=>{
+    /**
+     * Processes the new password form from the customer password reset form.
+    * @param {Object} req - The request object.
+    * @param {Object} res - The response object.
+    * @return {Promise<void>} - A promise that resolves when the function is complete. 
+    */
+    const errors=validationResult(req)
+    if(!errors.isEmpty()){
+        const err = errors.array()
+        req.body.errors=err
+
+      return processCustomerResetPasswordToken(req,res)
+    } else {
+        try{
+            const {customer_id,token}=req.body
+            let resetRequest= await CustomerPasswordResetRequestModel.findOne({
+                where:{
+                    token:token
+                }
+            })
+            if(!resetRequest){
+                return res.status(404).redirect(`/customer/resetPassword?msg=invalid+token`)
+            }
+            else if(resetRequest.expires_at < new Date()){
+                return res.status(404).redirect(`/customer/resetPassword?msg=expired+token`)
+            }
+            else{
+                let customer= await customerModel.findOne({
+                    where:{
+                        customer_id:customer_id
+                    }
+                })
+                customer.password=req.body.password
+                await customer.save()
+                await resetRequest.destroy()
+                return res.status(200).redirect(`/customer/login?success=true&msg=password+reset+successfully`)
+            }
+        }
+        catch(e){
+            console.log(e)
+        }
+    }
+
+}
 const showGuestPage=(req,res)=>{
     /**
  * Renders the showGuestPage view.
@@ -479,7 +631,7 @@ const processGuestUser=async (req,res)=>{
               // Create a guest user
               user = await customerModel.create({ email:email, guest: true });
               // Generate and store OTP
-              userId=user.customer_id
+              let userId=user.customer_id
               user_email=user.email
               guest=user.guest
              
@@ -525,6 +677,10 @@ module.exports= {
     showCustomerProfile,
     updateCustomerProfile,
     customerLogout,
+    customerResetPasswordForm,
+    processCustomerResetPasswordForm,
+    processCustomerResetPasswordToken,
+    processNewPasswordFromCustomerResetPasswordForm,
     showGuestPage,
     showForm,
     processGuestUser

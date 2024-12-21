@@ -16,7 +16,7 @@
                             <div class="helendo-tabs">
                                 <ul class="nav" role="tablist">
                                     <li class="tab__item nav-item active">
-                                        <a class="nav-link ">Login As Geust</a>
+                                        <a class="nav-link ">Login As Guest</a>
                                     </li>
                                     
 
@@ -26,31 +26,23 @@
                                 <div class="alert alert-danger" role="alert">
                                       <p><%= msg %>!</p>
                                 </div>
-                              <% } %>
-
-                              
+                              <% } %>                          
 
 
                                       
                             <div class="tab-content content-modal-box">
                                 <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
                                     
-                                    <form method="post" action="/showForm" class="account-form-box">
-                                        <h2>please enter your email address </h2>
+                                    <form method="post" action="/customer/showForm" class="account-form-box">
+                                        <h2>Please enter your email address </h2>
                                         <div class="single-input">
                                             <input type="email" class="form-control" id="username" placeholder="please enter your email address" name="email">
 
                                         </div>
                                        
-                                        <!-- <div class="checkbox-wrap mt-10">
-                                            <label class="label-for-checkbox inline mt-15">
-                                                <input class="input-checkbox" name="rememberme" type="checkbox" id="rememberme" value="forever"> <span>Remember me</span>
-                                            </label>
-                                            <a href="#" class=" mt-10">Lost your password?</a>
-                                        </div> -->
+                                       
 
-                                        <input type="hidden" name="_csrf"
-                    value="<%= csrfToken %>">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     
                    
                                         <div class="button-box mt-25">

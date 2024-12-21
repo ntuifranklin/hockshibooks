@@ -9,10 +9,11 @@ DROP TABLE IF EXISTS SequelizeMeta;
 DROP TABLE IF EXISTS Book_Reviews;
 
 DROP TABLE IF EXISTS customerOtpTable;
+DROP TABLE IF EXISTS Customer_password_reset_requests;
 
 DROP TABLE IF EXISTS otpTable;
 
-
+-- Then Dropping Main Table.
 DROP TABLE IF EXISTS powerUsers;
 DROP TABLE IF EXISTS Order_Items;
 DROP TABLE IF EXISTS Payment;
@@ -376,6 +377,7 @@ CREATE TABLE Customers (
     postal_zipcode VARCHAR(32)  NULL,
     phone VARCHAR(32)  NULL
 );
+
 CREATE TABLE customerOtpTable (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     otp VARCHAR(255),
@@ -384,6 +386,19 @@ CREATE TABLE customerOtpTable (
     FOREIGN KEY (customerId) REFERENCES Customers(customer_id) 
     ON DELETE CASCADE 
     ON UPDATE CASCADE
+);
+
+-- Password Reset Request Table
+CREATE TABLE Customer_password_reset_requests (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    customer_id CHAR(36) NOT NULL,
+    token VARCHAR(64) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) 
+	ON DELETE CASCADE 
+	ON UPDATE CASCADE
 );
 
 -- Countries Table

@@ -243,6 +243,51 @@ const sendCustomerNewOrderEmailNotofication=async(order, orderToSendAsEmail=[], 
   };
 };
 
+const sendCustomerResetPasswordEmail=async(customer={first_name:"", email:""}, resetPasswordLink="", expiryTime="")=>{
+  /**
+ * Sends an email to the customer with the updated order status.
+ *
+ * @param {Object} order - The order object containing the customer ID and order ID.
+ * @return {Promise<void>} A Promise that resolves when the email is sent successfully.
+ * @throws {Error} If there is an error sending the email.
+ */
+  if (customer == null || !customer || customer == {}) {
+
+    customer= await customerModel.findOne({
+      where:{
+        customer_id:order.customer_id
+      }
+    })
+  }
+ 
+  const email = new Email();    
+
+  try{
+      
+    let templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'customerPasswordResetEmail.template.ejs');
+    //console.log(`\tTemplate path: ${templatePath}`);
+    templatePath = path.normalize(templatePath);
+    //console.log(`\tTemplate path: ${templatePath}`);
+    
+    let ejsData = {
+      emailTitle: `${customer.first_name || 'Guest User'}, you requested to reset your password`,
+      customerName: `${customer.first_name}`,
+      resetPasswordLink: resetPasswordLink,
+      expiryTime: expiryTime,
+      companyName: process.env.COMPANY_NAME,
+      termsAndConditionsLink: process.env.WEBSITE_URL + "/docs/terms-and-conditions",
+      privacyPolicyLink: process.env.WEBSITE_URL + "/docs/policy",
+  };
+    const html = await ejs.renderFile(templatePath,ejsData);
+    await email.sendEmail(customer.email, ejsData.emailTitle, html) ;
+    //console.log(`Email sent successfully in ${__filename} : ${JSON.stringify(html)}`);
+
+  }
+  catch(e){
+    console.log("email error" , e)
+  };
+};
+
 const Md5Rand=()=>{
   /**
  * Generates an MD5 hash of a random value.
@@ -380,6 +425,7 @@ return imageFilename;
 module.exports={
   createDefaultBookImage,
   sendCustomerNewOrderEmailNotofication,
+  sendCustomerResetPasswordEmail,
   sendStatusChangedMessage,
   convertDateFormat,
   connect,

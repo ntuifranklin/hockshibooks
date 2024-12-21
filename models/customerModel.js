@@ -87,7 +87,7 @@ const Customer = sequelize.define('Customer', {
           }
         },
         
-      }
+    }
   
       
 });

@@ -12,7 +12,11 @@ const {
     customerSignupPost,
     customerLogout,
     showCustomerProfile,
-    updateCustomerProfile
+    updateCustomerProfile,
+    customerResetPasswordForm,
+    processCustomerResetPasswordForm,
+    processCustomerResetPasswordToken,
+    processNewPasswordFromCustomerResetPasswordForm
 
 } = require('./controller');
 
@@ -20,6 +24,7 @@ const {
     validateProfileUpdate,
     validateCustomerSignupForm,
     validateCustomerOTP,
+    validateCustomerResetPasswordForm,
     verifyCustomerIsLoggedIn
 
 } = require('./middleware');
@@ -36,6 +41,12 @@ module.exports = () => {
         router.get("/profile",verifyCustomerIsLoggedIn,showCustomerProfile);
         
         router.post("/profile",verifyCustomerIsLoggedIn,validateProfileUpdate,updateCustomerProfile);
+
+        router.get("/resetPassword",customerResetPasswordForm);
+        router.post("/resetPassword",validateCustomerResetPasswordForm,processCustomerResetPasswordForm);
+        router.get("/resetPassword/:token",processCustomerResetPasswordToken);
+
+        router.post("/updatePassword",processNewPasswordFromCustomerResetPasswordForm);
 
         router.get("/askGuest",showGuestPage);
   

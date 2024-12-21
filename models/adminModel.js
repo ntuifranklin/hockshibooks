@@ -28,16 +28,16 @@ powerUser.init({
         allowNull:false
     }},
     {
-        sequelize,
-        modelName: 'powerUser',  
-        timestamps: false,
+    sequelize,
+    modelName: 'powerUser',  
+    timestamps: false,
 
-        indexes: [
-          {
-            unique: true,
-            fields: ['email']
-          }
-        ],
+    indexes: [
+      {
+        unique: true,
+        fields: ['email'] //what is this ?
+      }
+    ],
     hooks: {
       beforeCreate: async (user) => {
         // Hash the password before creating a new powerUser.
