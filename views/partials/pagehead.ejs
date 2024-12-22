@@ -11,54 +11,118 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title><%= thisPageTitle %></title>
     
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="csrf-token" content="<%= csrfToken %>">
     <!-- Favicon -->
     <link rel="icon" href="/assets/images/logo_dot_com/img_files/hockshi-favicon-color.svg">
     <meta name="description" content="<%= thisPageTitle%>">
    	<% if (typeof customBookSeo != 'undefined') {  %>
+        <meta name="keywords" content="<%= customBookSeo.keywords %>" />
+        <meta property="og:title" content="<%= customBookSeo.seoTitle %>" />
+        <meta property="og:description" content="<%= customBookSeo.description %>" />
+        <meta property="og:image" content="<%= customBookSeo.image_url %>" />
+        <meta property="og:url" content="<%= customBookSeo.author %>" />
+        <meta property="og:type" content="book" />
         
-    <meta property="og:title" content="<%= customBookSeo.seoTitle %>" />
-    <meta property="og:description" content="<%= customBookSeo.description %>" />
-    <meta property="og:image" content="<%= customBookSeo.image_url %>" />
-    <meta property="og:url" content="<%= customBookSeo.author %>" />
-    <meta property="og:type" content="book" />
-    
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="<%= customBookSeo.seoTitle %>" />
-    <meta name="twitter:description" content="<%= customBookSeo.description %>" />
-    <meta name="twitter:image" content="<%= customBookSeo.image_url %>" />
-    <meta name="twitter:url" content="<%= customBookSeo.fullUrl %>" />
-    
-    <link rel="canonical" href="<%= customBookSeo.fullUrl %>" />
-    <meta name="robots" content="index, follow" />
-    <meta name="author" content="<%= customBookSeo.author %>" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="<%= customBookSeo.seoTitle %>" />
+        <meta name="twitter:description" content="<%= customBookSeo.description %>" />
+        <meta name="twitter:image" content="<%= customBookSeo.image_url %>" />
+        <meta name="twitter:url" content="<%= customBookSeo.fullUrl %>" />
+        
+        <link rel="canonical" href="<%= customBookSeo.fullUrl %>" />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="<%= customBookSeo.author %>" />
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Book",
+            "name": "<%= customBookSeo.seoTitle %>",
+            "author": {
+                "@type": "Person",
+                "name": "<%= customBookSeo.author %>"
+            },
+            "description": "<%= customBookSeo.description %>",
+            "image": "<%= customBookSeo.image_url %>",
+            "url": "<%= customBookSeo.fullUrl %>"
+        }
+        </script>
 
     <% } else { %>
-    <% // This is the default seo for the home page %>
-    <meta property="og:title" content="<%= thisPageTitle %>" />
-    
-	<meta name="author" content="<%= companyName %>">
-    <meta name="description" content="Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!">
-	<meta property="og:site_name" content="<%= companyName %>" />
-    <meta property="og:description" content="Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!">
-	<meta property="og:determiner" content="The" />
-	<meta property="og:locale" content="en_US" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="<%= websiteUrl %>/assets/images/logo_dot_com/img_files/new/svg/logo-color.svg" />
-	<meta property="og:url" content="<%= websiteUrl %>">
-	
-    <% // twitter seo %>
-    
-    <meta property="twitter:description" content="Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!">
-    <meta property="twitter:image" content="<%= websiteUrl %>/assets/images/logo_dot_com/img_files/new/svg/logo-color.svg">
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@<%= companyName %>" />
-    <meta name="twitter:title" content="@<%= thisPageTitle %>" />
-    <meta name="twitter:url" content="<%= websiteUrl %>" />
-    <meta name="robots" content="index, follow">
+    <% // This is the default seo for the home page when no custom seo is provided %>
+        <meta name="keywords" content="used books, affordable personal development books, secondhand finance books, curated business books, STEM books for students, pre-loved science and math books, buy and sell technology books, online bookstore for personal growth, cheap self-help books, budget-friendly business books, affordable STEM textbooks, secondhand computer technology books, curated books for entrepreneurs, motivational self-improvement books, high-quality STEM books, affordable educational books, pre-loved tech books, sustainable book shopping, best secondhand books online" />
 
-	<link rel="canonical" href="<%= websiteUrl %>">
+        <meta property="og:title" content="<%= thisPageTitle %>" />
+        
+        <meta name="author" content="<%= companyName %>">
+        <meta name="description" content="Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!">
+        <meta property="og:site_name" content="<%= companyName %>" />
+        <meta property="og:description" content="Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!">
+        <meta property="og:determiner" content="The" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="<%= websiteUrl %>/assets/images/logo_dot_com/img_files/new/svg/logo-color.svg" />
+        <meta property="og:url" content="<%= websiteUrl %>">
+        
+        <% // twitter seo %>
+        
+        <meta property="twitter:description" content="Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!">
+        <meta property="twitter:image" content="<%= websiteUrl %>/assets/images/logo_dot_com/img_files/new/svg/logo-color.svg">
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@<%= companyName %>" />
+        <meta name="twitter:title" content="@<%= thisPageTitle %>" />
+        <meta name="twitter:url" content="<%= websiteUrl %>" />
+        <meta name="robots" content="index, follow">
+
+        <link rel="canonical" href="<%= websiteUrl %>">
+        <% // generate schema.org based on the else part %>        
+        <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "url": "<%= websiteUrl %>",
+              "name": "<%= companyName %>",
+              "description": "Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!",
+              "keywords": [
+                "used books",
+                "affordable personal development books",
+                "secondhand finance books",
+                "curated business books",
+                "STEM books for students",
+                "pre-loved science and math books",
+                "buy and sell technology books",
+                "online bookstore for personal growth",
+                "cheap self-help books",
+                "budget-friendly business books",
+                "affordable STEM textbooks",
+                "secondhand computer technology books",
+                "curated books for entrepreneurs",
+                "motivational self-improvement books",
+                "high-quality STEM books",
+                "affordable educational books",
+                "pre-loved tech books",
+                "sustainable book shopping",
+                "best secondhand books online"
+              ],
+              "publisher": {
+                "@type": "Organization",
+                "name": "<%= companyName %>",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "<%= websiteUrl %>/assets/images/logo_dot_com/img_files/new/svg/logo-color.svg",
+                  "width": 512,
+                  "height": 512
+                }
+              },
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "<%= websiteUrl %>?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            }
+            </script>
+            
+
 
     <%  } %>
     
