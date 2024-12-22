@@ -1,149 +1,143 @@
 <%- include('../../views/partials/pagehead') %>
-
 <%- include('../../views/layout/customerNavBar') %>
 
+<!-- breadcrumb-area start -->
+<div class="breadcrumb-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="row breadcrumb_box  align-items-center">
+                    <div class="col-lg-6 col-md-6 col-sm-6 text-center text-sm-start">
+                        <h2 class="breadcrumb-title">Order Detail</h2>
+                    </div>
+                    <div class="col-lg-6  col-md-6 col-sm-6">
+                        <!-- breadcrumb-list start -->
+                        <ul class="breadcrumb-list text-center text-sm-end">
+                            <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item active">order No : <%=order.order_id %> </li>
+                        </ul>
 
-    <!-- breadcrumb-area start -->
-    <div class="breadcrumb-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="row breadcrumb_box  align-items-center">
-                        <div class="col-lg-6 col-md-6 col-sm-6 text-center text-sm-start">
-                            <h2 class="breadcrumb-title">Order Detail</h2>
-                        </div>
-                        <div class="col-lg-6  col-md-6 col-sm-6">
-                            <!-- breadcrumb-list start -->
-                            <ul class="breadcrumb-list text-center text-sm-end">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                                <li class="breadcrumb-item active">order No : <%=order.order_id %> </li>
-                            </ul>
-
-                            <ul class="breadcrumb-list text-center text-sm-end">
-                               
-                                <li class="breadcrumb-item active">delivery_status : <%=order.delivery_status %> </li>
-                            </ul>
-                            <!-- breadcrumb-list end -->
-                        </div>
+                        <ul class="breadcrumb-list text-center text-sm-end">
+                            
+                            <li class="breadcrumb-item active">delivery_status : <%=order.delivery_status %> </li>
+                        </ul>
+                        <!-- breadcrumb-list end -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- breadcrumb-area end -->
+</div>
+<!-- breadcrumb-area end -->
+ 
+<div id="main-wrapper">
+    <div class="site-wrapper-reveal border-bottom">
 
+        <!-- cart start -->
+        <div class="cart-main-area  section-space--ptb_90">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <form action="#">
+                            <div class="table-content table-responsive cart-table-content header-color-gray">
+                                <table>
+                                    <thead>
+                                        <tr class="bg-gray">
+                                            <th class="product-img">&nbsp;</th>
+                                            <th class="product-name">Product</th>
+                                            
+                                            <th class="product-price"> Price</th>
+                                            
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
+                                        <% for (let i=0;i != orderItems.length;i++){ %>
+                                            <tr>                                    
 
-
-
-    <div id="main-wrapper">
-        <div class="site-wrapper-reveal border-bottom">
-
-            <!-- cart start -->
-            <div class="cart-main-area  section-space--ptb_90">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <form action="#">
-                                <div class="table-content table-responsive cart-table-content header-color-gray">
-                                    <table>
-                                        <thead>
-                                            <tr class="bg-gray">
-                                                <th class="product-img">&nbsp;</th>
-                                                <th class="product-name">Product</th>
                                                 
-                                                <th class="product-price"> Price</th>
-                                                
-                                                <th>Quantity</th>
-                                                <th>Total</th>
-                                                
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            <% for (let i=0;i != orderItems.length;i++){ %>
-                                                <tr>                                    
-
+                                                <td class="product-img">
+                                                    <a href="/books/<%= orderItems[i].Book.seo_friendly_title %>">                                                                                    
+                                                        <% if(orderItems[i].Book.cover_image_url.split(":")[0]=="https") { %>
+                                                            <img  src="<%= orderItems[i].Book.cover_image_url_large %>" class="img-fluid bookCoverImage" alt="<%= orderItems[i].Book.seo_friendly_title %>-cover-image"  >
+                                                        <% } else { %>
+                                                            <img  src="/uploads/<%= orderItems[i].Book.cover_image_url_medium %>" class="img-fluid bookCoverImage" alt="<%= orderItems[i].Book.seo_friendly_title %>-cover-image"  >
+                                        
+                                                        <% } %>
                                                     
-                                                    <td class="product-img">
-                                                        <a href="/books/<%= orderItems[i].Book.seo_friendly_title %>">                                                                                    
-                                                            <% if(orderItems[i].Book.cover_image_url.split(":")[0]=="https") { %>
-                                                                <img  src="<%= orderItems[i].Book.cover_image_url_large %>" class="img-fluid bookCoverImage" alt="<%= orderItems[i].Book.seo_friendly_title %>-cover-image"  >
-                                                            <% } else { %>
-                                                                <img  src="/uploads/<%= orderItems[i].Book.cover_image_url_medium %>" class="img-fluid bookCoverImage" alt="<%= orderItems[i].Book.seo_friendly_title %>-cover-image"  >
-                                            
-                                                            <% } %>
-                                                        
-                                                        </a>
-                                                    </td>
-                                                    <td class="product-name"><a href="/books/<%= orderItems[i].Book.seo_friendly_title %>"><%= orderItems[i].Book.title %></a></td>
-    
-                                                    <td class="product-price"><span class="amount">$<%= orderItems[i].Book.price %></span></td>
-    
-                                                    <td class="cart-quality">
-                                                        <div class="quickview-quality quality-height-dec2">
-                                                            
-                                                            <p class="cart-plus-minus-box" ><%= orderItems[i].quantity %></p>
-                                                           
-                                                        </div>
-                                                    </td>
-                                                    <td class="price-total">
-                                                        <span class="amount">$ <%=orderItems[i].subtotal %></span>
-                                                    </td>
-                                                </tr>
-                                            <% } %>
-                                         
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </form>
-                            <div class="shoping-update-area row">
-                                <div class="continue-shopping-butotn col-6 mt-30">
-                                    <a href="/books" class="btn btn--lg btn--black"><i class="icon-arrow-left"></i> Make a new order </a>
-                                </div>
-                                
-                            </div>
-                            <div class="cart-buttom-area">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <!-- <div class="discount-code section-space--mt_60">
-                                            <h6 class="mb-30">Coupon Discount</h6>
-                                            <p>Enter your coupon code if you have one.</p>
-                                            <input type="text" name="name" placeholder="Coupon code">
-                                            <button class="coupon-btn btn btn--lg btn--border_1" type="submit">Apply coupon</button>
-                                        </div> -->
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="cart_totals section-space--mt_60 ms-md-auto">
-                                            <div class="grand-total-wrap">
-                                                <div class="grand-total-content">
-                                                    <ul>
-                                                        <!-- <li>Subtotal <span> $87.00</span></li> -->
-                                                        <li>Total <span>$<%= order.total_amount%></span> </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                                    </a>
+                                                </td>
+                                                <td class="product-name"><a href="/books/<%= orderItems[i].Book.seo_friendly_title %>"><%= orderItems[i].Book.title %></a></td>
 
+                                                <td class="product-price"><span class="amount">$<%= orderItems[i].Book.price %></span></td>
+
+                                                <td class="cart-quality">
+                                                    <div class="quickview-quality quality-height-dec2">
+                                                        
+                                                        <p class="cart-plus-minus-box" ><%= orderItems[i].quantity %></p>
+                                                        
+                                                    </div>
+                                                </td>
+                                                <td class="price-total">
+                                                    <span class="amount">$ <%=orderItems[i].subtotal %></span>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                        <div class="shoping-update-area row">
+                            <div class="continue-shopping-butotn col-6 mt-30">
+                                <a href="/books" class="btn btn--lg btn--black"><i class="icon-arrow-left"></i> Make a new order </a>
+                            </div>
+                            
                         </div>
+                        <div class="cart-buttom-area">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <!-- <div class="discount-code section-space--mt_60">
+                                        <h6 class="mb-30">Coupon Discount</h6>
+                                        <p>Enter your coupon code if you have one.</p>
+                                        <input type="text" name="name" placeholder="Coupon code">
+                                        <button class="coupon-btn btn btn--lg btn--border_1" type="submit">Apply coupon</button>
+                                    </div> -->
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="cart_totals section-space--mt_60 ms-md-auto">
+                                        <div class="grand-total-wrap">
+                                            <div class="grand-total-content">
+                                                <ul>
+                                                    <!-- <li>Subtotal <span> $87.00</span></li> -->
+                                                    <li>Total <span>$<%= order.total_amount%></span> </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
-            <!-- cart end -->
-
         </div>
-        <%- include('../../views/partials/footerarea') %>
-   </div>
+        <!-- cart end -->
 
-    <!--====================  scroll top ====================-->
-    <a href="#" class="scroll-top" id="scroll-top">
-        <i class="arrow-top icon-arrow-up"></i>
-        <i class="arrow-bottom icon-arrow-up"></i>
-    </a>
+    </div>
+    <%- include('../../views/partials/footerarea') %>
+</div>
+
+<!--====================  scroll top ====================-->
+<a href="#" class="scroll-top" id="scroll-top">
+    <i class="arrow-top icon-arrow-up"></i>
+    <i class="arrow-bottom icon-arrow-up"></i>
+</a>
     
 <%- include('../../views/partials/commonjslibs'); %>
 

@@ -278,9 +278,7 @@ const  successPayment = async(req,res)=>{
                     
                 },
                 {transaction:t});
-
                 productDetails.Inventory.quantity_available-=item.qty
-
                 await productDetails.Inventory.save() ;
                 orderToSendAsEmail.push({
                     title: productDetails.title,
@@ -321,6 +319,7 @@ const  successPayment = async(req,res)=>{
     catch(err){
         console.log(err)
         await t.rollback();
+        res.errors = err;
         return res.status(500).redirect(`/checkout`)
     }
 

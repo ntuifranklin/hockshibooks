@@ -2,7 +2,7 @@
 const { body,check,validationResult } = require('express-validator');
 
 const customerModel=require("../models/customerModel")
-const {showCustomerProfile} = require('./controller');
+const {signupPage} = require('./controller');
 const validateCustomerSignupForm = [
         body('first_name')
             .isLength({ max: 64 })
@@ -36,7 +36,7 @@ const validateCustomerSignupForm = [
             .withMessage('City must be at most 128 characters long')
             .notEmpty()
             .withMessage('City is required'),
-        body('state_province')
+        body('state_province_id')
             .isLength({ max: 128 })
             .withMessage('State/Province must be at most 128 characters long')
             .notEmpty()
@@ -62,7 +62,7 @@ const validateCustomerSignupForm = [
                 if (!errors.isEmpty()) {
                     const err = errors.array()
                     req.body.errors=err
-                  return showCustomerProfile(req, res);
+                  return signupPage(req, res);
                 }
                 next();
             }
@@ -113,7 +113,7 @@ const validateProfileUpdate = [
         .isLength({ min: 2 }).withMessage('Last Name must be at least 2 characters long'),
 
     // State/Province: Required, can be any string
-    check('state_province')
+    check('state_province_id')
         .notEmpty().withMessage('State/Province is required'),
 
     // Street Address: Required

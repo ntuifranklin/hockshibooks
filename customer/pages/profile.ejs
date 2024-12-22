@@ -59,7 +59,10 @@
                                                     <h3 class="title">Dashboard</h3>
                                                     <div class="welcome">
 
-                                                        <p>Hello, <strong><%=user.first_name %> <%=user.last_name%> </strong> (If Not <strong><%=user.first_name %> <%=user.last_name%>  ! </strong><a href="/logout" class="logout"> Logout</a>)</p>
+                                                        <p>Hello, 
+                                                            <strong><%=user.first_name %> <%=user.last_name%> </strong> 
+                                                            (If Not <strong><%=user.first_name %> <%=user.last_name%>  ! </strong>
+                                                            <a href="/customer/logout" class="logout">Please Logout</a>)</p>
                                                     </div>
                                                     <p class="mb-0">From your account dashboard. you can easily check & view your recent orders,  and edit your password and account details.</p>
                                                 </div>
@@ -90,7 +93,7 @@
                                                                     <td><%= user.Orders[i].order_date %></td>
                                                                     <td><%=user.Orders[i].delivery_status%></td>
                                                                     <td>$<%=user.Orders[i].total_amount%></td>
-                                                                    <td><a href="/orders/orderDetail/<%=user.Orders[i].order_id%>" class="btn btn btn-dark btn-hover-primary btn-sm rounded-0">View</a></td>
+                                                                    <td><a href="/order/orderDetail/<%=user.Orders[i].order_id%>" class="btn btn btn-dark btn-hover-primary btn-sm rounded-0">View</a></td>
                                                                 </tr>
                                                                 <%}%>
                                                             </tbody>
@@ -138,11 +141,10 @@
                                                                 <legend>Address change</legend>
                                                                 <div class="single-input-item mb-3">
                                                                     <label for="current-pwd" class="required mb-1">State/Province </label>
-                                                                    <select name="state_province" id="state_province" `>
-                                                                        <option value="<%= user.current_state.province_state_id%>" selected> current state/Province: <%=user.current_state.country_code%>-<%=user.current_state.province_state_name%></option>
+                                                                    <select name="state_province_id" id="state_province_id" `>
+                                                                        <option value="<%= user.current_state.province_state_id%>" selected>Current State/Province: <%=user.current_state.country_code%>-<%=user.current_state.province_state_name%></option>
                                                                         <!-- <option selected="false" value="<%=user.current_state.province_state_id%>">states</option> -->
-                                                                        <% for(let i=0; i < states.length; i++) { %>
-                                                                            
+                                                                        <% for(let i=0; i < states.length; i++) { %>                                                                            
                                                                             <option value="<%= states[i].province_state_id %>"><%= states[i].country_code %>-<%= states[i].province_state_name %></option> 
                                                                         <% } %>
                                                                 </select>
@@ -164,7 +166,7 @@
                                                                 </div>
 
                                                                 <div class="single-input-item mb-3">
-                                                                    <label for="current-pwd" class="required mb-1">zip code </label>
+                                                                    <label for="current-pwd" class="required mb-1">Zip code </label>
                                                                     <input type="text"  id="postal_zipcode" placeholder="postal zipcode" name="postal_zipcode" value="<%=user.postal_zipcode%>">
 
                                                                     

@@ -12,7 +12,7 @@ const {
 }=require("../utilities/universal_web_constants")
 
 let order;
-const viewOrder=async(req,res)=>{
+const viewOrderByAdmin=async(req,res)=>{
     /**
  * Retrieves an order and its associated order items from the database and renders a view to display them.
  *
@@ -182,10 +182,21 @@ const orderDetail= async(req,res)=>{
             ]
         })
         //console.log(orderItems)
+        let customer ;
+        let customerLocals = await req.locals.customer;
+        let customerSession = await req.session.customer;
+        if(!customerLocals && !customerSession){
+            return res.redirect(`/customer/login`)
+        };
+        if(customerLocals){
+            customer=customerLocals;
+        } else {
+            customer=customerSession;
+        };
         return res.render("../orders/pages/orderDetail",{
             order:Order,
-            orderItems:orderItems
-
+            orderItems:orderItems,
+            customer:customer
         })
     }
     catch(e){
@@ -199,7 +210,7 @@ const orderDetail= async(req,res)=>{
 }
 ;
 module.exports={
-    viewOrder,
+    viewOrderByAdmin,
     changeToDelivered,
     changeToProcessing,
     changeToShipped,

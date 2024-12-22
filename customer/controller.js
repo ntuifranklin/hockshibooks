@@ -180,31 +180,182 @@ const verifyCustomerOTP=(async(req,res)=>{
             let writeOptions =
             {
                 
-                EX: 900, // 15 minutes, 3600 is 1h , while 43200 is 12h
+                EX: 3600, // 3600 is 1h, 15 minutes, while 43200 is 12h
                 //XX: true, // write the data even if the key already exists
             } ;
             
             customer = await JSON.parse(JSON.stringify(customer));
-            await saveJSONObjectToRedisCache(redisCustomerKey, customer, writeOptions);
-            
+            await saveJSONObjectToRedisCache(redisCustomerKey, customer, writeOptions);            
             
             await customerOtpModel.destroy({
                 where:{
-                        customerId:customer_id
+                    customerId:customer_id
                 }
             });
             
             req.session.customer_id = customer_id;
             
-            await req.session.save();       
+            //await req.session.save();       
             req.session.customer = customer;
             res.locals.customer = customer ;
-            await req.session.save();       
-            
+            //await res.locals.save();
+            await req.session.save();
             return res.status(200).redirect(`/customer/profile`) 
     }
 }) ;
 
+const showCustomerProfile=async(req,res)=>{
+    await loadStatesAndCountries();
+    let customer = await req.session.customer;
+    let customer_id = await req.session.customer_id;
+    //console.log(`customer: `, customer);
+    //console.log(`customer_id: `, customer_id);
+    let customerInformation; 
+    if (!customer && customer_id) {
+        customerInformation = await customerModel.findOne(
+            {
+                where:{customer_id:customer_id},
+                include:[{
+                    model:orderModel
+                }]
+            })
+    } else if (customer && customer.customer_id) {
+        customerInformation = await customerModel.findOne(
+            {
+                where:{customer_id:customer.customer_id},
+                include:[{
+                    model:orderModel
+                }]
+            })
+
+    } else {
+        return res.status(404).redirect(`/customer/login?msg=neither+customer+id+nor+customer+object+found`);
+    }
+    //first select the state, two state code and country code for the customer
+    
+    //const states=await provinceStateModel.findAll()
+    const current_state=await provinceStateModel.findOne({
+        where:{
+            province_state_id:customerInformation.state_province_id,
+            country_code:customerInformation.country
+        }
+    })
+    //const country=await CountryModel.findAll()
+    // req.session.customer.customer_id
+    //console.log(`customerInformation: `, customerInformation);
+    //console.log(` current_state: `,current_state);
+    let user;
+    if (current_state) {
+        user = {...customerInformation.dataValues,current_state:{...current_state.dataValues},}
+    } else {
+        user = customerInformation;
+    }
+
+
+    if (req.body.errors) {
+        req.body.errors = req.body.errors.map((error) => {
+            return {
+                msg: error.msg,
+            };
+        });
+    }
+    //console.log(user)
+    return res.render("../customer/pages/profile",{
+        pagetitle:"Profile Page",
+        customer:customerInformation,
+        user:user,
+        states:states,
+        country:country,
+        errors:req.body.errors?req.body.errors:false,
+        msg:req.query.msg?req.query.msg:false,
+        type:req.query.type?req.query.type:false,
+        current_state:current_state,
+    })
+    
+   
+}
+const updateCustomerProfile=async(req,res)=>{
+    const errors=validationResult(req)
+    if(!errors.isEmpty()){
+        const err = errors.array()
+        req.body.errors=err
+
+      return showCustomerProfile(req,res)
+    } else {
+        try{
+            await loadStatesAndCountries();
+            let customer_id = req.session.customer_id
+            const customer= await customerModel.findOne(
+                {where:{customer_id:customer_id} }
+            
+            )
+            
+            if (!customer) {
+                return res.status(404).redirect(`/customer/profile?type=danger&msg=customer+not+found`)
+            }
+            //console.log("customer name: "+typeof(customer.newPassword))
+            // console.log(await bcrypt.compare(customer.password,req.body.oldPassword))
+            if(await bcrypt.compare(req.body.oldPassword,customer.password)){
+                let {country_code}= await provinceStateModel.findOne({
+                    where:{
+                        province_state_id:req.body.state_province_id
+                    }
+                })
+                //only update the customer information if the submitted information is different from the current information
+                if (customer.first_name == req.body.first_name &&
+                    customer.last_name == req.body.last_name &&
+                    customer.email == req.body.email &&
+                    customer.street_address == req.body.street_address &&
+                    customer.city == req.body.city &&
+                    customer.state_province_id == req.body.state_province_id &&
+                    customer.country == country_code &&
+                    customer.postal_zipcode == req.body.postal_zipcode &&
+                    customer.phone == req.body.phone &&
+                    req.body.newPassword == false) {
+                        return res.status(200).redirect(`/customer/profile?type=success&msg=profile+updated`)
+                }
+                if (customer.first_name != req.body.first_name) 
+                    customer.first_name = req.body.first_name;
+                if (customer.last_name != req.body.last_name)
+                    customer.last_name = req.body.last_name;
+                if (customer.email != req.body.email)
+                    customer.email = req.body.email;
+                if (customer.street_address != req.body.street_address)
+                    customer.street_address = req.body.street_address;
+                if (customer.city != req.body.city)
+                    customer.city = req.body.city;
+                if (customer.state_province_id != req.body.state_province_id)
+                    customer.state_province_id = req.body.state_province_id;
+                if (customer.country != country_code)
+                    customer.country = country_code;
+                if (customer.postal_zipcode != req.body.postal_zipcode)
+                    customer.postal_zipcode = req.body.postal_zipcode;
+                if (customer.phone != req.body.phone)
+                    customer.phone = req.body.phone;
+                if (req.body.newPassword) {
+                    customer.password = req.body.newPassword;
+                } else {    
+                    customer.password = req.body.oldPassword;
+                }
+
+                //console.log(req.body)
+                await customer.save()
+                return res.status(200).redirect(`/customer/profile?type=success&msg=successfully+updated+profile`)
+            }
+            else{
+
+                return res.status(200).redirect(`/customer/profile?type=danger&msg=wrong+password`)
+            }
+        
+        }
+        catch(e){
+            console.log(e)
+            return res.status(200).redirect(`/customer/profile?type=danger&msg=an+error+occured`);
+                
+        }
+        
+    }
+}
 const customerLogout=async (req,res)=>{
     /**
  * The customerLogout function is used to log out signed-in users.
@@ -315,150 +466,16 @@ If the email is not in use, creates a new customer record in the database and re
             phone:info.phone
 
         });
-       req.session.customer_id = customer.customer_id;
+       //req.session.customer_id = customer.customer_id;
        //await req.session.save();
-       req.session.customer = customer;
-       await req.session.save();
+       //req.session.customer = customer;
+       //await req.session.save();
        return res.status(200).redirect(`/customer/login?type=success&Sucessmsg=successfully+signed+up`) 
     }       
 
     }
 }
 
-const showCustomerProfile=async(req,res)=>{
-    await loadStatesAndCountries();
-    let customer = await req.session.customer;
-    let customer_id = await req.session.customer_id;
-    console.log(`customer: `, customer);
-    console.log(`customer_id: `, customer_id);
-    let customerInformation; 
-    if (!customer && customer_id) {
-        customerInformation = await customerModel.findOne(
-            {
-                where:{customer_id:customer_id},
-                include:[{
-                    model:orderModel
-                }]
-            })
-    } else if (customer && customer.customer_id) {
-        customerInformation = await customerModel.findOne(
-            {
-                where:{customer_id:customer.customer_id},
-                include:[{
-                    model:orderModel
-                }]
-            })
-
-    } else {
-        return res.status(404).redirect(`/customer/login?msg=neither+customer+id+nor+customer+object+found`);
-    }
-    //first select the state, two state code and country code for the customer
-    
-    //const states=await provinceStateModel.findAll()
-    const current_state=await provinceStateModel.findOne({
-        where:{
-            province_state_id:customerInformation.state_province_id,
-            country_code:customerInformation.country
-        }
-    })
-    //const country=await CountryModel.findAll()
-    // req.session.customer.customer_id
-    console.log(`customerInformation: `, customerInformation);
-    console.log(` current_state: `,current_state);
-    let user;
-    if (current_state) {
-        user = {...customerInformation.dataValues,current_state:{...current_state.dataValues},}
-    } else {
-        user = customerInformation;
-    }
-
-
-    if (req.body.errors) {
-        req.body.errors = req.body.errors.map((error) => {
-            return {
-                msg: error.msg,
-            };
-        });
-    }
-    //console.log(user)
-    return res.render("../customer/pages/profile",{
-        pagetitle:"Profile Page",
-        customer:customerInformation,
-        user:user,
-        states:states,
-        country:country,
-        errors:req.body.errors?req.body.errors:false,
-        msg:req.query.msg?req.query.msg:false,
-        type:req.query.type?req.query.type:false,
-        current_state:current_state,
-    })
-    
-   
-}
-const updateCustomerProfile=async(req,res)=>{
-    const errors=validationResult(req)
-    if(!errors.isEmpty()){
-        const err = errors.array()
-        req.body.errors=err
-
-      return showCustomerProfile(req,res)
-    } else {
-        try{
-            await loadStatesAndCountries();
-            const customer= await customerModel.findOne(
-                {where:{customer_id:userId} }
-            
-            )
-            console.log("customer name: "+typeof(customer.newPassword))
-            // console.log(await bcrypt.compare(customer.password,req.body.oldPassword))
-            if(await bcrypt.compare(req.body.oldPassword,customer.password)){
-                let {country_code}= await provinceStateModel.findOne({
-                    where:{
-                        province_state_id:req.body.state_province
-                    }
-                })
-
-                customer.first_name=req.body.first_name
-                customer.last_name=req.body.last_name
-                customer.email=req.body.email
-                customer.street_address=req.body.street_address
-                customer.city=req.body.city
-                customer.state_province=req.body.state_province
-                customer.country=country_code
-                customer.postal_zipcode=req.body.postal_zipcode
-                customer.phone=req.body.phone
-
-                console.log(req.body.newPassword==false)
-
-                console.log(req.body.newPassword==true)
-
-
-                if(req.body.newPassword){
-                    console.log("provided")
-                    customer.password=req.body.newPassword
-                }
-                else{
-                    customer.password=req.body.oldPassword
-                    console.log("not provided")
-                    
-                }
-
-                //console.log(req.body)
-                await customer.save()
-                return res.status(200).redirect(`/customer/profile?type=success&msg=successfully+updated+profile`)
-            }
-            else{
-
-                return res.status(200).redirect(`/customer/profile?type=danger&msg=wrong+password`)
-            }
-        
-        }
-        catch(e){
-                console.log(e)
-        }
-        
-    }
-}
 
 const customerResetPasswordForm=async(req,res)=>{
     /**
