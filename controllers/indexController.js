@@ -27,7 +27,7 @@ const showHomePage = async (req,res)=>{
     //console.log(`${JSON.stringify(books, null, 2)}`);
     return res.status(200).render("pages/home",{
         "books":books,
-        "pagetitle":"Books Available",
+        "pagetitle":"Curated Used Books for Personal Growth, Business, Tech, and Science",
         base_route_name:"books",
         api_route_name:"api",
         customer:customer

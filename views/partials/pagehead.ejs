@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="<%= csrfToken %>">
     <!-- Favicon -->
-    <link rel="icon" href="/assets/images/favicon.ico">
+    <link rel="icon" href="/assets/images/logo_dot_com/img_files/hockshi-favicon-color.svg">
     <meta name="description" content="<%= thisPageTitle%>">
    	<% if (typeof customBookSeo != 'undefined') {  %>
         
@@ -35,14 +35,29 @@
     <meta name="author" content="<%= customBookSeo.author %>" />
 
     <% } else { %>
-        
+    <% // This is the default seo for the home page %>
+    <meta property="og:title" content="<%= thisPageTitle %>" />
     
+	<meta name="author" content="<%= companyName %>">
+    <meta name="description" content="Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!">
+	<meta property="og:site_name" content="<%= companyName %>" />
+    <meta property="og:description" content="Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!">
 	<meta property="og:determiner" content="The" />
 	<meta property="og:locale" content="en_US" />
-	<meta name="author" content="<%= companyName %>">
-	<meta property="og:site_name" content="<%= companyName %>" />
-	<meta name="robots" content="index, follow">
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="<%= websiteUrl %>/assets/images/logo_dot_com/img_files/new/svg/logo-color.svg" />
 	<meta property="og:url" content="<%= websiteUrl %>">
+	
+    <% // twitter seo %>
+    
+    <meta property="twitter:description" content="Explore our curated selection of used books on personal development, finances, business, computer technology, and science & math. Affordable, high-quality reads to inspire and educate. Start exploring today!">
+    <meta property="twitter:image" content="<%= websiteUrl %>/assets/images/logo_dot_com/img_files/new/svg/logo-color.svg">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@<%= companyName %>" />
+    <meta name="twitter:title" content="@<%= thisPageTitle %>" />
+    <meta name="twitter:url" content="<%= websiteUrl %>" />
+    <meta name="robots" content="index, follow">
+
 	<link rel="canonical" href="<%= websiteUrl %>">
 
     <%  } %>
