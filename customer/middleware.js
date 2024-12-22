@@ -202,6 +202,14 @@ const customerIsLoggedInTrueOrFalse = async (req,res,next)=>{
 const validateCustomerResetPasswordForm = [
     body('email').
     isEmail().withMessage('Email must be valid'),
+    //add that the password and confirm_password must be the same
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    body('confirm_password').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Passwords must match');
+        }
+        return true;
+    }),
     (req, res, next) => {
         if(!validationResult(req).isEmpty()){
             let errMess = '';
