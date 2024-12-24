@@ -118,11 +118,18 @@
                                     <div id="acceptedPaymentMethodsCollapse" class="collapse show" data-parent="#pricingAccordion">
                                         <div class="card-body">
                                             We accept:
-                                            <ul>
-                                                <li>Major credit/debit cards (Visa, Mastercard, American Express)</li>
-                                                <li>PayPal</li>
-                                                <li>Bank transfers</li>
-                                            </ul>
+                                            <script>
+                                                //the string acceptedPaymentMethods from ejs has all the payment methods separated by commas
+                                                let acceptedPaymentMethods = "<%= acceptedPaymentMethods %>";
+                                                let paymentMethods = acceptedPaymentMethods.split(',');
+                                                let paymentList = "<ul>";
+                                                paymentMethods.forEach(method => {
+                                                    paymentList += "<li>" + method + "</li>";
+                                                });
+                                                paymentList += "</ul>";
+                                                document.write(paymentList);
+                                            </script>
+                                            
                                         </div>
                                     </div>
                                 </div>
