@@ -8,3 +8,4 @@ apps:
       NODE_ENV: production
     env_test:
       NODE_ENV: test
+    save_logs: true
