@@ -17,7 +17,8 @@ Inventory.init({
     },
     quantity_available: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 0
     },
     location: {
         type: DataTypes.STRING(256),

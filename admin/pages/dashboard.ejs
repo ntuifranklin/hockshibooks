@@ -71,27 +71,27 @@
                                                           
                                                         </thead>
                                                         <tbody>
-                                                          
-                                                          <% for(let i=0; i < orders.length; i++) { %>
-
-                                                            <tr>
-                                                                <th scope="row">
-                                                                    <a href="<%= `/order/view/${orders[i].order_id}` %>">
-                                                                        <%= orders[i].order_id %>
-                                                                    </a>
-                                                                </th>
-                                                                <td><%= orders[i].Customer.first_name ||"geust" %> <%= orders[i].Customer.last_name|| "" %></td>
-                                                                <td><%= orders[i].Customer.email %></td>
-                                                                <td>$<%= orders[i].total_amount %></td>
-                                                                <td><%= orders[i].delivery_status %></td>
-                                                                <td><%= orders[i].order_date %></td>
-                                                                <td>
-                                                                    <a href="<%= `/order/view/${orders[i].order_id}` %>" class="btn btn btn-dark btn-hover-primary btn-sm rounded-0">
-                                                                        <i class="fa-solid fa-folder-open"></i>
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                          <% } %>
+                                                        <% if ( orders && orders.length > 0 ) { %>            
+                                                            <% for(let i=0; i < orders.length; i++) { %>
+                                                                <tr>
+                                                                    <th scope="row">
+                                                                        <a href="<%= `/order/view/${orders[i].order_id}` %>">
+                                                                            <%= orders[i].order_id %>
+                                                                        </a>
+                                                                    </th>
+                                                                    <td><%= orders[i].Customer.first_name ||"geust" %> <%= orders[i].Customer.last_name|| "" %></td>
+                                                                    <td><%= orders[i].Customer.email %></td>
+                                                                    <td>$<%= orders[i].total_amount %></td>
+                                                                    <td><%= orders[i].delivery_status %></td>
+                                                                    <td><%= orders[i].order_date %></td>
+                                                                    <td>
+                                                                        <a href="<%= `/order/view/${orders[i].order_id}` %>" class="btn btn btn-dark btn-hover-primary btn-sm rounded-0">
+                                                                            <i class="fa-solid fa-folder-open"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                            <% } %>
+                                                        <% } %>
                                                             
                                                         </tbody>
                                                     </table>
@@ -120,16 +120,17 @@
                                                         
                                                       </thead>
                                                       <tbody>
-                                                        
-                                                        <% for(let i=0; i < payments.length; i++) { %>
-                                                          <tr>
-                                                            <th scope="row"><%= payments[i].transaction_id %></th>
-                                                            <td>$<%= payments[i].amount %></td>
-                                                            <td><%= payments[i].order_id %></td>
-                                                            <td><%= payments[i].payment_method %></td>
-                                                            <td><%= payments[i].payment_date %></td>                
-                                                          </tr>
-                                                          <% } %>
+                                                        <% if ( payments && payments.length > 0 ) { %>            
+                                                            <% for(let i=0; i < payments.length; i++) { %>
+                                                            <tr>
+                                                                <th scope="row"><%= payments[i].transaction_id %></th>
+                                                                <td>$<%= payments[i].amount %></td>
+                                                                <td><%= payments[i].order_id %></td>
+                                                                <td><%= payments[i].payment_method %></td>
+                                                                <td><%= payments[i].payment_date %></td>                
+                                                            </tr>
+                                                            <% } %>
+                                                        <% } %>
                                                           
                                                       </tbody>
                                                   </table>
@@ -155,25 +156,32 @@
                                                             <th scope="col">Edit | Delete</th>
                                                           </tr>
                                                         </thead>
-                                                        <tbody>                                                                          
-                                                          <% for(let i=0; i < books.length; i++) { %>
-                                                            <tr>
-                                                              <td><%= books[i].ISBN %></td>
-                                                              <th scope="row"><%= books[i].title %></th>
-                                                              <td><%= books[i].author %></td>
-                                                              <td>$<%= books[i].price %></td>
-                                                              <td>
-                                                                <%= books[i].Inventory.quantity_available %>
-                                                              </td>
-                                                              <td>                                                
-                                                                  <a href="<%= `/books/update/${books[i].book_id}` %>">
-                                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                                  </a>
-                                                                |
-                                                                  <a href="<%= `/books/delete/${books[i].book_id}` %>"><i class="fa-solid fa-trash"></i>
-                                                                </a>                                                            
-                                                              </td>
-                                                            </tr>
+                                                        <tbody>
+                                                          <% if ( books && books.length > 0 ) { %>                                                                      
+                                                            <% for(let i=0; i < books.length; i++) { %>
+                                                                <tr>
+                                                                <td><%= books[i].ISBN %></td>
+                                                                <th scope="row"><%= books[i].title %></th>
+                                                                <td><%= books[i].author %></td>
+                                                                <td>$<%= books[i].price %></td>
+                                                                <td>
+                                                                    <% if (books[i].Inventory && books[i].Inventory.quantity_available ) { %>
+                                                                        <%= books[i].Inventory.quantity_available %>
+                                                                    <% } else { %>
+                                                                        <% //console.log(`Inventory is non existent, let's check what this book is: ${JSON.stringify(books[i], null, 2) } `) %>
+                                                                        0
+                                                                    <% } %>
+                                                                </td>
+                                                                <td>                                                
+                                                                    <a href="<%= `/books/update/${books[i].book_id}` %>">
+                                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                                    </a>
+                                                                    |
+                                                                    <a href="<%= `/books/delete/${books[i].book_id}` %>"><i class="fa-solid fa-trash"></i>
+                                                                    </a>                                                            
+                                                                </td>
+                                                                </tr>
+                                                            <% } %>
                                                           <% } %>
                                                         </tbody>
                                                     </table>

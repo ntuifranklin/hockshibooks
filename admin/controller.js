@@ -246,7 +246,7 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
      
         let user = req.session.user; ;
         //console.log(`${JSON.stringify(loggedInUser)}`);
-
+        
         res.status(200).render("../admin/pages/dashboard",{
                 books:books,
                 payments:payments,
