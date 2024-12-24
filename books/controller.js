@@ -230,7 +230,12 @@ const addBookWithISBN= async(req,res)=>{
                     }
                 } ;
                 
-                
+                let number_of_pages = 0 ;
+                if (typeof data.number_of_pages != "undefined")
+                    number_of_pages = data.number_of_pages;
+                else if (typeof data.pagination != "undefined") {
+                    number_of_pages = parseInt(data.pagination);
+                }
 
                 if(!bookMightExistInInventory){
                     let createdBook=await bookModel.create({
@@ -239,7 +244,7 @@ const addBookWithISBN= async(req,res)=>{
                         author:data.authors[0].name,
                         ISBN:isbn10_or_13,
                         description: desc,
-                        number_of_pages:data.number_of_pages,
+                        number_of_pages:number_of_pages,
                         publication_date:data.publish_date,
                         cover_image_url:cover_image_url,
                         cover_image_url_small:cover_image_url_small,
