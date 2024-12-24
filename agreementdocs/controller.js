@@ -16,8 +16,17 @@ const termsAndConditionPage = (req, res) => {
     });
 } ;
 
+const faqPage = (req, res) => {
+    customer = req.session.customer;
+    res.render("../agreementdocs/pages/faq",{
+        "pagetitle":"FAQ",
+        customer:customer
+    });
+}
+
 
 module.exports = {  
     policyPage,
-    termsAndConditionPage   
+    termsAndConditionPage,
+    faqPage   
 };

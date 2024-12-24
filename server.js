@@ -62,6 +62,7 @@ const {
 } = require('./middleware/redis');
 const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME } = require('./utilities/universal_web_constants');
 const { setResponseLocalsCustomer } = require("./customer/utilities");
+//const { getListOfAcceptedStripePaymentMethods } = require("./checkout/utilities");
 
 const request_rate_limiter = rateLimit({
 	windowMs: 60 * 60 * 1000, // 60 minutes
@@ -148,6 +149,7 @@ async function startNewHockshiServer(){
 	app.use(cookieParser())
 
 	app.use(csrfProtection);
+	//let x = await getListOfAcceptedStripePaymentMethods();
 	
 	
 	//generate a unique web visitor user id for each user
@@ -160,6 +162,7 @@ async function startNewHockshiServer(){
 		res.removeHeader("X-Powered-By");
 		const valid_cart_actions = [ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM];
 		req.locals.valid_cart_actions = valid_cart_actions ;
+		
 		
 		next();
 	});
@@ -177,7 +180,7 @@ async function startNewHockshiServer(){
 
 	//check the values of the stripe keys
 	console.log("Stripe public key: ", process.env.STRIPE_PUBLIC_KEY);
-	console.log("Stripe secret key: ", process.env.STRIPE_SECRET_KEY);
+	//console.log("Stripe secret key: ", process.env.STRIPE_SECRET_KEY);
 
 	return app ;
 } ;
