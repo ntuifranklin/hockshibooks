@@ -10,7 +10,8 @@
             <div class="col-lg-7 col-md-8">
                 <div class="newsletter-wrap">
                     <form action="#" class="newsletter--one">
-                        <input class="input-box" name="rememberme" type="text" placeholder="Your email address">
+                        <input class="input-box" name="email" type="email" id="subscriberEmail" placeholder="Your email address">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <button class="submit-btn">Subscribe</button>
                     </form>
                 </div>
@@ -18,3 +19,42 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('.newsletter--one').submit(function(e) {
+            e.preventDefault();
+            var email = $("#subscriberEmail").val();
+            if (email) {
+                $.ajax({
+                    url: '/newsletter/subscribe',
+                    type: 'POST',
+                    data: {
+                        email: email,
+                        _csrf: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            alert('You have successfully subscribed to our newsletter');
+                        } else {
+                            alert('An error occurred while trying to subscribe to our newsletter');
+                        }
+                    },
+                    error: function(err) {
+                        //display error to user in nice format:
+                        alert(`Hmm something unusual happened: ${err.responseJSON.error}`);
+                        console.log(JSON.stringify(err, null, 2));
+                    }
+                });
+            }
+        });
+    });
+
+
+     window.addEventListener("load",()=>{
+        const newsLetterformsubmit = document.querySelector(".newsletter--one");
+        newsLetterformsubmit.addEventListener("submit",(e)=>{
+            e.preventDefault();
+        });
+    });
+</script>

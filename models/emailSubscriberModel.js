@@ -23,6 +23,7 @@ CREATE TABLE Email_Subscribers (
 const { Sequelize, DataTypes, Model } = require('sequelize');
 const sequelize = require('../config/database');
 
+const crypto = require('crypto');
 /* create a model using the sql table in comment above */
 class EmailSubscriber extends Model {}
 

@@ -31,7 +31,7 @@ const {
 
 // const {stripe} = require('../utilities/stripe') ;
 
-
+const newsLetterRoute = require('../newsletter/route');
 
 module.exports = () => {
   try{
@@ -52,6 +52,8 @@ module.exports = () => {
       router.use('/order',ordersRoute());
 
       router.use('/customer',customerRoute())
+
+      router.use('/newsletter',newsLetterRoute());
 
       //router.get("/orderDetail/:id",orderDetail)
       router.route("/f404").get(showError404).post(showError404)
