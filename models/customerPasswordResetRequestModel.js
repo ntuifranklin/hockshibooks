@@ -41,9 +41,22 @@ CustomerPasswordResetRequest.init({
     //create a hook to create a secure token for the customer that ends up being at most 255
     //characters long
     hooks: {
-        beforeCreate: async (CustomerPasswordResetRequest) => {
-            CustomerPasswordResetRequest.token = crypto.randomBytes(64).toString('hex').substring(0, 64);
-            CustomerPasswordResetRequest.id= crypto.createHash('md5').update(Math.random().toString()).digest('hex')
+        beforeCreate: async (customerPasswordResetRequest) => {
+           
+
+            let isUnique = false;
+            let id ;
+            while (!isUnique) {
+                
+                id = crypto.createHash('md5').update(Math.random().toString()).digest('hex')
+                let exisitingCustomerPasswordResetRequest = await CustomerPasswordResetRequest.findOne({ where: { id: id } });
+                if (!exisitingCustomerPasswordResetRequest) {
+                    customerPasswordResetRequest.id = id;
+                    isUnique = true;
+                }
+            }
+            customerPasswordResetRequest.token = crypto.randomBytes(64).toString('hex').substring(0, 64);
+           
         }
     },
 

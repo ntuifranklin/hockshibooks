@@ -11,13 +11,10 @@ DROP TABLE IF EXISTS Book_Reviews;
 DROP TABLE IF EXISTS customerOtpTable;
 DROP TABLE IF EXISTS Customer_password_reset_requests;
 
-
 DROP TABLE IF EXISTS otpTable;
 
-
+-- Then Dropping Main Table.
 DROP TABLE IF EXISTS powerUsers;
-
-
 DROP TABLE IF EXISTS Order_Items;
 DROP TABLE IF EXISTS Payment;
 DROP TABLE IF EXISTS Orders;
@@ -25,15 +22,36 @@ DROP TABLE IF EXISTS Inventory;
 DROP TABLE IF EXISTS Promotions;
 DROP TABLE IF EXISTS Shipping_Carriers;
 DROP TABLE IF EXISTS Customers;
+DROP TABLE IF EXISTS Email_Subscriber;
 DROP TABLE IF EXISTS Provinces_States;
 DROP TABLE IF EXISTS Countries;
 DROP TABLE IF EXISTS Books;
 DROP TABLE IF EXISTS Genres;
 DROP TABLE IF EXISTS Products;
-DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS Categories;
 
+-- email subscriber table
+CREATE TABLE Email_Subscriber (
+    subscriber_id VARCHAR(64) PRIMARY KEY, -- Unique identifier for each subscriber
+    email VARCHAR(255) NOT NULL UNIQUE, -- Email address of the subscriber
+    full_name VARCHAR(255), -- Full name of the subscriber
+    signup_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Date and time of signup
+    subscription_status ENUM('Active', 'Unsubscribed', 'Pending') NOT NULL DEFAULT 'Pending', -- Status of the subscription
+    preferred_frequency ENUM('Daily', 'Weekly', 'Monthly') DEFAULT 'Weekly', -- Frequency of email notifications
+    preferred_genres VARCHAR(255), -- Subscriber's preferred book genres (e.g., 'Fiction, Mystery, Sci-Fi')
+    language_preference VARCHAR(50) DEFAULT 'English', -- Preferred language for emails
+    last_email_sent DATETIME, -- Timestamp of the last email sent
+    open_rate FLOAT DEFAULT 0.0, -- Percentage of emails opened by the subscriber
+    click_rate FLOAT DEFAULT 0.0, -- Percentage of links clicked in emails
+    bounce_status ENUM('None', 'Soft Bounce', 'Hard Bounce') DEFAULT 'None', -- Email bounce status
+    ip_address_signup VARCHAR(45), -- IP address from which the user signed up
+    signup_source VARCHAR(255), -- Source of the signup (e.g., website, social media, ad campaign)
+    unsubscribe_reason VARCHAR(255), -- Reason provided by the subscriber for unsubscribing
+    gdpr_consent BOOLEAN DEFAULT FALSE, -- Whether the subscriber has provided GDPR consent
+    tags VARCHAR(255) -- Additional tags for categorizing the subscriber (e.g., 'VIP', 'Frequent Buyer')
+);
 
--- Genres Table
+-- Customers Table
 CREATE TABLE Genres (
     genre_id VARCHAR(64) PRIMARY KEY,
     name VARCHAR(128) NOT NULL
@@ -65,7 +83,6 @@ CREATE TABLE Books (
     cover_image_url_medium VARCHAR(1024),
     cover_image_url_large VARCHAR(1024)
 );
-
 
 -- Promotions Table
 CREATE TABLE Promotions (
@@ -106,7 +123,7 @@ CREATE TABLE otpTable (
 
 
 -- category table
-CREATE TABLE `categories` (
+CREATE TABLE `Categories` (
     `category_id` VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
     `name` VARCHAR(128) NOT NULL
 );
@@ -118,7 +135,7 @@ CREATE TABLE `Products` (
     `price` DECIMAL(10, 2) NOT NULL,
     `product_image_url` VARCHAR(1024),
     `category` VARCHAR(64),
-    FOREIGN KEY (`category`) REFERENCES `categories`(`category_id`)
+    FOREIGN KEY (`category`) REFERENCES `Categories`(`category_id`)
 );
 
 -- Customers Table
@@ -159,6 +176,7 @@ CREATE TABLE Customer_password_reset_requests (
 	ON DELETE CASCADE 
 	ON UPDATE CASCADE
 );
+
 -- Countries Table
 CREATE TABLE Countries (
     country_code VARCHAR(4) PRIMARY KEY,
@@ -292,6 +310,7 @@ CREATE TABLE Shipping_Carriers (
     carrier_name VARCHAR(128) NOT NULL,
     tracking_url VARCHAR(512) NOT NULL
 );
+
 -- Book_Reviews Table
 CREATE TABLE Book_Reviews (
     review_id VARCHAR(64) PRIMARY KEY,
@@ -303,7 +322,7 @@ CREATE TABLE Book_Reviews (
     FOREIGN KEY (book_id) REFERENCES Books(book_id),
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
 );
--- Some views :
+
 -- Some views :
 CREATE VIEW SecureCustomers AS
 SELECT 
@@ -338,7 +357,5 @@ LEFT JOIN Books as b
 ON i.book_id = b.book_id;
 
 
--- Inserting a super admin user
 INSERT INTO powerUsers ( email,password,role) VALUES ( 'franklinwebdev704@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
 
--- password = plaintextpassword
