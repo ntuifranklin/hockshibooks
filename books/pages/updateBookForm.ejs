@@ -70,7 +70,11 @@
                                             </div>
                                             <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                 <label for="" class="w-100">Quantity Available:
-                                                    <input type="number"  id="quantity" placeholder="Quantity Available" name="quantity" value="<%= book.Inventory.quantity_available %>">
+                                                    <% let quantity_available = 0 ; %>
+                                                    <% if(book.Inventory && book.Inventory.quantity_available && book.Inventory.quantity_available > 0 ) { %>
+                                                        <% quantity_available = book.Inventory.quantity_available; %>
+                                                    <% } %>
+                                                    <input type="number"  id="quantity" placeholder="Quantity Available" name="quantity" value="<%= quantity_available %>">
                                                 </label>
                                             </div>                                            
                                             <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">

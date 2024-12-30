@@ -262,11 +262,10 @@ INSERT INTO `Books` VALUES
 	'https://covers.openlibrary.org/b/id/7852100-M.jpg',
 	'https://covers.openlibrary.org/b/id/7852100-L.jpg'),
 ('dbed93d2ad7c739ff1eb527afb701ff0',
-	'Learning Selenium Testing Tools with Python',
-	'learning-selenium-testing-tools-with-python-unmesh-gundecha-9781783983506',
+	'Learning Selenium Testing Tools with Python','learning-selenium-testing-tools-with-python-unmesh-gundecha-9781783983506',
 	'Unmesh Gundecha',
 	'9781783983506',
-	'No description available',
+	'*Learning Selenium Testing Tools with Python* is a practical guide to using Selenium WebDriver for automated web testing with Python. The book covers key concepts and tools required to build effective Selenium-based test scripts. It introduces Selenium WebDriver and Python\'s testing frameworks, such as unittest and pytest, and provides insights into writing and executing test cases.\n\nKey highlights of the book include:\n1. **Introduction to Selenium**: Understanding the core concepts of Selenium, including setting up and configuring it with Python.\n2. **Test Automation Fundamentals**: Creating automated tests for web applications, including handling browsers, interacting with elements, and verifying expected outcomes.\n3. **Advanced Selenium Features**: Using advanced techniques like handling dynamic content, waiting mechanisms, and cross-browser testing.\n4. **Integrating with Python Testing Frameworks**: Writing tests using Python\'s unittest and pytest frameworks and integrating Selenium with Continuous Integration (CI) systems.\n5. **Real-World Examples**: Practical examples to help readers develop functional and maintainable test scripts.\n\nOverall, the book aims to provide readers with the tools and knowledge to perform automated web testing efficiently using Selenium and Python.',
 	'Good',
 	'Paperback',
 	216,
@@ -277,6 +276,7 @@ INSERT INTO `Books` VALUES
 	'learning-selenium-testing-tools-with-python-unmesh-gundecha-9781783983506-small-cover.jpg',
 	'learning-selenium-testing-tools-with-python-unmesh-gundecha-9781783983506-medium-cover.jpg',
 	'learning-selenium-testing-tools-with-python-unmesh-gundecha-9781783983506-large-cover.jpg'),
+
 ('e2ebddddcdaef4cd209308f51cfdb598',
 	'Lunch Money',
 	'lunch-money-rise-and-shine-andrew-clements-9780689866852',
@@ -376,7 +376,8 @@ INSERT INTO `Inventory` VALUES
 ('e2ebddddcdaef4cd209308f51cfdb598',1,'warehouse'),
 ('ee1791d35fe1dcee8126db3254d478e2',1,'warehouse'),
 ('f806a7102c92400b8b0044f643ac60b3',1,'warehouse'),
-('fbf4b2cdc0341672f468d484d7f082cd',1,'warehouse');
+('fbf4b2cdc0341672f468d484d7f082cd',1,'warehouse'),
+('dbed93d2ad7c739ff1eb527afb701ff0',1,'warehouse');
 
 CREATE TABLE powerUsers (
      id CHAR(36) PRIMARY KEY DEFAULT (UUID()),

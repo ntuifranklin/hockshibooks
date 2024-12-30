@@ -505,6 +505,7 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
         return res.status(404).redirect('/admin/dashboard?msg=book+not+found&type=danger');
     }
     
+    console.log(`book found: ${JSON.stringify(book, null, 2)}`);
     
     let c = getValidBookFormatsAndConditions();
     validBookFormats = c.validBookFormats;
