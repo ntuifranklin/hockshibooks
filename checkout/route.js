@@ -8,7 +8,7 @@ const {showStripePublicKey,checkout,askShippingInfo,successPayment} = require('.
 const shippingInfoValidation = require('./middleware');   
 module.exports = () => {
     
-    router.get('/',askShippingInfo)
+    //router.get('/',askShippingInfo)
     router.post('/',checkout)
     router.get('/stripe_public_key', showStripePublicKey);
     router.get("/successPayment",successPayment)
