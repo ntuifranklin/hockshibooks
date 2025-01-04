@@ -13,7 +13,9 @@ import otpModel from "../models/otpModel.js";
 import adminModel from "../models/adminModel.js";
 import bookModel from "../models/bookModel.js";
 import inventoryModel from "../models/inventory.js";
+import genreModel from '../models/genreModel.js';
 
+import {faker} from '@faker-js/faker';
 let adminUser = await adminModel.findOne({ where: { email: process.env.TEST_VALID_POWER_USER_EMAIL } });
 
 const validUser = {
@@ -24,9 +26,10 @@ const validUser = {
 
 import {generateAndSendOTP} from '../utilities/functions.js';
 import {startNewHockshiServer} from '../server.js';
-import { auth } from '@googleapis/docs';
-import { language } from 'googleapis/build/src/apis/language/index.js';
-import Inventory from '../models/inventory.js';
+
+const validBookConditions = bookModel.getAttributes().book_condition.values;
+const validBookFormats = bookModel.getAttributes().format.values;
+
 
 config.config();
 chai.use(chaiHttp);
@@ -50,6 +53,7 @@ const isbns = [
 ];
 const isbn="9780309063630"
 
+const allGenres = await genreModel.findAll();
 function  extractCsrfToken(res) {
   var $ = cheerio.load(res.text);
   return $('[name=_csrf]').val();
@@ -59,13 +63,10 @@ describe('search book functionality ',async () => {
  
 
   it("It should add a list of isbns to the database and successfully update their quantity and price successfully",async ()=>{
-    try{
-
-        
+    try{        
     
     let res = await agent.get('/admin');
     let csrfToken = extractCsrfToken(res);
-
 
     // Validate response (Example: checking status)
     expect(res).to.have.status(200);
@@ -101,17 +102,27 @@ describe('search book functionality ',async () => {
     
     //csrfToken = extractCsrfToken(otpResponse);
     for(let isbni of isbns){
-        
+      let format = faker.helpers.arrayElement(validBookFormats);     
+      let book_condition = faker.helpers.arrayElement(validBookConditions);
       agent
       .post("/books/addBookWithExternalAPI")
       .set('csrf-token', csrfToken)
-      .send({isbn:isbni,_csrf: csrfToken, quantity:1,price:12.99} )
+      .send({
+        isbn:isbni,
+        _csrf: csrfToken, 
+        quantity:3,
+        book_condition:book_condition,
+        format:format,
+        price:12.99,
+        genres:allGenres.map(genre=>genre.id)
+      } )
       .then((errPostISBN,isbnAddPostReponse)=>{
         if(errPostISBN){
           //console.log(`Error adding book with ISBN ${isbni}`);
           throw(errPostISBN);
         };
         expect(isbnAddPostReponse).to.have.status(200);
+        
         expect(isbnAddPostReponse).to.be.json; //because we are calling from the command line
       });
     } ;
@@ -119,35 +130,42 @@ describe('search book functionality ',async () => {
     //now for each book, updates its quantity and price
     //first get the book id from the isbn and then update the book
     for(let isbni of isbns){
-        let bookMightExist = await bookModel.findAll({
-            where:{
-                ISBN:isbni
-            },
-            include:[{model:inventoryModel}]
-        });
-        if (bookMightExist) {
-            let book = await JSON.parse(JSON.stringify(bookMightExist[0]));
-            //console.log(`Book with ISBN ${JSON.stringify(book,null, 2)} found`);
-            let bookUpdateObject = {
-                title: book.title,
-                author: book.author,
-                language: book.language,
-                bookId: book.book_id, 
-                quantity: parseInt(inventoryModel.quantity_available)*2, 
-                price: (parseFloat(book.price)*2).toFixed(2), 
-                _csrf: csrfToken,
-                location: book.Inventory.location, 
-            };
-            let updateBookResponse = await agent
-            .post("/books/update")
-            .set('csrf-token', csrfToken)
-            .send(bookUpdateObject);
-            //csrfToken = extractCsrfToken(updateBookResponse);
-            expect(updateBookResponse).to.have.status(200);
-            expect(updateBookResponse).to.be.json;
-        } else {
-          console.log(`Book with ISBN ${isbni} not found`);
-        }
+      
+      let format = faker.helpers.arrayElement(validBookFormats);     
+      let book_condition = faker.helpers.arrayElement(validBookConditions);
+      let bookMightExist = await bookModel.findAll({
+          where:{
+              ISBN:isbni
+          },
+          include:[{model:inventoryModel}]
+      });
+      //console.log(`Book : ${JSON.stringify(bookMightExist,null, 2)}`);
+      if (bookMightExist && bookMightExist.length>0) {
+          let book = await JSON.parse(JSON.stringify(bookMightExist[0]));
+          //console.log(`Book with ISBN ${JSON.stringify(book,null, 2)} found`);
+          let bookUpdateObject = {
+              title: book.title,
+              author: book.author,
+              language: book.language,
+              bookId: book.book_id, 
+              quantity: parseInt(inventoryModel.quantity_available)*2, 
+              genres: allGenres.map(genre => genre.genre_id),
+              price: (parseFloat(book.price)*2).toFixed(2), 
+              _csrf: csrfToken,
+              location: book.Inventory.location, 
+              format: format,
+              book_condition: book_condition,
+          };
+          let updateBookResponse = await agent
+          .post("/books/update")
+          .set('csrf-token', csrfToken)
+          .send(bookUpdateObject);
+          //csrfToken = extractCsrfToken(updateBookResponse);
+          expect(updateBookResponse).to.have.status(200);
+          expect(updateBookResponse).to.be.json;
+      } else {
+        console.log(`Book with ISBN ${isbni} not found`);
+      }
     
     }
 

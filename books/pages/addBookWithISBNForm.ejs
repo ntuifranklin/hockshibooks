@@ -101,13 +101,19 @@
                                                     var form = $(this);
                                                     var url = "/<%= post_add_book_with_isbn_route %>";
                                                     var type = "POST";
+                                                    const checkbox_genres = document.querySelectorAll('input[name="genres[]"]:checked');
+                                                    let genres = [];
+                                                    checkbox_genres.forEach((genre)=>{
+                                                        genres.push(genre.value);
+                                                    });
                                                     const data = {
                                                         isbn: $('#isbn').val(),
                                                         book_condition: $('#book_condition').val(),
                                                         format: $('#format').val(),
                                                         price: $('#price').val(),
                                                         quantity: $('#quantity').val(),
-                                                        _csrf: '<%= csrfToken %>'
+                                                        _csrf: '<%= csrfToken %>',
+                                                        genres: genres
                                                     };
                                                     //set header
                                                     $.ajaxSetup({
@@ -115,7 +121,7 @@
                                                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                                         }
                                                     });
-                                                   
+                                                    console.log(`Data to be sent: `,JSON.stringify(data,null,2));
                                                     $.ajax(
                                                         {
                                                         url: url,

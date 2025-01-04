@@ -76,7 +76,9 @@
                                                     <% } %>
                                                     <input type="number"  id="quantity" placeholder="Quantity Available" name="quantity" value="<%= quantity_available %>">
                                                 </label>
-                                            </div>                                            
+                                            </div>    
+                                                                                        
+
                                             <div class="single-input col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                 <label for="" class="w-100">
                                                     Location:
@@ -131,12 +133,48 @@
                                                             }
                                                         
                                                             %>
-                                                            <option value="<%= book_format %>" "<%= format_selected %>"><%= book_format %></option>
+                                                            <option value="<%= book_format %>" <%= format_selected %>><%= book_format %></option>
                                                         <% }%>
                                                     </select>
                                                 </label>
                                             </div>
-                                            <div class="single-input col-lg-12 col-md-12 col-sm-12 col-xs-12">    
+                                        </div>
+                                        
+                                        <div class="row" tooltip="Select genres for this book. It's current genres are dsplayed and selected below">
+                                            <!-- 
+                                            
+                                                all_available_genres:genres,
+                                                books_and_genres:thisBookallGenres,
+                                            -->
+                                            <%                                               
+                                                                                        
+                                                let genresids = [];
+                                                for (let i = 0; i < books_and_genres.length; i++){
+                                                    genresids.push(books_and_genres[i].genre_id);
+                                                };
+                                                //console.log(JSON.stringify(genresids,null,2));
+                                            %>
+                                            <% if (all_available_genres && all_available_genres.length > 0) { %>
+                                                <label for="genres[]" class="w-100">Genres:</label>
+                                               <% for (let genre of all_available_genres) { %>
+                                                    <% 
+                                                        let checked = genresids.includes(genre.genre_id) ? 'checked' : '';
+                                                    %>
+                                                    
+                                                    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-6" tooltip="<%= genre.name %>">                                                                                   
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" name="genres[]" type="checkbox" <%= checked %> value="<%= genre.genre_id %>" id="<%= genre.genre_id %>">
+                                                            <label class="form-check-label" for="<%= genre.genre_id %>">
+                                                                <%= genre.name %>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                <% } %>
+                                                   
+                                            <% } %>
+                                        </div>
+                                        <div class="row">
+                                            <div class="single-input col-12">    
                                                 <label for="decription" class="w-100">Description:
     
                                                     <textarea class="w-100" id="description" name="description" resize=true rows="12"  width="1000px">
@@ -145,6 +183,7 @@
                                                 </label>    
                                             </div>
                                         </div>
+
                                     
 
                                        <div class="row align-items-center">
@@ -164,6 +203,8 @@
                                         $(document).ready(function(){
                                             $('#updateBookSpinner').hide();
                                             let alertcontainerID = document.getElementById('updateBookFormResponseMessages');
+                                            //list of multiple selected genres
+                                            
                                             $('#updateBookForm').submit(async function(e){
                                                                                                  
                                                 e.preventDefault();
@@ -171,7 +212,12 @@
                                                 //var form = $(this);
                                                 var url = "/books/update";
                                                 var type = "POST";
-                                                let formData = new FormData();
+                                                //let formData = new FormData();
+                                                const checkbox_genres = document.querySelectorAll('input[name="genres[]"]:checked');
+                                                let genres = [];
+                                                checkbox_genres.forEach((genre)=>{
+                                                    genres.push(genre.value);
+                                                });
                                                 const data = {
                                                     _csrf: '<%= csrfToken %>',
                                                     bookId: $('#bookId').val(),
@@ -180,6 +226,7 @@
                                                     language: $('#language').val(),
                                                     price: $('#price').val(),
                                                     quantity: $('#quantity').val(),
+                                                    genres: genres,
                                                     number_of_pages: $('#number_of_pages').val(),
                                                     location: $('#location').val(),
                                                     date: $('#date').val(),
@@ -188,7 +235,7 @@
                                                     description: $('#description').val()
                                                     
                                                 };
-                                                console.log(`Data being sent to server: ${JSON.stringify(data,null,2)}`);
+                                                //console.log(`Data being sent to server: ${JSON.stringify(data,null,2)}`);
                                                 /*for (let key in Object.keys(data)) {
                                                     formData.append(key, data[key]);
                                                 }*/

@@ -87,7 +87,7 @@ Books.init({
          *
          */
           if (!book.book_id) {
-               book.book_id =  await crypto.createHash('md5').update(Math.random().toString()).digest('hex');
+               book.book_id =  crypto.createHash('md5').update(Math.random().toString()).digest('hex');
           }
         },beforeUpdate: async (book) => {
              /**
@@ -96,7 +96,7 @@ Books.init({
          */
             if (!book.book_id) {
               
-               book.book_id = await crypto.createHash('md5').update(Math.random().toString()).digest('hex');
+               book.book_id = crypto.createHash('md5').update(Math.random().toString()).digest('hex');
             }
             }
             },

@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes, Model } = require('sequelize');
 
+const crypto = require('crypto');
 const sequelize=require("../config/database")
 
 const Book = require('./bookModel'); // Import Book model to establish the association
@@ -11,9 +12,7 @@ class BooksGenres extends Model {} ;
 BooksGenres.init({
     book_genre_id: {
         type: DataTypes.STRING(64),
-        primaryKey: true,
-        allowNull: false,
-        
+        primaryKey: true        
     },
     book_id: {
         type: DataTypes.STRING(64),
@@ -46,7 +45,7 @@ BooksGenres.init({
             
             while (!isUnique) {
                 
-                book_genre_id =  await crypto.createHash('md5').update(Math.random().toString()).digest('hex').substr(0, 64);
+                book_genre_id =  await crypto.createHash('md5').update(Math.random().toString()).digest('hex');
                 let exisitingBooksGenres = await BooksGenres.findOne({ where: { book_genre_id: book_genre_id } });
                 if (!exisitingBooksGenres) {
                     booksGenres.book_genre_id = book_genre_id;
@@ -63,7 +62,7 @@ BooksGenres.init({
             
             while (!isUnique) {
                 
-                book_genre_id =  await crypto.createHash('md5').update(Math.random().toString()).digest('hex').substr(0, 64);
+                book_genre_id =  await crypto.createHash('md5').update(Math.random().toString()).digest('hex');
                 let exisitingBooksGenres = await BooksGenres.findOne({ where: { book_genre_id: book_genre_id } });
                 if (!exisitingBooksGenres) {
                     booksGenres.book_genre_id = book_genre_id;

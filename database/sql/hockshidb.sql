@@ -51,13 +51,13 @@ CREATE TABLE Email_Subscriber (
     unsubscribe_reason VARCHAR(255), -- Reason provided by the subscriber for unsubscribing
     gdpr_consent BOOLEAN DEFAULT FALSE, -- Whether the subscriber has provided GDPR consent
     tags VARCHAR(255) -- Additional tags for categorizing the subscriber (e.g., 'VIP', 'Frequent Buyer')
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Genres Table
 CREATE TABLE Genres (
     genre_id VARCHAR(64) PRIMARY KEY,
     name VARCHAR(128) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Books Table
 CREATE TABLE Books (
@@ -77,7 +77,7 @@ CREATE TABLE Books (
     cover_image_url_small VARCHAR(1024),
     cover_image_url_medium VARCHAR(1024),
     cover_image_url_large VARCHAR(1024)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE BooksGenres (
@@ -86,7 +86,7 @@ CREATE TABLE BooksGenres (
     genre_id VARCHAR(64) NOT NULL,
     FOREIGN KEY (book_id) REFERENCES Books(book_id),
     FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)   
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Promotions Table
 CREATE TABLE Promotions (
@@ -95,7 +95,7 @@ CREATE TABLE Promotions (
     discount_percentage DECIMAL(5, 2) NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Inventory Table
 CREATE TABLE Inventory (
@@ -105,14 +105,14 @@ CREATE TABLE Inventory (
     FOREIGN KEY (book_id) REFERENCES Books(book_id)
     ON delete CASCADE
     ON update CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE powerUsers (
      id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('basic_admin', 'super_admin') NOT NULL DEFAULT 'basic_admin'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE otpTable (
@@ -123,14 +123,14 @@ CREATE TABLE otpTable (
     FOREIGN KEY (powerUserId) REFERENCES powerUsers(id) 
     ON DELETE CASCADE 
     ON UPDATE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- category table
 CREATE TABLE `Categories` (
     `category_id` VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
     `name` VARCHAR(128) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- products table
 CREATE TABLE `Products` (
     `product_id` VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
@@ -140,7 +140,7 @@ CREATE TABLE `Products` (
     `product_image_url` VARCHAR(1024),
     `category` VARCHAR(64),
     FOREIGN KEY (`category`) REFERENCES `Categories`(`category_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Customers Table
 CREATE TABLE Customers (
@@ -156,7 +156,7 @@ CREATE TABLE Customers (
     country VARCHAR(128)  NULL,
     postal_zipcode VARCHAR(32)  NULL,
     phone VARCHAR(32)  NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE customerOtpTable (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
@@ -166,7 +166,7 @@ CREATE TABLE customerOtpTable (
     FOREIGN KEY (customerId) REFERENCES Customers(customer_id) 
     ON DELETE CASCADE 
     ON UPDATE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Password Reset Request Table
 CREATE TABLE Customer_password_reset_requests (
@@ -179,13 +179,13 @@ CREATE TABLE Customer_password_reset_requests (
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) 
 	ON DELETE CASCADE 
 	ON UPDATE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Countries Table
 CREATE TABLE Countries (
     country_code VARCHAR(4) PRIMARY KEY,
     country_name VARCHAR(128) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Provinces_States Table
 CREATE TABLE Provinces_States (
@@ -194,7 +194,7 @@ CREATE TABLE Provinces_States (
     province_state_name VARCHAR(128) NOT NULL,
     province_state_code VARCHAR(2) NOT NULL,
     FOREIGN KEY (country_code) REFERENCES Countries(country_code)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Orders Table
 CREATE TABLE Orders (
@@ -210,7 +210,7 @@ CREATE TABLE Orders (
     shipping_postal_code VARCHAR(32) NOT NULL,
     delivery_status ENUM('Processing', 'Shipped', 'Delivered') NOT NULL,
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Order_Items Table
 CREATE TABLE Order_Items (
@@ -222,7 +222,7 @@ CREATE TABLE Order_Items (
     subtotal DECIMAL(16, 2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES Orders(order_id),
     FOREIGN KEY (book_id) REFERENCES Books(book_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Payment Table
 CREATE TABLE Payment (
@@ -233,14 +233,14 @@ CREATE TABLE Payment (
     amount DECIMAL(10, 2) NOT NULL,
     transaction_id VARCHAR(128) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES Orders(order_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Shipping_Carriers Table
 CREATE TABLE Shipping_Carriers (
     carrier_id VARCHAR(64) PRIMARY KEY,
     carrier_name VARCHAR(128) NOT NULL,
     tracking_url VARCHAR(512) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Book_Reviews Table
 CREATE TABLE Book_Reviews (
@@ -252,7 +252,7 @@ CREATE TABLE Book_Reviews (
     review_date DATE NOT NULL,
     FOREIGN KEY (book_id) REFERENCES Books(book_id),
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Some views :
 CREATE VIEW SecureCustomers AS

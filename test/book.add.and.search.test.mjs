@@ -12,6 +12,7 @@ import * as cheerio from "cheerio";
 import otpModel from "../models/otpModel.js";
 import adminModel from "../models/adminModel.js";
 import bookModel from "../models/bookModel.js";
+import genreModel from '../models/genreModel.js';
 const validBookConditions = bookModel.getAttributes().book_condition.values;
 const validBookFormats = bookModel.getAttributes().format.values;
 
@@ -51,7 +52,7 @@ const isbns = [
   "9780399581120"
 ];
 const isbn="9780309063630"
-
+const allGenres = await genreModel.findAll();
 function  extractCsrfToken(res) {
   var $ = cheerio.load(res.text);
   return $('[name=_csrf]').val();
@@ -128,7 +129,8 @@ describe('search book functionality ',async () => {
         quantity:3,
         book_condition:book_condition,
         format:format,
-        price:6.99
+        price:6.99,
+        genres:allGenres.map(genre=>genre.id)
       } ).then((err,isbnResponse)=>{
         if(err){
           console.log(err)
@@ -219,7 +221,8 @@ describe('search book functionality ',async () => {
         quantity:fake_quantity,
         book_condition:book_condition,
         format:format,
-        price:fake_price
+        price:fake_price,
+        genres:[faker.number.int({min:1,max:allGenres.length})]
       } ).then((err,isbnResponse)=>{
         if(err){
           console.log(err)
@@ -304,7 +307,8 @@ describe('search book functionality ',async () => {
         quantity:3,
         book_condition:book_condition,
         format:format,
-        price:6.99
+        price:6.99,
+        genres:[faker.number.int({min:1,max:allGenres.length})]
       } ).then((err,isbnResponse)=>{
         if(err){
           console.log(err)
@@ -340,17 +344,6 @@ describe('search book functionality ',async () => {
     }
    
   }) ;
-
-
-
-
-
-
-
-
-
-
-
 
   
   it("It should not add a list of isbns to the database if any of the required fields is missing",async ()=>{
@@ -409,7 +402,8 @@ describe('search book functionality ',async () => {
         //quantity:3,
         book_condition:book_condition,
         format:format,
-        price:6.99
+        price:6.99,
+        genres:[allGenres.map(genre=>genre.id)]
       } ).then((err,isbnResponse)=>{
         if(err){
           console.log(err)
@@ -435,6 +429,7 @@ describe('search book functionality ',async () => {
         book_condition:book_condition,
         format:format,
         //price:6.99
+        genres:[allGenres.map(genre=>genre.id)]
       } ).then((err,isbnResponse)=>{
         if(err){
           console.log(err)
@@ -458,7 +453,8 @@ describe('search book functionality ',async () => {
         quantity:3,
         book_condition:book_condition,
         //format:format,
-        price:6.99
+        price:6.99,
+        genres:[allGenres.map(genre=>genre.id)]
       } ).then((err,isbnResponse)=>{
         if(err){
           console.log(err)
@@ -482,7 +478,8 @@ describe('search book functionality ',async () => {
         quantity:3,
         //book_condition:book_condition,
         format:format,
-        price:6.99
+        price:6.99,
+        genres:[allGenres.map(genre=>genre.id)]
       } ).then((err,isbnResponse)=>{
         if(err){
           console.log(err)
@@ -496,6 +493,34 @@ describe('search book functionality ',async () => {
         } ;
         expect(isbnResponse).to.be.json; //because we are using ajax in the form
       });
+      //add with isbn missing
+      agent
+      .post("/books/addBookWithExternalAPI")
+      .set('csrf-token', csrfToken)
+      .send({
+        //isbn:isbni,
+        _csrf: csrfToken, 
+        quantity:3,
+        book_condition:book_condition,
+        format:format,
+        price:6.99,
+        genres:[allGenres.map(genre=>genre.id)]
+      } ).then((err,isbnResponse)=>{
+        if(err){
+          console.log(err)
+        }
+              //console.log(Object.keys(isbnResponse))
+        if(validBookConditions.includes(book_condition) && validBookFormats.includes(format)){
+          expect(isbnResponse).to.have.status(200);
+        } else {
+          expect(isbnResponse).to.not.have.status(200);
+          
+        } ;
+        expect(isbnResponse).to.be.json; //because we are using ajax in the form
+      });
+
+      //now add with genres missing
+      
       //add with isbn missing
       agent
       .post("/books/addBookWithExternalAPI")

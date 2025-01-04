@@ -1,7 +1,7 @@
 const { body, validationResult } = require('express-validator');
 const bookModel=require("../models/bookModel")
 const inventoryModel=require("../models/inventory")
-
+const GenreModel=require("../models/genreModel")
 const validateISBN = [
     body('isbn')
       .custom(value => {
@@ -130,20 +130,34 @@ const validateAddBookWithISBNForm = [
   body('quantity')
     .isInt()
     .withMessage('Quantity must be an integer'),
-     // Middleware to check for validation errors
+
+  // Middleware to check genres array is not empty and was submitted
+  body('genres')
+    .isArray()
+    .withMessage('At least one genres must be selected for this book'),
+  //create a custom check to check that the submitted genreIDs are valid
+  body('genres.*')
+    .custom(async (genreId)=>{
+      const genre= await GenreModel.findByPk(genreId)
+      if(!genre){
+        throw new Error('Invalid genre submitted')
+      }
+    }),
+  // Middleware to check for validation errors
   body('book_condition')
     .isIn(bookModel.getAttributes().book_condition.values)
     .withMessage(`Invalid book condition. Accepted values are: ${bookModel.getAttributes().book_condition.values}`),
   body('format')
     .isIn(bookModel.getAttributes().format.values)
     .withMessage(`Invalid format. Accepted values are: ${bookModel.getAttributes().format.values}`),
-    (req, res, next) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      next();
-    },
+ 
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
 ];
 
 // Middleware to validate form inputs
@@ -170,6 +184,18 @@ const validateBookUpdateForm = [
     .isInt()
     .withMessage('Quantity must be an integer'),
 
+  // Middleware to check genres array is not empty and was submitted
+  body('genres')
+    .isArray()
+    .withMessage('At least one genres must be selected for this book'),
+  //create a custom check to check that the submitted genreIDs are valid
+  body('genres.*')
+    .custom(async (genreId)=>{
+      const genre= await GenreModel.findByPk(genreId)
+      if(!genre){
+        throw new Error('Invalid genre submitted')
+      }
+    }),
   // Language should be at least 1 character long
   body('language')
     .trim()

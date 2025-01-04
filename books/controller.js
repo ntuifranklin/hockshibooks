@@ -5,6 +5,7 @@ const { validationResult } = require('express-validator');
 const inventoryModel=require("../models/inventory");
 const GenreModel = require('../models/genreModel');
 const BooksGenresModel = require('../models/booksGenresModel');
+const sequelize = require('../config/database');
 const axios = require('axios');
 
 const fs=require("fs");
@@ -102,11 +103,8 @@ const oneBookDetailsHtmlView= async (req,res)=>{
             },
             include:[
             {model:inventoryModel}
-    
-    ]}
-     )
-
-    
+            ]
+        })  
 
 
     //  const newDate= convertDateFormat(book.publication_date)
@@ -159,8 +157,78 @@ const addBookWithISBN= async(req,res)=>{
     let isbn=req.body.isbn
     const price=req.body.price || 25.00;
     const qty=req.body.quantity || 1;
- 
+    //genres contains the list of genres IDs that the book belongs to
+    const genresids = req.body.genres || [];
+    //console.log(`genres: ${JSON.stringify(genres, null, 2)}`);
+    let tMightExist = await sequelize.transaction();
     let user = req.session.USER;
+    /* 
+        We should not automatically hit open library api. We should first check in our database if such a book exist
+     */
+    //console.log(`isbn: ${isbn}`);
+    isbn = isbn.trim();
+    isbn = isbn.replace(/-/g, '');
+    isbn = isbn.replace(/ /g, '');
+    isbn = isbn.replace(/[^0-9]/g, '');
+    let bookMightExist = await BookModel.findOne({
+        where:{
+            ISBN:isbn
+        },
+        //include inventory
+        include:[
+            {model:inventoryModel}
+        ]
+    });
+    if (bookMightExist){
+       
+        //what if the book exists and the inventory quantity is 0 ?
+        if(bookMightExist.inventory && bookMightExist.inventory.quantity_available < 1){ 
+            //update the quantity available
+            bookMightExist.inventory.quantity_available = qty;
+            await bookMightExist.inventory.save();
+            //the booksgenres model is a many to many relationship table model.
+            //we need to clear the existing genres and add the new ones
+            await BooksGenresModel.destroy({
+                where:{
+                    book_id:bookMightExist.book_id
+                },
+                transaction:tMightExist
+                
+            });
+            //add the new genres
+            for (let i = 0; i < genresids.length; i++){
+                let genreId = genresids[i];
+                await BooksGenresModel.create(
+                    {
+                        book_id:bookMightExist.book_id,
+                        genre_id:genreId
+                    },
+                    {
+                        transaction:tMightExist
+                    }
+                );
+            };
+            await tMightExist.commit();
+            return res.status(201).json({
+                success:true,
+                msg:`${bookMightExist.title}'s quantity updated successfully`,
+                data:{
+                    book:bookMightExist,
+                    inventory:bookMightExist.inventory
+                },
+                statusCode:201
+            });
+        } else {
+            tMightExist.rollback();
+            return res.status(400).json({
+                success:false,
+                error:"a book with this title already exists. Use update book to update the quantity or any other data",
+                statusCode:400
+            })
+        }
+    }
+    
+
     //isbn could be less than 10 or less than 8 characters. lets pad it with 000s
     /*
     //these api below are the new way of accessing the book information and cover image on open library
@@ -172,7 +240,7 @@ const addBookWithISBN= async(req,res)=>{
     let newBookApiUrl = `https://openlibrary.org/isbn/${isbn}.json`;
     */
     const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`;
-
+    let tCreateNewBook = await sequelize.transaction();
     try{
         const response= await axios.get(url)
 
@@ -183,11 +251,7 @@ const addBookWithISBN= async(req,res)=>{
         if(data){
             let desc= await getBookDescription(data.identifiers.openlibrary[0])
             try {
-                const bookMightExistInInventory=await BookModel.findOne({
-                    where:{
-                        ISBN:isbn
-                    }
-                })
+                
                 /* ISBN coul return a valid 13 o a valid 10 isbn numbers */
                 var isbn10_or_13 = isbn;
                 if (typeof data.identifiers.isbn_13 != "undefined")
@@ -238,9 +302,10 @@ const addBookWithISBN= async(req,res)=>{
                 else if (typeof data.pagination != "undefined") {
                     number_of_pages = parseInt(data.pagination);
                 }
-
-                if(!bookMightExistInInventory){
-                    let createdBook=await BookModel.create({
+                
+                
+                let createdBook=await BookModel.create(
+                    {
                         seo_friendly_title:seo_friendly_title,
                         title:data.title,
                         author:data.authors[0].name,
@@ -253,77 +318,58 @@ const addBookWithISBN= async(req,res)=>{
                         cover_image_url_medium:cover_image_url_medium,
                         cover_image_url_large:cover_image_url_large,
                         price:price
-                    }) 
-    
-                    let inventory = await inventoryModel.create({
-                        book_id:createdBook.book_id ,
-                        quantity_available:qty,
-                        location:"warehouse"
-                    })
-
-                    return res.status(201).json({
-                        msg:`${createdBook.title} was successfully added`,
-                        success:true,
-                        data:{
-                            book:createdBook,
-                            inventory:inventory
-                        } 
-                    });
-                } else {
-
-                    //book exists. let's check the inventory, and add the book only if the inventory is 0
-                    let inventory = await inventoryModel.findOne({
-                        where:{
-                            book_id:bookMightExistInInventory.book_id
-                        }
-                    });
-                    /* 
-                    maybe a new image is available at open library. 
-                    If it is then lets update the image if the image we have is empty 
-                    */
-                    if (cover_image_url && bookMightExistInInventory.cover_image_url == ""){
-                        bookMightExistInInventory.cover_image_url = cover_image_url;
-                        bookMightExistInInventory.cover_image_url_small = cover_image_url_small;
-                        bookMightExistInInventory.cover_image_url_medium = cover_image_url_medium;
-                        bookMightExistInInventory.cover_image_url_large = cover_image_url_large;
-                        await bookMightExistInInventory.save();
+                    },
+                    {
+                        transaction:tCreateNewBook
                     }
-                    
-                    //if inventory is 0, update the quantity available to the new quaantity
-                    if(inventory && inventory.quantity_available && inventory.quantity_available < 1){
-                        inventory.quantity_available=qty;
-                        //also update the book price
-                        bookMightExistInInventory.price=price;
-                        //save the changes
-                        await inventory.save();
-                        await bookMightExistInInventory.save();
-
-                        return res.status(201).json({
-                                success:true,
-                                msg:`${bookMightExistInInventory.title}'s quantity and price data updated+successfully`,
-                                data:{
-                                    book:bookMightExistInInventory,
-                                    inventory:inventory
-                                },
-                                statusCode:201
-                        });
-                    } else { 
-
-                        return res.status(400).json({
-                            success:false,
-                            error:"a book with this title already exists",
-                            statusCode:400
-                        })
-
-                    }                    
-                }
-            } catch (error) {
-                console.log(`${error}`);
-                return res.status(400).json({
-                    success:false,
-                    error:`error when adding book to database: ${error.message}`,
-                    statusCode:400
+                ); 
+                //console.log(`created book: ${JSON.stringify(createdBook, null, 2)}`);
+                let inventory = await inventoryModel.create({
+                    book_id:createdBook.book_id ,
+                    quantity_available:qty,
+                    location:"warehouse"
+                },
+                {
+                    transaction:tCreateNewBook
+                }) ;
+                //console.log(`created inventory: ${JSON.stringify(inventory, null, 2)}`);
+                //the booksgenres model is a many to many relationship table model.
+                //we need to clear the existing genres and add the new ones
+                 await BooksGenresModel.destroy({
+                    where:{
+                        book_id:createdBook.book_id
+                    },
+                    transaction:tCreateNewBook
                 });
+                
+                //add the new genres
+                for (let i = 0; i < genresids.length; i++){
+                    let genreId = genresids[i];
+                    if (genreId == null || genreId == ""){
+                        continue;
+                    };
+                    //console.log(`genreId: ${genreId}`);
+                    let booksGenres = await BooksGenresModel.create({
+                        book_id:createdBook.book_id,
+                        genre_id:genreId
+                    },
+                    {
+                        transaction:tCreateNewBook
+                    });
+                    //console.log(`genres: ${JSON.stringify(booksGenres, null, 2)}`);
+                };
+                await tCreateNewBook.commit();
+                return res.status(201).json({
+                    msg:`${createdBook.title} was successfully added`,
+                    success:true,
+                    data:{
+                        book:createdBook,
+                        inventory:inventory
+                    } 
+                });
+            } catch (error) {
+                throw new Error(error);
+                
             }
         } else {
             return res.status(404).json({
@@ -333,6 +379,7 @@ const addBookWithISBN= async(req,res)=>{
             })            
         }
     } catch(e) {
+        await tCreateNewBook.rollback();
         console.log(`${e.message}`);
         return res.status(404).json({
             success:false,
@@ -440,13 +487,14 @@ const deleteBook=async (req,res)=>{
    * 
        */
       let book= await BookModel.findByPk(req.params.id)
+      let tDestroyBook = await sequelize.transaction();
       try{
          let returnMessage = "";
           
           if (book) {
-                console.log(`Deleting book: ${JSON.stringify(book, null, 2)}`);
+                //console.log(`Deleting book: ${JSON.stringify(book, null, 2)}`);
                 if (book.cover_image_url != null) {
-                    console.log(`Deleting cover image: ${book.cover_image_url}`);
+                    //console.log(`Deleting cover image: ${book.cover_image_url}`);
                     /* check that the cover image url is not hosted on another server, 
                     meaning starts with http or htps */
                     if (!book.cover_image_url.startsWith("http")){
@@ -474,13 +522,32 @@ const deleteBook=async (req,res)=>{
                     }
                 }
                 let oldTitle = book.title;
-                await book.destroy()
+
+                await inventoryModel.destroy({
+                    where:{
+                        book_id:book.book_id
+                    },
+                    transaction:tDestroyBook
+                });
+                await BooksGenresModel.destroy({
+                    where:{
+                        book_id:book.book_id
+                    },
+                    transaction:tDestroyBook
+                });
+                await book.destroy(
+                    {
+                        transaction:tDestroyBook
+                    }
+                );
+                await tDestroyBook.commit();
                 let s = returnMessage.length > 0 ? returnMessage.trim().replace(/ /g, "+") + '&type=danger' : `Book+${oldTitle}+successfully+deleted&type=success`;
                 return res.redirect(`/admin/dashboard?msg=${s}`);
           }         
           
       }
       catch(e){
+          tDestroyBook.rollback();
           console.log(`${e.message}`);
           let s = e.message.trim().replace(/ /g, "+") + '&type=danger';
           return res.status(500).redirect(`/admin/dashboard?msg=${s}`);
@@ -509,8 +576,21 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
     if (!book){
         return res.status(404).redirect('/admin/dashboard?msg=book+not+found&type=danger');
     }
-    
-    console.log(`book found: ${JSON.stringify(book, null, 2)}`);
+    let thisBookallGenres = await BooksGenresModel.findAll({
+        where:{
+            book_id:book.book_id
+        }
+    });
+    if (!thisBookallGenres){
+        thisBookallGenres = [];
+    }
+    /*
+    let genresids = [];
+    for (let i = 0; i < thisBookallGenres.length; i++){
+        genresids.push(thisBookallGenres[i].genre_id);
+    };
+    */
+    let genres = await GenreModel.findAll();    
     
     let c = getValidBookFormatsAndConditions();
     validBookFormats = c.validBookFormats;
@@ -519,6 +599,8 @@ Finally, it renders a view template named "pages/updateBook" and passes the fetc
         user:req.session.USER,
         pagetitle:"Update Book",
         book:book,
+        all_available_genres:genres,
+        books_and_genres:thisBookallGenres,
         image:book.cover_image_url,
         accepted_book_conditions:validBookConditions,
         accepted_book_formats:validBookFormats,
@@ -532,80 +614,113 @@ const saveUpdateBookFormData=async(req,res)=>{
     /**
      * The saveUpdate function handles updating a book and its associated inventory record. It first retrieves the book and inventory records by the book ID, updates the fields with the new data, deletes the old cover image file if a new file is uploaded, and saves the changes to the database. 
      */ 
+    let tUpdateBook = await sequelize.transaction();
     try{
         /**
          * The function retrieves the book and inventory records from the database using the primary key (bookId). If the book or inventory records are not found, it returns a 404 error.
          */
         const book= await BookModel.findByPk(req.body.bookId)
         const inventory=await inventoryModel.findByPk(req.body.bookId)
-            let title = (new String(req.body.title)).trim();
-            let author = (new String(req.body.author)).trim();
-            let language = (new String(req.body.language)).trim();
-            let price = (parseFloat(req.body.price)).toFixed(2);
-            let date = req.body.date;
-            let quantity = parseInt(req.body.quantity);
-            let location = (new String(req.body.location)).trim();
-            let book_condition = (new String(req.body.book_condition)).trim();
-            let format = (new String(req.body.format)).trim();
-            let number_of_pages = parseInt(req.body.number_of_pages);
-            let description = (new String(req.body.description)).trim();
+        let title = (new String(req.body.title)).trim();
+        let author = (new String(req.body.author)).trim();
+        let language = (new String(req.body.language)).trim();
+        let price = (parseFloat(req.body.price)).toFixed(2);
+        let date = req.body.date;
+        let quantity = parseInt(req.body.quantity);
+        let location = (new String(req.body.location)).trim();
+        let book_condition = (new String(req.body.book_condition)).trim();
+        let format = (new String(req.body.format)).trim();
+        let number_of_pages = parseInt(req.body.number_of_pages);
+        let description = (new String(req.body.description)).trim();
+        const genresids = req.body.genres || [];
+               
+    
+        //The function updates the fields of the book and inventory records with the data from the request body.
+        //only update fields that have changed
+        if(title != book.title){
+            book.set({title:title})
+        } ;
+        if(author != book.author){
+            book.set({author:author})
+        };
+        if(language != book.language){
+            book.set({language:language})
+        };
+        if(price != book.price){
+            book.set({price:price})
+        };
+        if(description != book.description){
+            book.set({description:description})
+        };
+        if(book_condition != book.book_condition){
+            book.set({book_condition:book_condition})
+        };
+        if(format != book.format){
+            book.set({format:format})
+        };
+        if(number_of_pages != book.number_of_pages){
+            book.set({number_of_pages:number_of_pages})
+        };
+        if(date != book.publication_date){
+            book.set({publication_date:date})
+        };
+        if(quantity != inventory.quantity_available){
+            inventory.set({quantity_available:quantity})
+        };
+        if(location != inventory.location){
+            inventory.set({location:location})
+        };        
+        //The function saves the updated book and inventory records to the database.
 
-       
-            //The function updates the fields of the book and inventory records with the data from the request body.
-            //only update fields that have changed
-            if(title != book.title){
-                book.set({title:title})
-            } ;
-            if(author != book.author){
-                book.set({author:author})
-            };
-            if(language != book.language){
-                book.set({language:language})
-            };
-            if(price != book.price){
-                book.set({price:price})
-            };
-            if(description != book.description){
-                book.set({description:description})
-            };
-            if(book_condition != book.book_condition){
-                book.set({book_condition:book_condition})
-            };
-            if(format != book.format){
-                book.set({format:format})
-            };
-            if(number_of_pages != book.number_of_pages){
-                book.set({number_of_pages:number_of_pages})
-            };
-            if(date != book.publication_date){
-                book.set({publication_date:date})
-            };
-            if(quantity != inventory.quantity_available){
-                inventory.set({quantity_available:quantity})
-            };
-            if(location != inventory.location){
-                inventory.set({location:location})
-            };        
-            //The function saves the updated book and inventory records to the database.
-
-            await book.save()
-            await inventory.save()
-
-            //After successful update, we notify the user
-            return res.status(201).json({
-                success:true,
-                msg:`${book.title}'s+data+updated+successfully`,
-                data:{
-                    book:book,
-                    inventory:inventory
+        await book.save(
+            {
+                transaction:tUpdateBook
+            }
+        )
+        await inventory.save(
+            {
+                transaction:tUpdateBook
+            }
+        );
+        //the booksgenres model is a many to many relationship table model.
+        //we need to clear the existing genres and add the new ones
+        await BooksGenresModel.destroy({
+            where:{
+                book_id:book.book_id
+            },
+            transaction:tUpdateBook
+        });
+        //add the new genres
+        for (let i = 0; i < genresids.length; i++){
+            let genreId = genresids[i];
+            await BooksGenresModel.create(
+                {
+                    book_id:book.book_id,
+                    genre_id:genreId
                 },
-                statusCode:201
-            });
-            
+                {
+                    transaction:tUpdateBook
+                }
+            );
+        };
+        await tUpdateBook.commit();
+
+        //After successful update, we notify the user
+        return res.status(201).json({
+            success:true,
+            msg:`${book.title}'s+data+updated+successfully`,
+            data:{
+                book:book,
+                inventory:inventory
+            },
+            statusCode:201
+        });
+        
     
     }
     
     catch(e){
+        tUpdateBook.rollback();
         console.log(`${e.message}`);
         return res.status(500).redirect(`/admin/dashboard?msg=server+error&type=danger`);
     }
