@@ -80,6 +80,6 @@ BooksGenres.init({
 // Establish the association
 BooksGenres.hasMany(Book, { foreignKey: 'book_id' });
 BooksGenres.hasMany(Genre, { foreignKey: 'genre_id' });
-Book.belongsToMany(BooksGenres, { foreignKey: 'book_id' });
+Book.belongsTo(BooksGenres, { foreignKey: 'book_id' });
 
 module.exports = BooksGenres;

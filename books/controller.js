@@ -1,8 +1,10 @@
 
 const { Op } = require("sequelize");
-const bookModel=require("../models/bookModel")
+const BookModel =require("../models/bookModel")
 const { validationResult } = require('express-validator');
 const inventoryModel=require("../models/inventory");
+const GenreModel = require('../models/genreModel');
+const BooksGenresModel = require('../models/booksGenresModel');
 const axios = require('axios');
 
 const fs=require("fs");
@@ -29,8 +31,8 @@ function getValidBookFormatsAndConditions() {
     if (validBookFormats != null && validBookConditions != null){
         return {validBookFormats, validBookConditions};
     };
-    validBookConditions =  bookModel.getAttributes().book_condition.values;
-    validBookFormats =  bookModel.getAttributes().format.values;
+    validBookConditions =  BookModel.getAttributes().book_condition.values;
+    validBookFormats =  BookModel.getAttributes().format.values;
     return {validBookConditions, validBookFormats};
 };
 const allBooksDumpApi=async(req,res)=>{
@@ -39,7 +41,7 @@ const allBooksDumpApi=async(req,res)=>{
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
 
-        const books = await bookModel.findAll({
+        const books = await BookModel.findAll({
             limit: limit,
             offset: offset,
             include:[
@@ -47,7 +49,7 @@ const allBooksDumpApi=async(req,res)=>{
             ]
         });
 
-        const totalItems = await bookModel.count();
+        const totalItems = await BookModel.count();
         const totalPages = Math.ceil(totalItems / limit);
 
         res.status(200).json({
@@ -76,7 +78,7 @@ const oneBookDetailsHtmlView= async (req,res)=>{
  */
     const param=req.params.seo_friendly_title ;
 
-    const book= await bookModel.findOne({
+    const book= await BookModel.findOne({
         where:{
             seo_friendly_title:param
         },
@@ -90,7 +92,7 @@ const oneBookDetailsHtmlView= async (req,res)=>{
 
     //console.log(`book found: ${JSON.stringify(book,null, 2)}`);
 
-     const relatedBooks= await bookModel.findAll({
+     const relatedBooks= await BookModel.findAll({
         where: {
             book_id: {
                 [Op.ne]: book.book_id // Exclude the current book
@@ -181,7 +183,7 @@ const addBookWithISBN= async(req,res)=>{
         if(data){
             let desc= await getBookDescription(data.identifiers.openlibrary[0])
             try {
-                const bookMightExistInInventory=await bookModel.findOne({
+                const bookMightExistInInventory=await BookModel.findOne({
                     where:{
                         ISBN:isbn
                     }
@@ -238,7 +240,7 @@ const addBookWithISBN= async(req,res)=>{
                 }
 
                 if(!bookMightExistInInventory){
-                    let createdBook=await bookModel.create({
+                    let createdBook=await BookModel.create({
                         seo_friendly_title:seo_friendly_title,
                         title:data.title,
                         author:data.authors[0].name,
@@ -340,7 +342,7 @@ const addBookWithISBN= async(req,res)=>{
     }
 } ;
 
-const getAddBookWithISBNForm=(req,res)=>{
+const getAddBookWithISBNForm=async (req,res)=>{
     /**
  * Renders the "pages/addBookWithISBNForm" template with a message set to false.
  *
@@ -355,6 +357,8 @@ const getAddBookWithISBNForm=(req,res)=>{
     let c = getValidBookFormatsAndConditions();
     validBookFormats = c.validBookFormats;
     validBookConditions = c.validBookConditions;
+    let allGenres = await GenreModel.findAll();
+    //console.log(`all genres: ${JSON.stringify(allGenres, null, 2)}`);
     res.status(200).render("../books/pages/addBookWithISBNForm",{
         pagetitle:"Add Book with ISBN",
         user:user,
@@ -363,6 +367,7 @@ const getAddBookWithISBNForm=(req,res)=>{
         accepted_book_conditions:validBookConditions,
         accepted_book_formats:validBookFormats,
         add_books_route_name: "addBookWithExternalAPI",
+        allGenres:allGenres,
 
     })
 } ;
@@ -387,7 +392,7 @@ const searchBook=async (req,res)=>{
             let query= req.body.query 
             query = query.trim();
             //console.log(`Searching for query: ${query}`);
-            const books= await bookModel.findAll({
+            const books= await BookModel.findAll({
                 where: {
                   [Op.or]: [
                     { title: { [Op.like]: `%${query}%` } }, // Op.iLike is for case-insensitive search in PostgreSQL
@@ -434,7 +439,7 @@ const deleteBook=async (req,res)=>{
    * 6. If an error occurs at any step, logs the error and redirects the user to the admin dashboard with an error message.
    * 
        */
-      let book= await bookModel.findByPk(req.params.id)
+      let book= await BookModel.findByPk(req.params.id)
       try{
          let returnMessage = "";
           
@@ -531,7 +536,7 @@ const saveUpdateBookFormData=async(req,res)=>{
         /**
          * The function retrieves the book and inventory records from the database using the primary key (bookId). If the book or inventory records are not found, it returns a 404 error.
          */
-        const book= await bookModel.findByPk(req.body.bookId)
+        const book= await BookModel.findByPk(req.body.bookId)
         const inventory=await inventoryModel.findByPk(req.body.bookId)
             let title = (new String(req.body.title)).trim();
             let author = (new String(req.body.author)).trim();

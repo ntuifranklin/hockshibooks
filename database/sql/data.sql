@@ -3,6 +3,7 @@ INSERT INTO Genres (genre_id, name) VALUES
     (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Computer and Technology'),
     (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Finance'),
     (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Personal Development'),
+    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Investing'),
     (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Business');
 
 /*!40000 ALTER TABLE `Books` DISABLE KEYS */;
