@@ -8,6 +8,8 @@ DROP TABLE IF EXISTS SequelizeMeta;
 
 DROP TABLE IF EXISTS Book_Reviews;
 
+DROP TABLE IF EXISTS BooksGenres;
+
 DROP TABLE IF EXISTS customerOtpTable;
 DROP TABLE IF EXISTS Customer_password_reset_requests;
 
@@ -51,7 +53,7 @@ CREATE TABLE Email_Subscriber (
     tags VARCHAR(255) -- Additional tags for categorizing the subscriber (e.g., 'VIP', 'Frequent Buyer')
 );
 
--- Customers Table
+-- Genres Table
 CREATE TABLE Genres (
     genre_id VARCHAR(64) PRIMARY KEY,
     name VARCHAR(128) NOT NULL
@@ -84,6 +86,17 @@ CREATE TABLE Books (
     cover_image_url_large VARCHAR(1024)
 );
 
+
+/*!40000 ALTER TABLE `Books` ENABLE KEYS */;
+
+CREATE TABLE BooksGenres (
+	book_genre_id VARCHAR(64) PRIMARY KEY,
+    book_id VARCHAR(64) NOT NULL,
+    genre_id VARCHAR(64) NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES Books(book_id),
+    FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)   
+);
+
 -- Promotions Table
 CREATE TABLE Promotions (
     promo_id VARCHAR(64) PRIMARY KEY,
@@ -102,6 +115,25 @@ CREATE TABLE Inventory (
     ON delete CASCADE
     ON update CASCADE
 );
+
+INSERT INTO `Inventory` VALUES
+('03b88b284b846a222b26610ef6500781',1,'warehouse'),
+('174763f85d88946cd39622464e0a532c',1,'warehouse'),
+('1cc7ae0ffe2654c00763e21f0e587f97',1,'warehouse'),
+('4eb0e6c8ae771e9622f8b79fe4e9029f',1,'warehouse'),
+('58146e3b39b2ad96c8b268fdda267356',1,'warehouse'),
+('58b8eac08d738216aa904b80d45c1f9e',1,'warehouse'),
+('74d9ac32f1123501cad04cf59af00018',1,'warehouse'),
+('77a9d51f79fe60f38af743412f521c07',1,'warehouse'),
+('95c24aa6852153af3aaa06198088045e',1,'warehouse'),
+('d1a747b08743a5d18053e0e5c114c158',1,'warehouse'),
+('d22a87459b8289c75b6f47472bcc5318',1,'warehouse'),
+('d9412f53ae33c8fe99d4e3cbbf97cad1',1,'warehouse'),
+('e2ebddddcdaef4cd209308f51cfdb598',1,'warehouse'),
+('ee1791d35fe1dcee8126db3254d478e2',1,'warehouse'),
+('f806a7102c92400b8b0044f643ac60b3',1,'warehouse'),
+('fbf4b2cdc0341672f468d484d7f082cd',1,'warehouse'),
+('dbed93d2ad7c739ff1eb527afb701ff0',1,'warehouse');
 
 CREATE TABLE powerUsers (
      id CHAR(36) PRIMARY KEY DEFAULT (UUID()),

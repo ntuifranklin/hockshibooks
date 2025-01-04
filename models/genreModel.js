@@ -29,7 +29,7 @@ Genre.init({
              genre.book_id = await crypto.createHash('md5').update(Math.random().toString()).digest('hex');
           }
           }
-          },
+    },
 });
 
 module.exports = Genre;
