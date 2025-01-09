@@ -5,8 +5,7 @@ const router = express.Router();
 
 module.exports = () => {
     router.post("/subscribe", validateEmailMiddleware, subscribe);
-    router.post("/unsubscribe:subscriber_id",subscriber_id_found, unsubscribe);
-    
+    router.post("/unsubscribe:subscriber_id",subscriber_id_found, unsubscribe);   
 
     return router;
 }

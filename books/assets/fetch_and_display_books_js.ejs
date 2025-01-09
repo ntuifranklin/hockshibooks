@@ -74,18 +74,19 @@
             const response = await fetch(`${api_get_books_url}?page=${page}&limit=${limit}&bookName=${bookName}&sort=${sort}`);
             result = await response.json();
             data= result.data
-            console.log(result)
+            //console.log(result)
             renderBooks(data)
         }
 
 
     // Returns: None
-    fetchBooks()
+    //await fetchBooks()
     
 
 
     window.addEventListener("load",async()=>{
-            console.log("finished loading")
+            //console.log("finished loading")
+            /*
             document.getElementById('prevPage').addEventListener('click', async() => {
                 if (currentPage > 1) {
                     await fetchBooks(currentPage - 1,"", currentSort);
@@ -96,7 +97,8 @@
             document.getElementById('nextPage').addEventListener('click', async() => {
                   await fetchBooks(currentPage + 1,"", currentSort);
 
-            });      
+            });    
+            */  
                       
         });
 

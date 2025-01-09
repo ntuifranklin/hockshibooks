@@ -179,7 +179,7 @@ async function startNewHockshiServer(){
 	}) ;
 
 	//check the values of the stripe keys
-	console.log("Stripe public key: ", process.env.STRIPE_PUBLIC_KEY);
+	//console.log("Stripe public key: ", process.env.STRIPE_PUBLIC_KEY);
 	//console.log("Stripe secret key: ", process.env.STRIPE_SECRET_KEY);
 
 	return app ;

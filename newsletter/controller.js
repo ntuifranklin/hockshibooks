@@ -5,7 +5,7 @@ const subscribe = async (req, res) => {
         const { email } = req.body;
         
         const subscriber = await EmailSubscriber.create({ email });
-        return res.status(201).json(subscriber);
+        return res.status(200).json(subscriber);
     } catch (error) {
         console.log(`error occured while subscribing: `,JSON.stringify(error, null, 2));
         return res.status(500).json({ error: error.message });
