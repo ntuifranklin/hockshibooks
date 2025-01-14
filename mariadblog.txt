@@ -1,0 +1,16 @@
+2025-01-11 00:06:17+00:00 [Note] [Entrypoint]: Entrypoint script for MariaDB Server 1:11.6.2+maria~ubu2404 started.
+2025-01-11 00:06:17+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+2025-01-11 00:06:17+00:00 [Note] [Entrypoint]: Entrypoint script for MariaDB Server 1:11.6.2+maria~ubu2404 started.
+2025-01-11 00:06:17+00:00 [Note] [Entrypoint]: Initializing database files
+2025-01-11 00:06:20+00:00 [Note] [Entrypoint]: Database files initialized
+2025-01-11 00:06:20+00:00 [Note] [Entrypoint]: Starting temporary server
+2025-01-11 00:06:20+00:00 [Note] [Entrypoint]: Waiting for server startup
+2025-01-11 00:06:23+00:00 [Note] [Entrypoint]: Temporary server started.
+2025-01-11 00:06:24+00:00 [Note] [Entrypoint]: Creating database hockshidbprod
+2025-01-11 00:06:24+00:00 [Note] [Entrypoint]: Securing system users (equivalent to running mysql_secure_installation)
+
+2025-01-11 00:06:24+00:00 [Note] [Entrypoint]: Stopping temporary server
+2025-01-11 00:06:24+00:00 [Note] [Entrypoint]: Temporary server stopped
+
+2025-01-11 00:06:24+00:00 [Note] [Entrypoint]: MariaDB init process done. Ready for start up.
+

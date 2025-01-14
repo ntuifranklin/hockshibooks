@@ -237,11 +237,26 @@ const validateBookUpdateForm = [
   },
 ];
 
+const validateGenreSeoFriendlyTitleExists = (req, res, next) => {
+  const genreSeoFriendlyTitle = req.params.genre_seo_friendly_title;
+  GenreModel.findOne({ where: { seo_friendly_title: genreSeoFriendlyTitle } })
+    .then(genre => {
+      if (!genre) {
+        return res.status(404).json({ error: 'Genre not found' });
+      }
+      res.locals.genre = genre;
+      next();
+    })
+    .catch(err => {
+      return res.status(500).json({ error: 'Error finding genre' });
+    });
+} ;
+
 module.exports= {
   validateISBN,
   validateCreateNewBookForm,
   validateBookID,
   validateBookUpdateForm,
-  validateAddBookWithISBNForm
-  
+  validateAddBookWithISBNForm,
+  validateGenreSeoFriendlyTitleExists
 }

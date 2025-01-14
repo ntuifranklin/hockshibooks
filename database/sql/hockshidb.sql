@@ -56,7 +56,8 @@ CREATE TABLE Email_Subscriber (
 -- Genres Table
 CREATE TABLE Genres (
     genre_id VARCHAR(64) PRIMARY KEY,
-    name VARCHAR(128) NOT NULL
+    name VARCHAR(128) NOT NULL,
+    seo_friendly_title VARCHAR(256) NOT NULL -- SEO-friendly title for the genre
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Books Table

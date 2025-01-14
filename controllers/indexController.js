@@ -17,12 +17,14 @@ const showHomePage = async (req,res)=>{
  * @return {Promise<void>} - A promise that resolves when the home page view is rendered.
  */
 
+    
     const books=await bookModel.findAll({
         limit:8,
         include:[
             {model:inventoryModel}
         ], 
     });
+    
     customer = req.session.customer;
     //console.log(`${JSON.stringify(books, null, 2)}`);
     return res.status(200).render("pages/home",{

@@ -6,6 +6,8 @@ INSERT INTO Genres (genre_id, name, seo_friendly_title) VALUES
     (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Investing', 'investing'),
     (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Business', 'business');
 
+
+
 -- Insert data for the US and Canada into the Countries Table
 INSERT INTO Countries (country_code, country_name) VALUES ('US', 'United States'), ('CA', 'Canada');
 
@@ -78,7 +80,6 @@ INSERT INTO Provinces_States (province_state_id, country_code, province_state_na
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Northwest Territories','NT'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Nunavut','NU'),
 (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Yukon','YT');
-
 
 
 INSERT INTO powerUsers ( email,password,role) VALUES 

@@ -51,20 +51,14 @@ CREATE TABLE Email_Subscriber (
     unsubscribe_reason VARCHAR(255), -- Reason provided by the subscriber for unsubscribing
     gdpr_consent BOOLEAN DEFAULT FALSE, -- Whether the subscriber has provided GDPR consent
     tags VARCHAR(255) -- Additional tags for categorizing the subscriber (e.g., 'VIP', 'Frequent Buyer')
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Genres Table
 CREATE TABLE Genres (
     genre_id VARCHAR(64) PRIMARY KEY,
-    name VARCHAR(128) NOT NULL
-);
-
-INSERT INTO Genres (genre_id, name) VALUES 
-    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Science, Math, and Engineering'),
-    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Computer and Technology'),
-    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Finance'),
-    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Personal Development'),
-    (SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'Business');
+    name VARCHAR(128) NOT NULL,
+    seo_friendly_title VARCHAR(256) NOT NULL -- SEO-friendly title for the genre
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Books Table
 CREATE TABLE Books (
@@ -84,10 +78,8 @@ CREATE TABLE Books (
     cover_image_url_small VARCHAR(1024),
     cover_image_url_medium VARCHAR(1024),
     cover_image_url_large VARCHAR(1024)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
-/*!40000 ALTER TABLE `Books` ENABLE KEYS */;
 
 CREATE TABLE BooksGenres (
 	book_genre_id VARCHAR(64) PRIMARY KEY,
@@ -95,7 +87,7 @@ CREATE TABLE BooksGenres (
     genre_id VARCHAR(64) NOT NULL,
     FOREIGN KEY (book_id) REFERENCES Books(book_id),
     FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)   
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Promotions Table
 CREATE TABLE Promotions (
@@ -104,7 +96,7 @@ CREATE TABLE Promotions (
     discount_percentage DECIMAL(5, 2) NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Inventory Table
 CREATE TABLE Inventory (
@@ -114,33 +106,14 @@ CREATE TABLE Inventory (
     FOREIGN KEY (book_id) REFERENCES Books(book_id)
     ON delete CASCADE
     ON update CASCADE
-);
-
-INSERT INTO `Inventory` VALUES
-('03b88b284b846a222b26610ef6500781',1,'warehouse'),
-('174763f85d88946cd39622464e0a532c',1,'warehouse'),
-('1cc7ae0ffe2654c00763e21f0e587f97',1,'warehouse'),
-('4eb0e6c8ae771e9622f8b79fe4e9029f',1,'warehouse'),
-('58146e3b39b2ad96c8b268fdda267356',1,'warehouse'),
-('58b8eac08d738216aa904b80d45c1f9e',1,'warehouse'),
-('74d9ac32f1123501cad04cf59af00018',1,'warehouse'),
-('77a9d51f79fe60f38af743412f521c07',1,'warehouse'),
-('95c24aa6852153af3aaa06198088045e',1,'warehouse'),
-('d1a747b08743a5d18053e0e5c114c158',1,'warehouse'),
-('d22a87459b8289c75b6f47472bcc5318',1,'warehouse'),
-('d9412f53ae33c8fe99d4e3cbbf97cad1',1,'warehouse'),
-('e2ebddddcdaef4cd209308f51cfdb598',1,'warehouse'),
-('ee1791d35fe1dcee8126db3254d478e2',1,'warehouse'),
-('f806a7102c92400b8b0044f643ac60b3',1,'warehouse'),
-('fbf4b2cdc0341672f468d484d7f082cd',1,'warehouse'),
-('dbed93d2ad7c739ff1eb527afb701ff0',1,'warehouse');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE powerUsers (
      id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('basic_admin', 'super_admin') NOT NULL DEFAULT 'basic_admin'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE otpTable (
@@ -151,14 +124,14 @@ CREATE TABLE otpTable (
     FOREIGN KEY (powerUserId) REFERENCES powerUsers(id) 
     ON DELETE CASCADE 
     ON UPDATE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- category table
 CREATE TABLE `Categories` (
     `category_id` VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
     `name` VARCHAR(128) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- products table
 CREATE TABLE `Products` (
     `product_id` VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
@@ -168,7 +141,7 @@ CREATE TABLE `Products` (
     `product_image_url` VARCHAR(1024),
     `category` VARCHAR(64),
     FOREIGN KEY (`category`) REFERENCES `Categories`(`category_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Customers Table
 CREATE TABLE Customers (
@@ -184,7 +157,7 @@ CREATE TABLE Customers (
     country VARCHAR(128)  NULL,
     postal_zipcode VARCHAR(32)  NULL,
     phone VARCHAR(32)  NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE customerOtpTable (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
@@ -194,7 +167,7 @@ CREATE TABLE customerOtpTable (
     FOREIGN KEY (customerId) REFERENCES Customers(customer_id) 
     ON DELETE CASCADE 
     ON UPDATE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Password Reset Request Table
 CREATE TABLE Customer_password_reset_requests (
@@ -207,13 +180,13 @@ CREATE TABLE Customer_password_reset_requests (
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) 
 	ON DELETE CASCADE 
 	ON UPDATE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Countries Table
 CREATE TABLE Countries (
     country_code VARCHAR(4) PRIMARY KEY,
     country_name VARCHAR(128) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Provinces_States Table
 CREATE TABLE Provinces_States (
@@ -222,80 +195,7 @@ CREATE TABLE Provinces_States (
     province_state_name VARCHAR(128) NOT NULL,
     province_state_code VARCHAR(2) NOT NULL,
     FOREIGN KEY (country_code) REFERENCES Countries(country_code)
-);
-
--- Insert data for the US and Canada into the Countries Table
-INSERT INTO Countries (country_code, country_name) VALUES ('US', 'United States'), ('CA', 'Canada');
-
--- Insert US states into the Provinces_States Table with random province_state_id
-INSERT INTO Provinces_States (province_state_id, country_code, province_state_name, province_state_code) VALUES
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Alabama', 'AL'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Alaska', 'AK'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Arizona', 'AZ'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Arkansas', 'AR'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'California', 'CA'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Colorado', 'CO'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Connecticut', 'CT'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Delaware', 'DE'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Florida', 'FL'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Georgia', 'GA'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Hawaii', 'HI'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Idaho', 'ID'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Illinois', 'IL'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Indiana', 'IN'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Iowa', 'IA'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Kansas', 'KS'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Kentucky', 'KY'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Louisiana', 'LA'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Maine', 'ME'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Maryland', 'MD'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Massachusetts', 'MA'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Michigan', 'MI'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Minnesota', 'MN'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Mississippi', 'MS'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Missouri', 'MO'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Montana', 'MT'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Nebraska', 'NE'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Nevada', 'NV'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'New Hampshire', 'NH'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'New Jersey', 'NJ'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'New Mexico', 'NM'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'New York', 'NY'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'North Carolina', 'NC'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'North Dakota', 'ND'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Ohio', 'OH'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Oklahoma', 'OK'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Oregon', 'OR'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Pennsylvania', 'PA'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Rhode Island', 'RI'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'South Carolina', 'SC'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'South Dakota', 'SD'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Tennessee', 'TN'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Texas', 'TX'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Utah', 'UT'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Vermont', 'VT'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Virginia', 'VA'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Washington', 'WA'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'District of Columbia', 'DC'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'West Virginia', 'WV'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Wisconsin', 'WI'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'US', 'Wyoming', 'WY');
-
--- Insert Canadian provinces into the Provinces_States Table with random province_state_id
-INSERT INTO Provinces_States (province_state_id, country_code, province_state_name, province_state_code) VALUES
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Alberta','AB'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'British Columbia','BC'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Manitoba','MB'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'New Brunswick','NB'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Newfoundland and Labrador','NF'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Nova Scotia','NS'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Ontario','ON'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Prince Edward Island', 'PE'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Quebec','QC'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Saskatchewan','SK'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Northwest Territories','NT'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Nunavut','NU'),
-(SUBSTRING(MD5(RAND()) FROM 1 FOR 64), 'CA', 'Yukon','YT');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Orders Table
 CREATE TABLE Orders (
@@ -311,7 +211,7 @@ CREATE TABLE Orders (
     shipping_postal_code VARCHAR(32) NOT NULL,
     delivery_status ENUM('Processing', 'Shipped', 'Delivered') NOT NULL,
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Order_Items Table
 CREATE TABLE Order_Items (
@@ -323,7 +223,7 @@ CREATE TABLE Order_Items (
     subtotal DECIMAL(16, 2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES Orders(order_id),
     FOREIGN KEY (book_id) REFERENCES Books(book_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Payment Table
 CREATE TABLE Payment (
@@ -334,14 +234,14 @@ CREATE TABLE Payment (
     amount DECIMAL(10, 2) NOT NULL,
     transaction_id VARCHAR(128) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES Orders(order_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Shipping_Carriers Table
 CREATE TABLE Shipping_Carriers (
     carrier_id VARCHAR(64) PRIMARY KEY,
     carrier_name VARCHAR(128) NOT NULL,
     tracking_url VARCHAR(512) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Book_Reviews Table
 CREATE TABLE Book_Reviews (
@@ -353,7 +253,7 @@ CREATE TABLE Book_Reviews (
     review_date DATE NOT NULL,
     FOREIGN KEY (book_id) REFERENCES Books(book_id),
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Some views :
 CREATE VIEW SecureCustomers AS
@@ -387,7 +287,3 @@ SELECT
 FROM Inventory as i
 LEFT JOIN Books as b
 ON i.book_id = b.book_id;
-
-
-INSERT INTO powerUsers ( email,password,role) VALUES ( 'franklinwebdev704@gmail.com','$2b$10$ksGTrtCJ4NCjqcYwar5vh.sW0lBLGlVY5TlJ8oVwVducQ13/YixcO',"super_admin");
-

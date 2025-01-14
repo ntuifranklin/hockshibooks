@@ -5,7 +5,6 @@ const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
 const port = env != process.env.PRODUCTION_ENV ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
 
 
-
 const express = require('express');
 
 const path = require('path');
@@ -14,7 +13,7 @@ const {connect,checkUploadDir,setDatabaseEnvironment}=require("./utilities/funct
 const bodyParser = require('body-parser');
 const {setStripeKeysToUse} = require('./middleware/set_stripe_keys');
 const routes = require('./routes');
-
+const {errorsController} = require('./errors/controller');
 const csrf = require('csurf');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
@@ -60,7 +59,7 @@ const {
 	setUniqueUserID,
 	initializeRedisClient
 } = require('./middleware/redis');
-const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM, USER_CART_NAME } = require('./utilities/universal_web_constants');
+const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM } = require('./utilities/universal_web_constants');
 const { setResponseLocalsCustomer } = require("./customer/utilities");
 //const { getListOfAcceptedStripePaymentMethods } = require("./checkout/utilities");
 
@@ -75,11 +74,11 @@ const request_rate_limiter = rateLimit({
 let mysqlSessionStore = new MySQLStore(mysq_store_session_database_options);
 
 async function startNewHockshiServer(){
-		
 	/* This is a duplicate right here */
 	setDatabaseEnvironment();
 	const app = express();
-
+	try {
+		
 	//start redis cache
 	await initializeRedisClient();
 	app.use(express.static(path.join(__dirname, 'views')));
@@ -163,7 +162,6 @@ async function startNewHockshiServer(){
 		const valid_cart_actions = [ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM];
 		req.locals.valid_cart_actions = valid_cart_actions ;
 		
-		
 		next();
 	});
 
@@ -174,6 +172,7 @@ async function startNewHockshiServer(){
 	*/
 	app.use('/',routes());
 	app.use(setResponseLocalsCustomer);
+	
 	app.listen(port, () => {
 		console.log(`One hockshi worker server listening on port ${port}`);
 	}) ;
@@ -182,6 +181,9 @@ async function startNewHockshiServer(){
 	//console.log("Stripe public key: ", process.env.STRIPE_PUBLIC_KEY);
 	//console.log("Stripe secret key: ", process.env.STRIPE_SECRET_KEY);
 
+	} catch(e){
+		app.use(errorsController);
+	} ;
 	return app ;
 } ;
 

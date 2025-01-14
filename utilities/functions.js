@@ -10,7 +10,7 @@ const nodemailerMock=require("nodemailer-mock")
 const axios= require("axios");
 const { Email } = require('./email');
 const ejs = require('ejs');
-const { createCanvas, loadImage } = require('canvas');
+const { createCanvas } = require('canvas');
 const {
   ORDER_STATUS_PROCESSING,
   ORDER_STATUS_SHIPPED,
@@ -39,7 +39,7 @@ const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
     process.env.DB_NAME = process.env.DB_DEV_DB_NAME;
     process.env.DB_HOST = process.env.DB_DEV_HOST;
   } else {
-    process.exit(1);
+    throw(new Error(`Environment not set for database settings, please set the environment variable NODE_ENV to either production, testing or development`));
   } ;
   
     /* print current settings 
@@ -412,7 +412,6 @@ for (let i = 0; i < lines.length; i++) {
   context.fillText(lines[i], startX, startY + i * writePx);
 }
 
-
 // Save image to file
 const buffer = canvas.toBuffer('image/jpeg');
 let imageFilename = imageTitle + '.jpg';
@@ -422,7 +421,7 @@ fs.writeFileSync(uploadsDir + '/' + imageFilename, buffer);
 
 return imageFilename;
 
-}
+};
 module.exports={
   createDefaultBookImage,
   sendCustomerNewOrderEmailNotofication,

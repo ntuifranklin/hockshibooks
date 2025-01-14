@@ -1,0 +1,29 @@
+<%- include('../../views/partials/pagehead') %>
+
+<%- include('../../views/layout/customerNavBar') %>
+
+<%- include('../../views/partials/breadcrumbs') %>
+    
+    <div id="main-wrapper">        
+        <div class="container">
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Ooops!</h4>
+                <p>Sorry, something went wrong while processing your request. Please try again later or contact support if the issue persists.</p>
+                <hr>
+                <p class="mb-0">If the problem continues, please reach out to our support team for assistance.</p>
+            </div>
+            
+            <%- include('../../views/partials/newsletterform') %>
+        </div>
+        <%- include('../../views/partials/footerarea') %>
+    </div>
+    <!--====================  scroll top ====================-->
+    <a href="#" class="scroll-top" id="scroll-top">
+        <i class="arrow-top icon-arrow-up"></i>
+        <i class="arrow-bottom icon-arrow-up"></i>
+    </a>
+    
+<%- include('../../views/partials/commonjslibs'); %>
+</body>
+
+</html>

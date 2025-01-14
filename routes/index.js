@@ -23,6 +23,7 @@ const checkoutRoute = require('../checkout/route');
 const ordersRoute = require('../orders/route');
 
 const customerRoute = require('../customer/route');
+
 const {
   showHomePage,
   showError404,
@@ -33,7 +34,7 @@ const {
 
 const newsLetterRoute = require('../newsletter/route');
 
-module.exports = () => {
+module.exports = (req,res,next) => {
   try{
     
       router.get("/",showHomePage)
@@ -53,17 +54,21 @@ module.exports = () => {
 
       router.use('/customer',customerRoute())
 
-      router.use('/newsletter',newsLetterRoute());
+      router.use('/newsletter',newsLetterRoute());     
+      
+     
 
       //router.get("/orderDetail/:id",orderDetail)
       router.route("/f404").get(showError404).post(showError404)
+
+
       router.route("/*").get(showError404).post(showError404)
       
   } catch (error){
     //send 500 error to the client
+    //console.log(`Error in ${__filename}`, error)
     
-
-    console.log(`Error in ${__filename}`, error)
+    router.next(error)
     
   } ;
 

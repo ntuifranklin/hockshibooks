@@ -14,7 +14,8 @@ const {
     searchBook,
     deleteBook,
     getUpdateBookForm,
-    saveUpdateBookFormData
+    saveUpdateBookFormData,
+    booksByGenreSeoFriendlyTitle
 } = require('./controller');
 
 const { verifyLogin } = require('../admin/middleware') ;
@@ -24,7 +25,8 @@ const {
     validateCreateNewBookForm, 
     validateBookID,
     validateBookUpdateForm,
-    validateAddBookWithISBNForm
+    validateAddBookWithISBNForm,
+    validateGenreSeoFriendlyTitleExists
 } = require('./middleware');
 const { showError404 } = require('../controllers/indexController');
 module.exports = () => {
@@ -36,6 +38,7 @@ module.exports = () => {
     router.get(`/delete/:id`,verifyAdminIsLoggedIn,validateBookID, deleteBook);    
     router.post('/search', searchBook)    
 
+    router.get('/genre/:genre_seo_friendly_title',validateGenreSeoFriendlyTitleExists, booksByGenreSeoFriendlyTitle)
     /*
     Since validateBookID and getUpdateBookForm both access the databse twice for the same book
 

@@ -12,7 +12,11 @@ Genre.init({
     name: {
         type: DataTypes.STRING(128),
         allowNull: false
-    }
+    },
+    seo_friendly_title: {
+        type: DataTypes.STRING(256),
+        allowNull: false
+    },
 }, {
     sequelize,
     modelName: 'Genre',

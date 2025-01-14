@@ -458,7 +458,6 @@ const searchBook=async (req,res)=>{
               return res.status(200).render("../books/pages/search",{
                 pagetitle:"Search Books",
                 "books":books,
-                
                 base_route_name:"books",
                 api_route_name:"api",
                 custumer:customer,
@@ -728,7 +727,43 @@ const saveUpdateBookFormData=async(req,res)=>{
 
 }
 
-
+const booksByGenreSeoFriendlyTitle = async (req, res) => {
+    const genre_seo_friendly_title = req.params.genre_seo_friendly_title;
+    //genre should already be in the locals variable
+    const genre = res.locals.genre;
+    const genre_id = genre.genre_id;
+    //first select all books_id that have genre_id = genre_id
+    const booksGenres = await BooksGenresModel.findAll({
+        where: {
+            genre_id: genre_id
+        }
+    });
+    let book_ids = [];
+    for (let i = 0; i < booksGenres.length; i++){
+        book_ids.push(booksGenres[i].book_id);
+    };
+    //console.log(`book_ids: ${JSON.stringify(book_ids, null, 2)}`);
+    const books = await BookModel.findAll({
+        where: {
+            book_id: {
+                [Op.in]: book_ids
+            }
+        },
+        include: [
+            {model: inventoryModel}
+        ]
+    });
+    //console.log(`books: ${JSON.stringify(books, null, 2)}`);
+    let customer = req.session.customer;
+    return res.status(200).render("../books/pages/search", {
+        pagetitle: `${genre.name} Books`,
+        books: books,
+        base_route_name: "books",
+        api_route_name: "api",
+        genre: genre,
+        customer: customer
+    });
+}
 
 
 module.exports = {
@@ -740,5 +775,6 @@ module.exports = {
     searchBook,
     deleteBook,
     getUpdateBookForm,
-    saveUpdateBookFormData
+    saveUpdateBookFormData,
+    booksByGenreSeoFriendlyTitle
 }
