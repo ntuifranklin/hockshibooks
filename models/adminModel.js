@@ -2,7 +2,10 @@ const {Sequelize,DataTypes,Model}= require('sequelize')
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
+
 const sequelize = require('../config/database');
+
+
 
 //powerUser model
 class powerUser extends Model{}
@@ -28,16 +31,16 @@ powerUser.init({
         allowNull:false
     }},
     {
-    sequelize,
-    modelName: 'powerUser',  
-    timestamps: false,
+        sequelize,
+        modelName: 'powerUser',  
+        timestamps: false,
 
-    indexes: [
-      {
-        unique: true,
-        fields: ['email'] //what is this ?
-      }
-    ],
+        indexes: [
+          {
+            unique: true,
+            fields: ['email']
+          }
+        ],
     hooks: {
       beforeCreate: async (user) => {
         // Hash the password before creating a new powerUser.

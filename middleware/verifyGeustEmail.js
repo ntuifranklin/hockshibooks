@@ -9,7 +9,7 @@
 const { body, validationResult } = require('express-validator');
 
 // Middleware to validate form inputs
-const verifyGuestEmail = [
+const verifyGeustEmail = [
   body('email')
   .isEmail()
   .withMessage('Email must be valid')
@@ -25,4 +25,4 @@ const verifyGuestEmail = [
   },
 ];
 
-module.exports = verifyGuestEmail;
+module.exports = verifyGeustEmail;

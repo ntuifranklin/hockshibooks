@@ -5,20 +5,16 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
+const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
-let sequelize;
 
+let sequelize;
 if (config.use_env_variable) {
-  //we are using an environment variable to connect to the database
-  console.log("Using environment variable to connect to the database");
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  console.log("WE ARE NOT USING environment variable to connect to the database");
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
-
 
 fs
   .readdirSync(__dirname)

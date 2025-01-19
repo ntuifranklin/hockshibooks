@@ -1,90 +1,209 @@
-<%- include('../../partials/pagehead') %>
-<%  if (user) { %>
-  <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
-<% } %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
 
-<div class="container">
+    <link rel="icon" href="../../../../assets/images/favicon.ico">
+
+    <!-- CSS
+        ============================================ -->
+    
+    <!-- Bootstrap Css -->
+    <link rel="stylesheet" href="../../assets/css/vendor/bootstrap.min.css">
     
     
-    <div class="errors">
-        <% if (msg) { %>
+    <!-- Icons Css -->
+    <link rel="stylesheet" href="../../assets/css/vendor/linearicons.min.css">
+    <link rel="stylesheet" href="../../assets/css/vendor/fontawesome-all.min.css">
+    
+    <!-- Animation Css -->
+    <link rel="stylesheet" href="../../assets/css/plugins/animation.min.css">
+    
+    
+    <!-- Slick Slier Css -->
+    <link rel="stylesheet" href="../../assets/css/plugins/slick.min.css">
+    
+    
+    <!-- Magnific Popup CSS -->
+    <link rel="stylesheet" href="../../assets/css/plugins/magnific-popup.css">
+    
+    
+    <!-- Easyzoom CSS -->
+    <link rel="stylesheet" href="../../assets/css/plugins/easyzoom.css">
+    
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">   
+    
+</head>
+<body>
+
+   <%  if (user) { %>
+    <%- include('./navBar',{email:user.email,role:user.role,host:host}) %>
+    <% } %>
+    <div class="container">
+        
+       
+        <div class="errors">
+            <% if (msg) { %>
+                                        
+                    
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <p><%= msg.msg %>!</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+                    </div>
+            <% } %>
+
+        </div>
+        <!-- <form method="post" action="<%= `${host}/admin/books/addBookWithISBN` %>">
+            <div class="input-group">
+                <label for="isbn">ISBN</label>
+                <input type="text" id="isbn" placeholder="The ISBN can be 10 or 13 caracters long" name="isbn">
+            </div>
+            <div class="input-group">
+                <label for="displayName">price</label>
+                <input type="number" id="displayName" placeholder="$25 is the default price" name="price">
+            </div>
+            <input type="hidden" name="_csrf"
+            value="<%= csrfToken %>">
+            <button type="submit">Insert Book</button>
+        </form> -->
+
+        <div id="main-wrapper">
+            <div class="site-wrapper-reveal border-bottom">
+    
+                <div class="my-account-page-warpper section-space--ptb_120">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-7 m-auto w-50">
+                                <div class="myaccount-box-wrapper">
                                     
-                
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <p><%= msg.msg %>!</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    <div class="tab-content content-modal-box">
+                                        <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
+                                            <form method="post" action="<%= `${host + books_route}/addBookWithISBN` %>">
+                                                <h1>Add Book With ISBN</h1>
+                                                <div class="single-input">
+                                                    <label for="isbn" class="w-100">ISBN: 
 
-                </div>
-        <% } %>
-
-    </div>
-    <!-- <form method="post" action="<%= `${host}/admin/books/addBookWithISBN` %>">
-        <div class="input-group">
-            <label for="isbn">ISBN</label>
-            <input type="text" id="isbn" placeholder="The ISBN can be 10 or 13 caracters long" name="isbn">
-        </div>
-        <div class="input-group">
-            <label for="displayName">price</label>
-            <input type="number" id="displayName" placeholder="$25 is the default price" name="price">
-        </div>
-        <input type="hidden" name="_csrf"
-        value="<%= csrfToken %>">
-        <button type="submit">Insert Book</button>
-    </form> -->
-
-    <div id="main-wrapper">
-        <div class="site-wrapper-reveal border-bottom">
-
-            <div class="my-account-page-warpper section-space--ptb_120">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-7 m-auto w-50">
-                            <div class="myaccount-box-wrapper">
-                                
-                                <div class="tab-content content-modal-box">
-                                    <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
-                                        <form method="post" action="/admin/addBookWithISBN">
-                                            <h1>Add Book With ISBN</h1>
-                                            <div class="single-input">
-                                                <label for="isbn" class="w-100">ISBN: 
-
-                                                <input type="text"  class="form-control" id="isbn" placeholder="The ISBN can be 10 or 13 caracters long" name="isbn">
-
-                                                </label>
-                                            </div>
-                                            <div class="single-input">
-                                                
-                                                    <label for="displayName" class="w-100">price: 
-
-                                                    <input type="number" step=".01" class="form-control" id="displayName" placeholder="$25 is the default price" name="price">
+                                                    <input type="text"  class="form-control" id="isbn" placeholder="The ISBN can be 10 or 13 caracters long" name="isbn">
 
                                                     </label>
-                                                
-                                            </div>
-                                            <input type="hidden" name="_csrf"
-                                            value="<%= csrfToken %>">
-                                            
-                                            <div class="button-box mt-25">
-                                                <button type="submit" class="btn btn--full btn--black">Save updates</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    
+                                                </div>
+                                                <div class="single-input">
+                                                    
+                                                        <label for="displayName" class="w-100">price: 
 
+                                                        <input type="number" class="form-control" id="displayName" placeholder="$25 is the default price" name="price">
+
+                                                        </label>
+                                                    
+                                                </div>
+                                                <input type="hidden" name="_csrf"
+                                                value="<%= csrfToken %>">
+                                             
+                                                <div class="button-box mt-25">
+                                                    <button type="submit" class="btn btn--full btn--black">Save updates</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        
+    
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+    
             </div>
-
+    
+            
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
         </div>
     </div>
-</div>
 
-<%- include('../../partials/admin_jslibs') %>
+<script src="../assets/js/adminDashboard.js"></script>
 
+    <script src="/assets/js/vendor/modernizr-2.8.3.min.js"></script>
 
+    <!-- jQuery JS -->
+    <script src="/assets/js/vendor/jquery-3.5.1.min.js"></script>
+    <script src="/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="/assets/js/vendor/bootstrap.min.js"></script>
+    
+    <!-- Fullpage JS -->
+    <script src="/assets/js/plugins/fullpage.min.js"></script>
+    
+    <!-- Slick Slider JS -->
+    <script src="/assets/js/plugins/slick.min.js"></script>
+    
+    <!-- Countdown JS -->
+    <script src="/assets/js/plugins/countdown.min.js"></script>
+    
+    <!-- Magnific Popup JS -->
+    <script src="/assets/js/plugins/magnific-popup.js"></script>
+    
+    <!-- Easyzoom JS -->
+    <script src="/assets/js/plugins/easyzoom.js"></script>
+    
+    <!-- ImagesLoaded JS -->
+    <script src="/assets/js/plugins/images-loaded.min.js"></script>
+    
+    <!-- Isotope JS -->
+    <script src="/assets/js/plugins/isotope.min.js"></script>
+    
+    <!-- YTplayer JS -->
+    <script src="/assets/js/plugins/YTplayer.js"></script>
+    
+    <!-- Instagramfeed JS -->
+    <!-- <script src="/assets/js/plugins/jquery.instagramfeed.min.js"></script> -->
+    
+    <!-- Ajax Mail JS -->
+    <script src="/assets/js/plugins/ajax.mail.js"></script>
+    
+    <!-- wow JS -->
+    <script src="/assets/js/plugins/wow.min.js"></script>
+    
+    
+    
+    <!-- Plugins JS (Please remove the comment from below plugins.min.js for better website load performance and remove plugin js files from avobe) -->
+    
+    <!--
+    <script src="/assets/js/plugins/plugins.min.js"></script>
+    -->
+    
+    <!-- Main JS -->
+    <script src="/assets/js/main.js"></script>
 </body>
-
 </html>

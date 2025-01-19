@@ -7,8 +7,7 @@ const { expect } = chai;
 // Load environment variables
 config();
 
-/* On stripe dashboard at dashboard.stripe.com , development mode should be toggled on */
-const stripe = Stripe(process.env.DEVELOPMENT_STRIPE_SECRET_KEY);
+const stripe = Stripe(process.env.Stripe_secret_key);
 
 describe('Stripe Payment Tests', () => {
   it('should create a successful charge', async () => {

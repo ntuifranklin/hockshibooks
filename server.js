@@ -1,194 +1,229 @@
 
-
-require("dotenv").config() ;
-const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
-const port = env != process.env.PRODUCTION_ENV ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
-
-
 const express = require('express');
-
+const { faker } = require('@faker-js/faker');
 const path = require('path');
-const {connect,checkUploadDir,setDatabaseEnvironment}=require("./utilities/functions");
-
+const createError = require('http-errors');
+const {isTestEnvironment,connect,checkUploadDir}=require("./utilities/functions");
 const bodyParser = require('body-parser');
-const {setStripeKeysToUse} = require('./middleware/set_stripe_keys');
+const {decode} = require('html-entities');
+const template_folder = './statictemplate';
 const routes = require('./routes');
-const {errorsController} = require('./errors/controller');
+const multer=require("multer")
 const csrf = require('csurf');
-const session = require('express-session');
-const MySQLStore = require('express-mysql-session')(session);
-const {mysq_store_session_database_options} = require('./sessionmanagement/session');
+const cookieSession = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(cookieSession.Store);
+
 const cookieParser=require('cookie-parser');
 let csrfProtection = csrf({ cookie: true });
 
+//controllers
+const booksRouter=require("./routes/booksRoute")
+const adminRoute=require("./routes/adminRoutes")
+const index=require("./routes/index")
+const OrdersRouter=require("./routes/OrdersRoute")
 
-/* This has to be done before any database connection is made */
-setDatabaseEnvironment();
+require("dotenv").config()
 
+let parseForm = bodyParser.urlencoded({ extended: false });
+
+const app = express();
+
+const { stripe,testStripeProductCreation } = require('./utilities/stripe'); 
+
+// const DEV_PORT=5445 ;
+
+// let PORT = process.env.NODE_ENV=="test"?4000:3000 ;
+const env = process.env.NODE_ENV||"dev";
+const port = env == "test" ? process.env.TEST_PORT : process.env.PRODUCTION_SITE_PORT;
+
+
+const sequelize = require('./config/database');
 process.env.ROOT_PATH=path.join(__dirname, './');
 
 //connects to the database
-//connect()
+const sequeliz=connect()
+const sessionStore = new SequelizeStore({
+    db: sequeliz,
+    tableName: 'sessions' // Table where sessions will be stored
+});
+
+// Sync the session store table to the database
+sessionStore.sync();  
 //checks if the uploads dir exists, this dir is where all our cover images will be stored
-checkUploadDir();
+checkUploadDir()
+//models
+const powerUser= require("./models/adminModel")
+const otpModel=require("./models/otpModel")
+const bookModel=require("./models/bookModel")
+const genreModel=require("./models/genreModel")
+const inventoryModel=require("./models/inventory")
 
 
-//set stripe keys to use
-setStripeKeysToUse();
+//middleware
 
-const cors = require('cors');
-const site_secret = process.env.SITE_SECRET;
+const validateOTP=require("./middleware/OTPmiddleware")
+
+
+//multer config
+
+
+
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, '/views')));
+app.set('views', path.join(__dirname, './views'));
+app.use(express.json());
+
+
+
+const site_secret = faker.internet.password({ length:64 });
 let dynamicCookie =  {
     sameSite: 'none',
-	secret:site_secret,
+	secret:process.env.SITE_SECRET, 
+	store: sessionStore,
 	cookie:{
+
 		maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS),
 	},																				
     secure: false,
     httpOnly: false,
 	resave: false,
+	
   saveUninitialized: false
 };
 
 // csrf protection
 
+
+
 /* Prevent attackes from guessing passwords with rate limiting per IP address */
 const { rateLimit } = require('express-rate-limit');
-//const { serialize } = require('v8');
-const { 
-	setUniqueUserID,
-	initializeRedisClient
-} = require('./middleware/redis');
-const { ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM } = require('./utilities/universal_web_constants');
-const { setResponseLocalsCustomer } = require("./customer/utilities");
-//const { getListOfAcceptedStripePaymentMethods } = require("./checkout/utilities");
+const { serialize } = require('v8');
 
-const request_rate_limiter = rateLimit({
-	windowMs: 60 * 60 * 1000, // 60 minutes
-	limit: 1000, // Limit each IP to 1000 requests per `window` (here, per 30 minutes).
+const form_rate_limiter = rateLimit({
+	windowMs: 30 * 60 * 1000, // 30 minutes
+	limit: 10000, // Limit each IP to 1000 requests per `window` (here, per 30 minutes).
 	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
 	// store: ... , // Use an external store for consistency across multiple server instances.
+
 });
+app.use(form_rate_limiter); 
+/* If in a production environment, then use un secure cookies */
 
-let mysqlSessionStore = new MySQLStore(mysq_store_session_database_options);
 
-async function startNewHockshiServer(){
-	/* This is a duplicate right here */
-	setDatabaseEnvironment();
-	const app = express();
-	try {
-		
-	//start redis cache
-	await initializeRedisClient();
-	app.use(express.static(path.join(__dirname, 'views')));
-	app.set('view engine', 'ejs');
-	app.set('views', path.join(__dirname, 'views'));
-	app.use(express.json());
+// var isTestingEnv =isTestEnvironment(root_dir=new String(__dirname));
 
-	app.use(request_rate_limiter); 
+// if ( !isTestingEnv) {
+//     PORT = process.env.PRODUCTION_SITE_PORT;
+// } else if (isTestingEnv) {
+//     PORT = process.env.TEST_SITE_PORT;
+// } else {
+//     throw Error("We could neither detect testing or production environment");
+// }
+if (port == process.env.PRODUCTION_SITE_PORT) {
+        
+    app.set('trust proxy', 1) // trust first proxy
+    dynamicCookie.secure = true; // serve secure cookies
+    dynamicCookie.sameSite = 'strict';
+    dynamicCookie.httpOnly = true;
+} else {
+     
+    app.set('trust proxy', 0) // trust first proxy
+    dynamicCookie.secure = false; // we do not need to serve secure cookies
+    dynamicCookie.sameSite = 'strict';
+    dynamicCookie.httpOnly = false;
+} ;
 
-	if (env == process.env.PRODUCTION_ENV) {
-			
-		app.set('trust proxy', 1) // trust first proxy
-		dynamicCookie.secure = true; // serve secure cookies
-		dynamicCookie.sameSite = 'strict';
-		dynamicCookie.httpOnly = true;
-	} else {
-		
-		app.set('trust proxy', 0) // trust first proxy
-		dynamicCookie.secure = false; // we do not need to serve secure cookies
-		dynamicCookie.sameSite = 'none';
-		dynamicCookie.httpOnly = false;
-	} ;
-	const corsOptions = {
-		// List of trusted domains: imagedelivery.net(cloudlflare image api), cloudflare.com, stripe.com
-		origin: ['https://hockshi.com','https://stripe.com','https://*.stripe.com', 'https://imagedelivery.net', 'https://cloudflare.com'], 
-		methods: ['GET', 'POST', 'PUT', 'DELETE'], // List of accepted http methods
-		allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-HTTP-Method-Override', 'Accept'], // List of accepted http headers
-	};
-	app.use(cors(corsOptions));
-	app.locals.companyName = process.env.COMPANY_NAME;
-	app.locals.companyCity = process.env.COMPANY_CITY;
-	app.locals.companyState = process.env.COMPANY_STATE;
-	app.locals.companyZip = process.env.COMPANY_ZIP;
-	app.locals.websiteUrl = process.env.WEBSITE_URL ;
-	app.locals.companyPhoneNumber = process.env.COMPANY_PHONE_NUMBER;
-	app.locals.customerBusinessEmail = process.env.CUSTOMER_BUSINESS_EMAIL;
-	app.locals.shippingDays = process.env.SHIPPING_DAYS;
-	app.locals.buyerRefundPolicyDeadlineDays = process.env.BUYER_REFUND_POLICY_DEADLINE_DAYS;
-	app.locals.acceptedPaymentMethods = process.env.ACCEPTED_PAYMENT_METHODS;
-	app.locals.sellerChargedCommission = process.env.SELLER_CHARGED_COMMISSION;
-	//<%= companyCity  %> <%= companyState  %>, <%= companyZip %>
-	app.locals.companyAddress = process.env.COMPANY_CITY + " " + process.env.COMPANY_STATE + ", " + process.env.COMPANY_ZIP;
-	app.locals.facebookpage = process.env.FACEBOOK_PAGE;
-	app.locals.xpage = process.env.X_PAGE;
-	app.locals.instagrampage = process.env.INSTAGRAM_PAGE;
-	app.locals.linkedinpage = process.env.LINKEDIN_PAGE;
-	//Terms and conditions
-	app.locals.minimumUserAge = process.env.MINIMUM_USER_AGE;
-	app.locals.companyJurisdiction = process.env.COMPANY_JURISDICTION;
 
-	/* 
-	 when customer logs in, this variable will serve as
-	 a place holder for the logged in customer's data 
-	 */
-	app.locals.customer = null ;
-	app.use(bodyParser.urlencoded({extended: true}));
 
-	//app.use(dynamicCookie)	
-	app.use(session({
-		secret: site_secret, // Replace with a secure secret key
-		resave: false, // Prevents session from being saved on every request
-		saveUninitialized: false, // Ensures session is saved only when modified
-		cookie: { maxAge: Number(process.env.SESSION_MAXIMUM_TIME_IN_MILLI_SECONDS) }, // 1-day cookie
-		store: mysqlSessionStore,
-	  }));
 
-	app.use(cookieParser())
 
-	app.use(csrfProtection);
-	//let x = await getListOfAcceptedStripePaymentMethods();
-	
-	
-	//generate a unique web visitor user id for each user
-	app.use(setUniqueUserID);
+app.use(bodyParser.urlencoded({extended: true}));
+
+
+app.use(cookieSession(dynamicCookie))	
+
+app.use(cookieParser())
+
+app.use(csrfProtection);
+
+
+    	/*
+
+app.use(parseForm, csrfProtection, async(request, response, next) => { 
+	testStripeProductCreation().then(product => {
+		stripe.prices.create({
+		  unit_amount: 1200,
+		  currency: 'usd',
+		  recurring: {
+			interval: 'month',
+		  },
+		  product: product.id,
+		}).then(price => {
+		  console.log('Success! Here is your starter subscription product id: ' + product.id);
+		  console.log('Success! Here is your starter subscription price id: ' + price.id);
+		});
+	});
+    
+    return next();
+});
+	*/
+
+ 
+
 	app.use((req, res, next) => {
-		//await req.session.destroy();
-		res.locals = app.locals ;
-		req.locals = app.locals ;
 		res.locals.csrfToken = req.csrfToken();
-		res.removeHeader("X-Powered-By");
-		const valid_cart_actions = [ADD_CART_QUANTITY, SUBTRACT_CART_QUANTITY, REMOVE_CART_ITEM];
-		req.locals.valid_cart_actions = valid_cart_actions ;
-		
+		res.locals.host=process.env.HOST
+		if(req.session.user!=false){
+			res.locals.user=req.session.user
+
+			res.locals.admin_route=`${process.env.ADMIN_ROUTE}`
+			res.locals.order_route=`${process.env.ADMIN_ROUTE + process.env.ADMIN_ORDERS_ROUTE}`
+			res.locals.books_route=`${process.env.ADMIN_ROUTE + process.env.ADMIN_BOOKS_ROUTE}`
+		}
+		if(req.session.customer!=false){
+		res.locals.companyDetails={
+			companyAdress:process.env.COMPANY_ADDRESS,
+			companyPhone:process.env.COMPANY_PHONE_NUMBER,
+			facebookPage:process.env.FACEBOOK_PAGE,
+			XPage:process.env.X_PAGE,
+			instagramPage:process.env.INSTAGRAM_PAGE
+		}
+
+		res.locals.customer_route=`${process.env.CUSTOMER_ROUTE}`
+
+			res.locals.customer=req.session.customer
+
+		}
+
+			
 		next();
 	});
 
 
-	/*
-		The function below saves any api that returns json in redis cache
-		 then returns it faster instead of requesting it each time.
-	*/
-	app.use('/',routes());
-	app.use(setResponseLocalsCustomer);
-	
-	app.listen(port, () => {
-		console.log(`One hockshi worker server listening on port ${port}`);
-	}) ;
+// app.use('/',index);
+// app.use ("/admin",adminRoute)
+// app.use("/admin/books",booksRouter)
+// app.use("/admin/order",OrdersRouter)
 
-	//check the values of the stripe keys
-	//console.log("Stripe public key: ", process.env.STRIPE_PUBLIC_KEY);
-	//console.log("Stripe secret key: ", process.env.STRIPE_SECRET_KEY);
+app.use(`${process.env.CUSTOMER_ROUTE}`,index);
+app.use (`${process.env.ADMIN_ROUTE}`,adminRoute)
+app.use(`${process.env.ADMIN_ROUTE + process.env.ADMIN_BOOKS_ROUTE}`,booksRouter)
+app.use(`${process.env.ADMIN_ROUTE +process.env.ADMIN_ORDERS_ROUTE}`,OrdersRouter)
 
-	} catch(e){
-		app.use(errorsController);
-	} ;
-	return app ;
-} ;
+console.log(process.env.CUSTOMER_ROUTE)
+console.log(process.env.ADMIN_ROUTE)
+console.log(`${process.env.ADMIN_ROUTE + process.env.ADMIN_BOOKS_ROUTE}`)
+console.log(`${process.env.ADMIN_ROUTE + process.env.ADMIN_ORDERS_ROUTE}`)
 
-module.exports = {
-	startNewHockshiServer
-}
+app.use((req,res)=>{
+	res.render("pages/404")
+})
+
+app.listen(port, () => {
+    console.log(`Express server listening on port ${port}`);
+   
+})
+module.exports={app};
 
 

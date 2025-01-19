@@ -5,58 +5,17 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const otpModel=require("../models/otpModel")
 const customerModel=require("../models/customerModel")
+const adminModel=require("../models/adminModel")
 const cusomerOtpModel=require("../models/customerOtpModel")
 const nodemailerMock=require("nodemailer-mock")
-const axios= require("axios");
-const { Email } = require('./email');
+const axios= require("axios")
 const ejs = require('ejs');
-const { createCanvas } = require('canvas');
-const {
-  ORDER_STATUS_PROCESSING,
-  ORDER_STATUS_SHIPPED,
-  ORDER_STATUS_DELIVERED
-} = require('./universal_web_constants');
+const session = require("express-session");
+
+const SequelizeStore = require('connect-session-sequelize')(session.Store);  
+
+
 require("dotenv").config()
-
-function setDatabaseEnvironment() {
-  
-const env = process.env.NODE_ENV || process.env.DEVELOPMENT_ENV;
-/* This has to be done before any database connection is made */
-
-  if (env == process.env.PRODUCTION_ENV) {
-    process.env.DB_USER = process.env.DB_PROD_USER;
-    process.env.DB_PSWD = process.env.DB_PROD_PASSWORD;
-    process.env.DB_NAME = process.env.DB_PROD_DB_NAME;
-    process.env.DB_HOST = process.env.DB_PROD_HOST;
-  } else if (env == process.env.TEST_ENV) {
-    process.env.DB_USER = process.env.DB_TEST_USER;
-    process.env.DB_PSWD = process.env.DB_TEST_PASSWORD;
-    process.env.DB_NAME = process.env.DB_TEST_DB_NAME;
-    process.env.DB_HOST = process.env.DB_TEST_HOST;
-  } else if (env == process.env.DEVELOPMENT_ENV) {
-    process.env.DB_USER = process.env.DB_DEV_USER;
-    process.env.DB_PSWD = process.env.DB_DEV_PASSWORD;
-    process.env.DB_NAME = process.env.DB_DEV_DB_NAME;
-    process.env.DB_HOST = process.env.DB_DEV_HOST;
-  } else {
-    throw(new Error(`Environment not set for database settings, please set the environment variable NODE_ENV to either production, testing or development`));
-  } ;
-  
-    /* print current settings 
-    console.log("Current settings: ");
-    console.log("DB_USER: ", process.env.DB_USER);
-    console.log("DB_PSWD: ", process.env.DB_PSWD);
-    console.log("DB_NAME: ", process.env.DB_NAME);
-    console.log("DB_HOST: ", process.env.DB_HOST);
-    console.log(
-      `Environment not set for database settings, 
-      please set the environment variable NODE_ENV to either production, 
-      testing or development`
-    );
-    */
-    
-} ;
-
 
 function isTestEnvironment(root_dir=new String(__dirname)) {
    
@@ -97,10 +56,18 @@ const connect = () => {
     // Authenticate the connection
 
   sequelize.authenticate().then(() => { 
-    console.log('Database with [sequelize] Connection established successfully.');
+    console.log('Connection established successfully.');
   }).catch(err => {
     console.error('Unable to connect to the database:', err);
   });
+
+  const sessionStore = new SequelizeStore({
+    db: sequelize,
+    tableName: 'sessions' // Table where sessions will be stored
+});
+
+// Sync the session store table to the database
+sessionStore.sync();
   // Return the Sequelize instance
   return sequelize;
 };
@@ -113,38 +80,71 @@ const generateAndSendOTP=async (userId,mail,otpmodel)=>{
  * @returns {Promise<void>} A Promise that resolves when the OTP is successfully sent.
  */
   const otpCode = crypto.randomInt(100000, 999999).toString();
-  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // OTP valid for 5 minutes
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // OTP valid for 15 minutes
   let Transporter;
   
   console.log(otpCode)
   // Save OTP to the database
   if(otpmodel.toString()==otpModel.toString()){
   let code =await otpmodel.create({  otp:otpCode,powerUserId:userId, expiration_time:expiresAt });
-  } else if(otpmodel.toString()==cusomerOtpModel.toString()){
+}
+  else if(otpmodel.toString()==cusomerOtpModel.toString()){
    let code=await otpmodel.create({  otp:otpCode,customerId:userId, expiration_time:expiresAt });
 
   }
-  const email = new Email();    
+  
+// if (process.env.NODE_ENV === 'test') {
+//   Transporter = nodemailerMock.createTransport();
 
-  try{
-      
-    let templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'OTPcodeTemplate.ejs');
-    //console.log(`\tTemplate path: ${templatePath}`);
-    templatePath = path.normalize(templatePath);
-    //console.log(`\tTemplate path: ${templatePath}`);
-    const html = await ejs.renderFile(templatePath,{code:otpCode});
-    await email.sendEmail(mail, 'OTP code', html) ;
-    //console.log(`Email sent successfully in ${__filename} : ${JSON.stringify(html)}`);
 
-  }
-  catch(e){
-    console.log("email error" , e)
-  }
+
+//   } 
+  // else{ 
+
+    
+    Transporter=nodemailer.createTransport({
+      service:'gmail',
+
+      auth:{
+        user:process.env.EMAIL_USER,
+        pass:process.env.EMAIL_PASS //google does not allow you to use your regular password for third party apps instead , you will generate an app pass , app passwords can only be generated for accounts with 2FA
+
+      }
+    });
+    
+    const templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,`OTPcodeTemplate.ejs`);
+    ejs.renderFile(templatePath,{code:otpCode}, (err, html) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: mail,
+        subject: 'Your OTP Code',
+        html: html,
+        
+        
+      };
+      try{
+
+         Transporter.sendMail(mailOptions,()=>{
+          console.log("Email sent successfully.");        });
+          // console.log(otpCode)
+    }
+    catch(e){
+      console.log("email error" , e)
+    }
+    })
+
+
+  
+ 
 
  return otpCode
 }
 
-const sendStatusChangedMessage=async(order,status, orderToSendAsEmail=[], customer={})=>{
+const sendStatusChangedMessage=async(order,status)=>{
   /**
  * Sends an email to the customer with the updated order status.
  *
@@ -153,142 +153,131 @@ const sendStatusChangedMessage=async(order,status, orderToSendAsEmail=[], custom
  * @return {Promise<void>} A Promise that resolves when the email is sent successfully.
  * @throws {Error} If there is an error sending the email.
  */
-  if (customer == null || !customer || customer == {}) {
+  const customer= await customerModel.findOne({
+    where:{
+      customer_id:order.customer_id
+    }
+  })
+  Transporter=nodemailer.createTransport({
+    service:'gmail',
 
-    customer= await customerModel.findOne({
-      where:{
-        customer_id:order.customer_id
-      }
-    })
-  }
- 
+    auth:{
+      user:process.env.EMAIL_USER,
+      pass:process.env.EMAIL_PASS //google does not allow you to use your regular password for third party apps instead , you will generate an app pass , app passwords can only be generated for accounts with 2FA
 
-
-  const email = new Email();    
-
-  try{
-      
-    let templatePath;
-    if (status === ORDER_STATUS_PROCESSING || 
-      status === ORDER_STATUS_DELIVERED || 
-      status === ORDER_STATUS_SHIPPED) {
-      templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'orderStatusChangedTemplate.ejs');
-    } else {  
-      throw new Error('Invalid order status');
-    } ;
-    //console.log(`\tTemplate path: ${templatePath}`);
-    templatePath = path.normalize(templatePath);
-    //console.log(`\tTemplate path: ${templatePath}`);
-    const html = await ejs.renderFile(templatePath,{
-        emailTitle: 'Order Status Changed',
-        customerName: `${customer.first_name}`,
-        orderId: `${order.order_id}`,
-    });
-    await email.sendEmail(customer.email, 'Order Status Change', html) ;
-    //console.log(`Email sent successfully in ${__filename} : ${JSON.stringify(html)}`);
-
-  }
-  catch(e){
-    console.log("email error" , e)
-  };
-} ;
-const sendCustomerNewOrderEmailNotofication=async(order, orderToSendAsEmail=[], customer={})=>{
-  /**
- * Sends an email to the customer with the updated order status.
- *
- * @param {Object} order - The order object containing the customer ID and order ID.
- * @return {Promise<void>} A Promise that resolves when the email is sent successfully.
- * @throws {Error} If there is an error sending the email.
- */
-  if (customer == null || !customer || customer == {}) {
-
-    customer= await customerModel.findOne({
-      where:{
-        customer_id:order.customer_id
-      }
-    })
-  }
- 
-  const email = new Email();    
-
-  try{
-      
-    let templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'customerNewOrderEmailNotification.template.ejs');
-    //console.log(`\tTemplate path: ${templatePath}`);
-    templatePath = path.normalize(templatePath);
-    //console.log(`\tTemplate path: ${templatePath}`);
-    
-    let ejsData = {
-      emailTitle: `${customer.first_name || 'Guest User'}, your order was received`,
-      customerName: `${customer.first_name}`,
-      orderId: `${order.order_id}`,
-      orderList: orderToSendAsEmail,
-      shippingAddress: order.shipping_address,
-      shippingCity: order.shipping_city || '',
-      shippingState: order.shipping_state_province,
-      shippingCountry: order.shipping_country,
-      shippingPostalCode: order.shipping_postal_code,
-      totalAmount: order.total_amount,
-      companyName: process.env.COMPANY_NAME,
-      askGuestToCreateAccountLink: process.env.WEBSITE_URL + "/customer/askGuest",
-      termsAndConditionsLink: process.env.WEBSITE_URL + "/docs/terms-and-conditions",
-      privacyPolicyLink: process.env.WEBSITE_URL + "/docs/policy",
-  };
-    const html = await ejs.renderFile(templatePath,ejsData);
-    await email.sendEmail(customer.email, ejsData.emailTitle, html) ;
-    //console.log(`Email sent successfully in ${__filename} : ${JSON.stringify(html)}`);
-
-  }
-  catch(e){
-    console.log("email error" , e)
-  };
+    }
+  });
+  const templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,`OrderChangedTemplate.ejs`);
+  ejs.renderFile(templatePath,{customerName:customer.last_name || "geust user", status:status,orderId:order.order_id}, (err, html) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+const mailOptions = {
+  from: process.env.EMAIL,
+  to: customer.email,
+  subject: 'Order status change',
+  html:html
 };
+try{
 
-const sendCustomerResetPasswordEmail=async(customer={first_name:"", email:""}, resetPasswordLink="", expiryTime="")=>{
-  /**
- * Sends an email to the customer with the updated order status.
- *
- * @param {Object} order - The order object containing the customer ID and order ID.
- * @return {Promise<void>} A Promise that resolves when the email is sent successfully.
- * @throws {Error} If there is an error sending the email.
- */
-  if (customer == null || !customer || customer == {}) {
+     Transporter.sendMail(mailOptions,()=>{
+      console.log("Email sent successfully.");        });
+      // console.log(otpCode)
+}
+catch(e){
+  console.log("email error" , e)
+}
+})
+}
 
-    customer= await customerModel.findOne({
+const sendOrderCompletedMessage=async(customer,order)=>{
+  /** }
+   * 
+   * 
+ **/
+
+  Transporter=nodemailer.createTransport({
+    service:'gmail',
+
+    auth:{
+      user:process.env.EMAIL_USER,
+      pass:process.env.EMAIL_PASS //google does not allow you to use your regular password for third party apps instead , you will generate an app pass , app passwords can only be generated for accounts with 2FA
+
+    }
+  });
+  const templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,`orderCompletedMessage.ejs`);
+  ejs.renderFile(templatePath,{customerName:customer.last_name + " " + customer.first_name || "geust user", orderId:order.order_id}, (err, html) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+const mailOptions = {
+  from: process.env.EMAIL,
+  to: customer.email,
+  subject: 'Your Order Was Recieved',
+  html:html
+};
+try{
+
+     Transporter.sendMail(mailOptions,()=>{
+      console.log("Email sent successfully.");        });
+      // console.log(otpCode)
+      sendEmailToAdmin(customer,order)
+}
+catch(e){
+  console.log("email error" , e)
+}
+})
+
+
+
+}
+
+const sendEmailToAdmin=async(customer,order)=>{
+  
+  Transporter=nodemailer.createTransport({
+    service:'gmail',
+
+    auth:{
+      user:process.env.EMAIL_USER,
+      pass:process.env.EMAIL_PASS //google does not allow you to use your regular password for third party apps instead , you will generate an app pass , app passwords can only be generated for accounts with 2FA
+
+    }
+  });
+  const templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,`newOrderInitiated.ejs`);
+  ejs.renderFile(templatePath,{customerName:customer.last_name + " " + customer.first_name || "geust user", orderId:order.order_id,total:order.total_amount,orderDate:order.order_date}, async (err, html) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    const superAdmins= await adminModel.findAll({
       where:{
-        customer_id:order.customer_id
+        role:"super_admin"
       }
     })
-  }
- 
-  const email = new Email();    
-
-  try{
-      
-    let templatePath = path.join(process.env.ROOT_PATH, 'views','EmailTemplates' ,'customerPasswordResetEmail.template.ejs');
-    //console.log(`\tTemplate path: ${templatePath}`);
-    templatePath = path.normalize(templatePath);
-    //console.log(`\tTemplate path: ${templatePath}`);
-    
-    let ejsData = {
-      emailTitle: `${customer.first_name || 'Guest User'}, you requested to reset your password`,
-      customerName: `${customer.first_name}`,
-      resetPasswordLink: resetPasswordLink,
-      expiryTime: expiryTime,
-      companyName: process.env.COMPANY_NAME,
-      termsAndConditionsLink: process.env.WEBSITE_URL + "/docs/terms-and-conditions",
-      privacyPolicyLink: process.env.WEBSITE_URL + "/docs/policy",
+superAdmins.forEach((admin)=>{
+  
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: admin.email,
+    subject: 'New Order Made',
+    html:html
   };
-    const html = await ejs.renderFile(templatePath,ejsData);
-    await email.sendEmail(customer.email, ejsData.emailTitle, html) ;
-    //console.log(`Email sent successfully in ${__filename} : ${JSON.stringify(html)}`);
-
+  try{
+  
+       Transporter.sendMail(mailOptions,()=>{
+        console.log("Email sent successfully.");        });
+        // console.log(otpCode)
   }
   catch(e){
     console.log("email error" , e)
-  };
-};
-
+  }
+    
+})
+})
+}
 const Md5Rand=()=>{
   /**
  * Generates an MD5 hash of a random value.
@@ -323,7 +312,6 @@ const checkUploadDir=()=>{
   // Construct the path to the uploads directory
 
 const uploadsDir = path.join(process.env.ROOT_PATH, 'views/uploads');
-
 // Check if the uploads directory exists
 if (!fs.existsSync(uploadsDir)) {
       // Create the uploads directory if it doesn't exist
@@ -356,6 +344,11 @@ const checkFileExtension=(file, cb)=>{
 
 }
 
+/**
+ * Retrieves the book description from the Open Library API by its identifier.
+ * @param {string} openLibraryId - The Open Library identifier for the book.
+ * @returns {string} The book description if available, otherwise 'No description available'.
+ */
 const getBookDescription= async (openLibraryId)=>{
 
   const url = `https://openlibrary.org/works/${openLibraryId}.json`;
@@ -368,65 +361,8 @@ const getBookDescription= async (openLibraryId)=>{
         console.error('Error fetching book description:', error);
         return 'No description available';
     }
-};
-
-
-
-/*
-  This function creates a default image for a book with the specified title.
-  The image is saved to the uploads directory and the filename is returned.
-  If no title is provided, the image will have a default title.
-  The image dimensions can also be specified.
-*/
-const createDefaultBookImage=async (width=300, height=300, imageTitle='default-image')=>{
-  
-const canvas = createCanvas(width, height);
-const context = canvas.getContext('2d');
-
-// Fill background
-context.fillStyle = '#dcb14a'; // website brand color for background
-context.fillRect(0, 0, width, height);
-
-//writing px should be about 7% of the image width
-let writePx = Math.ceil(width * 0.07);
-// Add text
-context.font = `${writePx}px Arial`;
-context.fillStyle = '#000000'; // Black text
-//write 15 characters for every line of the image title to the image
-const lines = [];
-let line = '';
-const words = imageTitle.split('-');
-for (let i = 0; i < words.length; i++) {
-  if (line.length + words[i].length <= 15) {
-    line += words[i] + ' ';
-  } else {
-    lines.push(line);
-    line = words[i] + ' ';
-  }
 }
-lines.push(line);
-//start at about 25% of the image width and 25% of the image height
-let startX = Math.round(width * 0.25);
-let startY = Math.round(height * 0.25);
-for (let i = 0; i < lines.length; i++) {
-  context.fillText(lines[i], startX, startY + i * writePx);
-}
-
-// Save image to file
-const buffer = canvas.toBuffer('image/jpeg');
-let imageFilename = imageTitle + '.jpg';
-
-const uploadsDir = path.join(process.env.ROOT_PATH, 'views/uploads');
-fs.writeFileSync(uploadsDir + '/' + imageFilename, buffer);
-
-return imageFilename;
-
-};
-module.exports={
-  createDefaultBookImage,
-  sendCustomerNewOrderEmailNotofication,
-  sendCustomerResetPasswordEmail,
-  sendStatusChangedMessage,
+module.exports={sendStatusChangedMessage,
   convertDateFormat,
   connect,
   isTestEnvironment,
@@ -435,6 +371,5 @@ module.exports={
   checkFileExtension,
   checkUploadDir,
   getBookDescription,
-  setDatabaseEnvironment
+  sendOrderCompletedMessage
 }
-

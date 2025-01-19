@@ -1,19 +1,18 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-//clear old pool
+
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PSWD, {
-    host: process.env.DB_HOST,
+    host: '172.17.0.2',
     dialect: 'mariadb',
     port:3306,
     logging:console.log(),
     pool: {
-      max: 1024,
-      min: 64,
-      acquire:264 ,
-      idle: 128
-   }
-
+      max: 6,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+   },
   });
 
-module.exports=sequelize
+  module.exports=sequelize

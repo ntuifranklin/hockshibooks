@@ -2,18 +2,16 @@ const express = require('express');
 const router = express.Router();
 const {changeToDelivered,changeToProcessing,changeToShipped,viewOrder}=require("../controllers/OrdersController")
 
-const {verifyLogin} =require("../admin/middleware");
-const { orderDetail } = require('../controllers/indexController');
+const verifyLogin=require("../middleware/verifyLogin")
 
-module.exports = () => {
-    
 router.get("/viewOrder/:id",verifyLogin,viewOrder)
 router.get("/changeToProcessing/:id",verifyLogin,changeToProcessing)
 router.get("/changeToShipped/:id",verifyLogin,changeToShipped)
-router.get("/changeToDelivered/:id",verifyLogin,changeToDelivered)
-router.get("/orderDetail/:id",orderDetail)
+router.get("/chnageToDelivered/:id",verifyLogin,changeToDelivered)
 
-return router ;
+// router.get("/viewOrder/:id",viewOrder)
+// router.get("/changeToProcessing/:id",changeToProcessing)
+// router.get("/changeToShipped/:id",changeToShipped)
+// router.get("/chnageToDelivered/:id",changeToDelivered)
 
-}
-
+module.exports = router 

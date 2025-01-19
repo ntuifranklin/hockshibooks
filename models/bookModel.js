@@ -15,10 +15,6 @@ Books.init({
         type: DataTypes.STRING(64),
         primaryKey: true
     },
-    seo_friendly_title: {
-        type: DataTypes.STRING(1024),
-        allowNull: false
-    },
     title: {
         type: DataTypes.STRING(512),
         allowNull: false
@@ -33,23 +29,8 @@ Books.init({
         unique:true
     },
     description: {
-        type: DataTypes.STRING(1536),
+        type: DataTypes.TEXT,
         allowNull: false
-    },
-    book_condition: {
-        type: DataTypes.ENUM('New','Like New','Good','Fair','Poor'),
-        allowNull: false,
-        defaultValue: 'Good'
-    },
-    format: {
-        type: DataTypes.ENUM('Hardcover','Paperback','Ebook'),
-        allowNull: false,
-        defaultValue: 'Paperback'
-    },
-    number_of_pages: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
     },
     price: {
         type: DataTypes.DECIMAL(10, 2),
@@ -58,24 +39,19 @@ Books.init({
     publication_date: {
         type: DataTypes.DATE
     },
-    language: {
-        type: DataTypes.STRING(32),
-        allowNull: false,
-        defaultValue: 'English'
-    },
+    // language: {
+    //     type: DataTypes.STRING(64)
+    // },
     cover_image_url: {
         type: DataTypes.STRING(1024)
     },
-    cover_image_url_small: {
-        type: DataTypes.STRING(1024)
-    },
-    cover_image_url_medium: {
-        type: DataTypes.STRING(1024)
-    },
-    cover_image_url_large: {
-        type: DataTypes.STRING(1024)
-    }
-    
+    // genre: {
+    //     type: DataTypes.STRING(64),
+    //     references: {
+    //         model: Genre,
+    //         key: 'genre_id'
+    //     }
+    // }
 }, {
     sequelize,
     modelName: 'Books',
@@ -87,7 +63,7 @@ Books.init({
          *
          */
           if (!book.book_id) {
-               book.book_id =  crypto.createHash('md5').update(Math.random().toString()).digest('hex');
+               book.book_id =  await crypto.createHash('md5').update(Math.random().toString()).digest('hex');
           }
         },beforeUpdate: async (book) => {
              /**
@@ -96,7 +72,7 @@ Books.init({
          */
             if (!book.book_id) {
               
-               book.book_id = crypto.createHash('md5').update(Math.random().toString()).digest('hex');
+               book.book_id = await crypto.createHash('md5').update(Math.random().toString()).digest('hex');
             }
             }
             },

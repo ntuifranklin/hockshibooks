@@ -1,14 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
+<html class="no-js" lang="zxx"></html>
+
 <head>
-  <meta charset="UTF-8">
-  <title><%= emailTitle %></title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-   <%- include('../partials/defaultcommoncss') %>
-  </head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+
+
+
+</head>
+
 <body class="">
 
     <div id="main-wrapper" style="width: 100%; margin: 0; padding: 0;">
@@ -25,33 +27,12 @@
                     <div class="tab-content content-modal-box" style="margin-top: 30px;">
                       <div class="tab-pane fade show active" id="tab_list_06" role="tabpanel">
                         <h1 style="font-size: 32px; color: #333; text-align: center; margin-bottom: 20px; font-weight: bold;">Thank you for your order</h1>
-                        <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 30px;">Hi <b> <%=customerName || "Guest User"%></b>, </p>
+                        <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 30px;">Hi <b> <%=customerName || "geust user"%></b>, </p>
                         <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 30px;">  Thank you for your order! We’re excited to get it ready for you. You'll receive another email once your order has been shipped.
                         </p>
                         <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 30px;">   <b>Order ID</b> <%=orderId%>
                         </p>
-                        <!--
-                        
-                                        
-                              const order = await orderModel.create({
-                                  customer_id:  customer.customer_id, // Has to be changed to session.customer
-                                  order_date: new Date(),
-                                  total_amount: session.amount_total / 100,
-                                  payment_status: 'Pending',
-                                  shipping_address: customerRetrieved.shipping.address.line1,
-                                  shipping_city: customerRetrieved.shipping.address.city,
-                                  shipping_state_province: customerRetrieved.shipping.address.state,
-                                  shipping_country: customerRetrieved.address.country,
-                                  shipping_postal_code: customerRetrieved.shipping.address.postal_code,
-                                  delivery_status: 'Processing'
-                              },
-                              {transaction:t});
-                              const order_id = order.order_id;                    
-                        
-                        
-                        -->
-                        
-                        
+
                         <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 30px;">  If you have any questions, feel free to reply to this email.
                         </p>
       
@@ -66,12 +47,22 @@
       
         </div>
       </div>
-
-
-
       
-      <%- include('../partials/commonjslibs'); %>
-    
+
+
+ 
+  
+
+   
+
+
+    <!-- Bootstrap JS -->
+    <script src="assets/js/vendor/bootstrap.min.js"></script>
+
+    <!-- Fullpage JS -->
+
+    <script src="assets/js/plugins/slick.min.js"></script>
+
    
 
 

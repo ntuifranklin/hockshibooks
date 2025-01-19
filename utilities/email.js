@@ -1,9 +1,7 @@
 var nodemailer = require('nodemailer');
 require('dotenv').config();
-const ejs = require('ejs');
+
 const randomstring = require('randomstring');
-const fs = require('fs');
-const path= require("path");
 const OTP_CODE_SIZE = 6;
 exports.OTP_CODE_SIZE=OTP_CODE_SIZE;
 
@@ -61,24 +59,11 @@ const FORWARD_EMAIL_AUTH_JSON = {
 
 exports.FORWARD_EMAIL_AUTH_JSON = FORWARD_EMAIL_AUTH_JSON ;
 
-const GMAIL_APP_EMAIL_AUTH_JSON = {
-    service:'gmail',
-    auth:{
-      user:process.env.HOCKSHI_GMAIL_APP_USER,
-      /* google does not allow you to use your regular password for third party apps instead , 
-      you will generate an app pass , app passwords can only be generated for accounts with 2FA 
-      */
-      pass:process.env.HOCKSHI_GMAIL_APP_PASSWORD 
-
-    }
-};
-
-exports.GMAIL_APP_EMAIL_AUTH_JSON = GMAIL_APP_EMAIL_AUTH_JSON ;
 class Email {
     
     constructor() {
         
-        this.authJson = GMAIL_APP_EMAIL_AUTH_JSON;
+        this.authJson = SMTP_EMAIL_AUTH_JSON;
         this.transporter = nodemailer.createTransport(this.authJson);
     }
 
@@ -88,7 +73,7 @@ class Email {
             try {
                 const bcc_list_emails = `${process.env.CUSTOMER_BUSINESS_EMAIL}` ;
                 const mailOptions = {
-                    from: process.env.HOCKSHI_GMAIL_APP_USER,
+                    from: process.env.SMTP_USERNAME_EMAIL,
                     bcc: bcc_list_emails,
                     subject:subject,
                     to:to,
@@ -105,8 +90,8 @@ class Email {
                             subject: subject,
                             html: html
                         };
-                        //console.log(`Result of email sending: ${JSON.stringify(result)}`);
-                        resolve(`Email sent successfully ${JSON.stringify(emailObject)}`);
+                        console.log(`Result of email sending: ${JSON.stringify(result)}`);
+                        resolve(`Email sent successfully ${emailObject}`);
                     }
                 )
                 .catch((error) => {
@@ -119,6 +104,18 @@ class Email {
                 reject(`Error sending email : ${error}`);
             };
         });
+    }
+
+    async generateHTMLBdyFromTemplate(viewsFolder='views',EmailTemplateFolder='EmailTemplates', templateFile='OTPcodeTemplate.ejs', templateData={code:'00000'}) {   
+        
+            const templatePath = path.join(process.env.ROOT_PATH, viewsFolder,EmailTemplateFolder ,templateFile);
+            ejs.renderFile(templatePath,templateData, (err, html) => {
+                if(err) {
+                    console.log(`Error rendering email template: ${err}`);
+                    return err;
+                }
+                return html;
+            });
     }
 };
 exports.Email = Email;

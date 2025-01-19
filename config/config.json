@@ -1,10 +1,8 @@
-
 {
-    
   "development": {
     "username": "root",
-    "password": "",
-    "database": "hockshidbdev",
+    "password": "Password123!",
+    "database": "hockshi",
     "host": "172.17.0.2",
     "dialect": "mariadb",
     "port":"3306",
@@ -12,17 +10,15 @@
   },
   "test": {
     "username": "root",
-    "password": "",
-    "database": "hockshidbtest",
+    "password": null,
+    "database": "database_test",
     "host": "mariadb",
-    "dialect": "mariadb",
-    "port":"3306",
-    "logging": true    
+    "dialect": "mariadb"
   },
   "production": {
     "username": "root",
-    "password": "",
-    "database": "hockshidbprod",
+    "password": null,
+    "database": "database_production",
     "host": "127.0.0.1",
     "dialect": "mariadb"
   }

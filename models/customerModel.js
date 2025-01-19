@@ -2,6 +2,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const bcrypt = require('bcrypt');
+const {Md5Rand}=require("../utilities/functions")
 const crypto = require('crypto');
 
 const Order= require("./ordersModel")
@@ -29,7 +30,7 @@ const Customer = sequelize.define('Customer', {
         type: DataTypes.STRING(256),
         allowNull: true,
     },
-    guest: {
+    geust: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false, 
@@ -42,7 +43,7 @@ const Customer = sequelize.define('Customer', {
         type: DataTypes.STRING(128),
         allowNull: true,
     },
-    state_province_id: {
+    state_province: {
         type: DataTypes.STRING(128),
         allowNull: true,
     },
@@ -87,7 +88,7 @@ const Customer = sequelize.define('Customer', {
           }
         },
         
-    }
+      }
   
       
 });

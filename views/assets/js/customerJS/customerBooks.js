@@ -5,7 +5,7 @@
     let currentSort = 'latest';  // Default sort value
 
         async function fetchBooks(page = 1,bookName="",sort="latest") {
-            const response = await fetch(`/books/api?page=${page}&limit=${limit}&bookName=${bookName}&sort=${sort}`);
+            const response = await fetch(`/allBooks?page=${page}&limit=${limit}&bookName=${bookName}&sort=${sort}`);
              result = await response.json();
              data= result.data
             console.log(result)
@@ -71,18 +71,25 @@
        }
 
        const findAddCartButton=()=>{
-            console.log("found")
-            document.querySelectorAll('.add-to-cart').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const productId = event.target.getAttribute('data-product-id');
-                    // updateCartCount();
-                    addToCart(productId);
-                });
-            }); 
-        }
-        // Returns: None
+
+           console.log("found")
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productId = event.target.getAttribute('data-product-id');
+                // updateCartCount();
+                addToCart(productId);
+            });
+          }); 
+      }
+        
+    
+     
+                    // Returns: None
         fetchBooks()
         
+      
+
+
         document.getElementById("filter").addEventListener("change", (e) => {
             currentSort = e.target.value;
 
@@ -99,15 +106,24 @@
                     await fetchBooks(currentPage - 1,"", currentSort);
                     findAddCartButton()
                 }
-            });
+              });
       
-            document.getElementById('nextPage').addEventListener('click', async() => {
+              document.getElementById('nextPage').addEventListener('click', async() => {
                   await fetchBooks(currentPage + 1,"", currentSort);
                   findAddCartButton()
 
-            });      
-                      
-        });
+              });
+      
+                      // Attaches an event listener to the window object that triggers when the page has finished loading.
+                      // 
+                      // When the page finishes loading, the event listener function is executed.
+                      // 
+                      // The function selects the element with the class 'timeline-wrapper' and assigns it to the variable 'animation'.
+                      // It also selects the element with the class 'product-list' and assigns it to the variable 'products'.
+                      // 
+                      // The function then adds the class 'move' to the 'animation' element and removes the class 'hidden' from the 'products' element.
+                      //
+                    });
 
 
         

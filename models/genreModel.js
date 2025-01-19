@@ -12,11 +12,7 @@ Genre.init({
     name: {
         type: DataTypes.STRING(128),
         allowNull: false
-    },
-    seo_friendly_title: {
-        type: DataTypes.STRING(256),
-        allowNull: false
-    },
+    }
 }, {
     sequelize,
     modelName: 'Genre',
@@ -33,7 +29,7 @@ Genre.init({
              genre.book_id = await crypto.createHash('md5').update(Math.random().toString()).digest('hex');
           }
           }
-    },
+          },
 });
 
 module.exports = Genre;

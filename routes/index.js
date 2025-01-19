@@ -2,76 +2,104 @@ const express = require('express');
 const router = express.Router();
 
 require('dotenv').config();
-
-
-//admin module
-const adminRoute = require('../admin/route');
-
-//books module
-const booksRoute = require('../books/route');
-
-//cart module
-const cartRoute = require('../cart/route');
-
-//docs module
-const docsRoute = require('../agreementdocs/route');
-
-//checkout route 
-const checkoutRoute = require('../checkout/route');
-
-//orders route
-const ordersRoute = require('../orders/route');
-
-const customerRoute = require('../customer/route');
+const csrf = require('csurf');
+let csrfProtection = csrf({ cookie: true });
 
 const {
   showHomePage,
-  showError404,
-
+  bookDetail,
+  viewCart,
+  getCartItems,
+  searchBook,
+  loginPage,
+  signupPage,
+  signupPost,
+  loginPagePost,
+  checkout,
+  successPayment,
+  verifyOTP,
+  processGeustUser,
+  showGeustPage,
+  showForm,
+  allBooks,
+  Profile,
+  viewBooks,
+  updateProfile,
+  oderDetail,
+  addToCart,
+  updateCart,
+  deleteCart,
+  GetCartLength,
+logout
 }= require("../controllers/indexController");
+const customerSignupValidation = require('../middleware/customerSignupValidation');
+const verifyUser= require("../middleware/verifyUser")
+const shippingInfoValidation=require("../middleware/shipping-infoValidation")
+const updateProfileValidation=require("../middleware/updateProfileValidation")
 
 // const {stripe} = require('../utilities/stripe') ;
 
-const newsLetterRoute = require('../newsletter/route');
 
-module.exports = (req,res,next) => {
-  try{
-    
-      router.get("/",showHomePage)
+const calculateOrderAmount = (items) => { 
 
-      router.use('/admin',adminRoute())
-      router.use('/books',booksRoute())
-      router.use('/cart', cartRoute())
-      router.use('/docs', docsRoute())
-      
+// Replace this constant with a calculation of the order's amount
+// Calculate the order total on the server to prevent
 
-      router.use( '/checkout',checkoutRoute())
-      /*
-        router.get("/success",successPayment)
-      */
+// people from directly manipulating the amount on the client
+return 50;                                                                
 
-      router.use('/order',ordersRoute());
+};
 
-      router.use('/customer',customerRoute())
+exports.calculateOrderAmount = calculateOrderAmount ;
 
-      router.use('/newsletter',newsLetterRoute());     
-      
-     
+router.get("/",showHomePage)
 
-      //router.get("/orderDetail/:id",orderDetail)
-      router.route("/f404").get(showError404).post(showError404)
+router.get("/productDetails/:id",bookDetail)
 
 
-      router.route("/*").get(showError404).post(showError404)
-      
-  } catch (error){
-    //send 500 error to the client
-    //console.log(`Error in ${__filename}`, error)
-    
-    router.next(error)
-    
-  } ;
+
+router.route("/login").get(loginPage).post(loginPagePost)
 
 
-  return router ;
-}
+router.get("/askGeust",showGeustPage)
+
+router.route("/showForm").get(showForm).post(processGeustUser)
+
+
+router.post("/search",searchBook)
+
+
+router.post("/verifyOTP",verifyOTP)
+
+router.get("/signup",signupPage)
+
+router.post("/signup",customerSignupValidation,signupPost)
+
+router.post( '/checkout',verifyUser,shippingInfoValidation,checkout)
+
+router.get("/books",viewBooks)
+
+  router.get("/allBooks",allBooks)
+
+
+router.get("/success",successPayment)
+
+router.get("/logout",logout)
+
+router.get("/profile",Profile)
+
+router.post("/updateProfile",verifyUser,updateProfileValidation,updateProfile)
+
+router.get("/orderDetail/:id",verifyUser,oderDetail)
+
+
+
+  // cart management
+  router.route("/cart").get(viewCart).post(getCartItems)
+  router.post("/cartLength",GetCartLength)
+
+  router.post('/add-to-cart/:id',addToCart)
+  router.post('/update-cart',updateCart)
+  router.post('/deleteItem/:id',deleteCart)
+
+module.exports = router

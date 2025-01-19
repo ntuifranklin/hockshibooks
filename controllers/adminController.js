@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const sequelize = require('../config/database');
 const {generateAndSendOTP}=require("../utilities/functions");
 const { validationResult } = require('express-validator');
+const { Op } = require("sequelize");
 
 const { json } = require('body-parser');
 require("dotenv").config()      
@@ -25,6 +26,11 @@ const validateOTP = require('../middleware/OTPmiddleware');
 let user_email,authUser;
 let userId
 
+//routes
+const admin_route=process.env.ADMIN_ROUTE
+const book_route=process.env.ADMIN_BOOKS_ROUTE
+const customer_route=process.env.CUSTOMER_ROUTE
+const order_route=process.env.ADMIN_ORDERS_ROUTE
 
 const login=(req,res,next)=>{
 
@@ -32,6 +38,7 @@ const login=(req,res,next)=>{
         //the login function renders the login page that will request the email and password of the users who wishes to login
         res.status(200)
         res.render("pages/admin/admin_login",{
+                title:"Admin Login",
                 msg:false,
                 host:process.env.HOST
         })
@@ -61,9 +68,12 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                         if(!user){
                                 
                                 res.status(401).render("pages/admin/admin_login",{
+                                         title:"Admin Login",
+
                                         csrfToken: req.csrfToken(),
                                         msg:"please check your email and password again",
                                            host:process.env.HOST
+                                           
                                 })
                         }
                         else{
@@ -73,6 +83,8 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                                         authUser=user.dataValues
                                         generateAndSendOTP(user.id,user_email,otpModel)
                                 res.status(200).render(`pages/admin/otpVerification`,{
+                                         title:"Admin Otp Verification",
+
                                         userId:userId,
                                         email:user_email,
                                         msg:false,
@@ -81,6 +93,7 @@ The function uses await to handle asynchronous operations and bcrypt.compare to 
                         }
                                 else{
                                         res.status(401).render("pages/admin/admin_login",{
+                                                title:"Admin Login",
                                                 csrfToken: req.csrfToken(),
                                                 msg:"please check your email and password again",
                                                 host:process.env.HOST
@@ -122,7 +135,9 @@ If there are errors, render the otpVerification page with an error message.
                 const errors=validationResult(req)
                 if(!errors.isEmpty()){
                         const {msg}=errors.array()[0]
-                        res.render(`pages/otpVerification`,{
+                        res.render(`pages/admin/otpVerification`,{
+                                title:"Admin Otp verification",
+
                                 userId:userId,
                                 email:user_email,
                                 msg:msg,
@@ -139,7 +154,9 @@ If there are errors, render the otpVerification page with an error message.
                 if(!otpRecord){
                         authUser="";
                         
-                        res.status(401).render(`pages/otpVerification`,{
+                        res.status(401).render(`pages/admin/otpVerification`,{
+                                title:"Admin Otp verification",
+
                                 userId:userId,
                                 email:user_email,
                                 msg:"invalid OTP record",
@@ -153,7 +170,9 @@ If there are errors, render the otpVerification page with an error message.
                         authUser="";
                         
 
-                        res.status(401).render(`pages/otpVerification`,{
+                        res.status(401).render(`pages/admin/otpVerification`,{
+                                title:"Admin Otp verification",
+
                                 userId:userId,
                                 email:user_email,
 
@@ -169,6 +188,7 @@ If there are errors, render the otpVerification page with an error message.
         Redirect the user to the dashboard.
                          */
                         req.session.user={
+                                admin_id:userId,
                                 email:authUser.email,
                                 role:authUser.role
                         }
@@ -177,8 +197,9 @@ If there are errors, render the otpVerification page with an error message.
                                         powerUserId:userId
                                 }
                         })
+                        console.log(userId)
                         
-                        res.status(200).redirect(`${process.env.HOST}/admin/dashboard`) 
+                        res.status(200).redirect(`${process.env.HOST + admin_route}/dashboard`) 
                 }
 }) 
 const dashboard=async(req,res)=>{
@@ -200,26 +221,142 @@ Finally, it renders a view template named "pages/dashboard" and passes the fetch
                 
         })
 
+
         const payments= await paymentModel.findAll({})
-        const orders=await orderModel.findAll({
-                include:[
-                        {model:customerModel}
-                ]
-        })
+        // const orders=req.body.orders||await orderModel.findAll({
+        //         include:[
+        //                 {model:customerModel}
+        //         ]
+        // })
      
         // res.send(user)
         res.locals.user=req.session.user
 
+        const totalBooks=await bookModel.count()
+        console.log(totalBooks)
+        const totalOrders=await orderModel.count()
+        const ProcessingOrders= await orderModel.count({
+                where:{
+                        delivery_status:"Processing"
+                }
+        })
+        console.log(ProcessingOrders)
+        const ShippedOrders= await orderModel.count({
+                where:{
+                        delivery_status:"Shipped"
+                }
+        })
+        const DeliveredOrders= await orderModel.count({
+                where:{
+                        delivery_status:"Delivered"
+                }
+        })
 
         res.status(200).render("pages/admin/dashboard",{
+                title:"Admin Dashboard",
                 books:books,
                 payments:payments,
-                orders:orders,
+                // orders:orders,
                 type:type,
                 msg:msg,
-                host:process.env.HOST
+                host:process.env.HOST,
+                meta:{
+                        totalBooks:totalBooks,
+                        totalOrders:totalOrders,
+                        ProcessingOrders:ProcessingOrders,
+                        ShippedOrders:ShippedOrders,
+                        DeliveredOrders:DeliveredOrders
+                }
 
         })
+}
+
+const GetOrders = async(req,res)=>{
+        try{
+                const order= req.query.order|| ""
+                console.log(order)
+        
+                const result = await orderModel.findAll({
+                        include: [
+                            {
+                                model: customerModel,
+                                
+                            }
+                        ],
+                        where: {
+                            [Op.or]: [
+                                { order_id: { [Op.like]: `%${order}%` } }
+                            ]
+                        }
+                    });
+                    
+
+        console.log(result)
+        res
+        .json({
+                orders:result
+        }).status(200)
+}
+catch(err){
+        console.log(err)
+        res.status(500)
+}
+        
+    }
+
+const adminProfile = async(req,res)=>{
+        const {email}=await powerUSer.findOne({
+                where:{
+                        id:req.session.user.admin_id
+                }
+        })
+        return res.render(`pages/admin/admin_profile`,{
+                title:"My Profile",
+                errors:req.body.errors?req.body.errors:false,
+                msg:req.query.msg?req.query.msg:false,
+            type:req.query.type?req.query.type:false,
+                
+                email:email
+        })
+}
+const processAccountChanges = async(req,res)=>{
+      
+
+        const errors= validationResult(req)
+
+        if(!errors.isEmpty() ){
+                req.body.errors= errors.array()
+                await adminProfile(req,res)
+        }
+        else{
+                const {email,New_password,Old_password}= req.body
+                const user= await powerUSer.findOne({
+                        where:{
+                                id:req.session.user.admin_id
+                        }
+                })
+
+                if(await bcrypt.compare(Old_password,user.password)){
+                        user.email=email
+
+                        if(New_password){
+                                console.log("provided")
+                                user.password=New_password
+                            }
+                            else{
+                                user.password=Old_password
+                                console.log("not provided")
+                                
+                            }
+
+                            await user.save()
+                            return res.redirect(`${process.env.HOST + admin_route}/dashboard?type=success&msg=successfully+updated+profile`)
+                }
+                else{
+                        return res.redirect(`${process.env.HOST + admin_route}/adminProfile?type=error&msg=old+password+did+not+match`)
+                }
+        }
+       
 }
 const logout=(req,res)=>{
         /*
@@ -229,15 +366,15 @@ const logout=(req,res)=>{
         
         */ 
         if(!req.session.user){
-                res.status(404).res.redirect(`${process.env.HOST}/admin/`) 
+                res.status(404).res.redirect(`${process.env.HOST + admin_route}/`) 
                 
         }
         else{
                 delete req.session.user
-                res.redirect(`${process.env.HOST}/admin/`) 
+                res.redirect(`${process.env.HOST + admin_route}/`) 
 
         }
 }
 module.exports={
-        login,formSubmit,verifyOTP,dashboard,logout
+        login,formSubmit,verifyOTP,dashboard,logout,GetOrders,adminProfile,processAccountChanges
 }

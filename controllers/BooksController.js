@@ -1,6 +1,7 @@
-require("dotenv").config()
 const csrf = require('csurf');
 let csrfProtection = csrf({ cookie: true });
+
+
 const sequelize = require('../config/database');
 const { validationResult } = require('express-validator');
 const { json } = require('body-parser');
@@ -9,6 +10,8 @@ const axios = require('axios');
 const fs=require("fs")
 const path=require("path")
 const multer=require("multer")
+
+    require("dotenv").config()
 
 
 //models
@@ -21,6 +24,12 @@ const { language } = require('googleapis/build/src/apis/language');
 
 //variables
 let updateBookId;
+
+
+//routes
+const admin_route=process.env.ADMIN_ROUTE
+const book_route=process.env.ADMIN_BOOKS_ROUTE
+const order_route=process.env.ADMIN_ORDERS_ROUTE
 
 const GetinsertBook= async(req,res)=>{
 
@@ -35,8 +44,9 @@ Here's what it does:
      */
     const genre= await genreModel.findAll()
 
-    res.render("pages/bookInsert",{
-        host:process.env.HOST,
+    res.render("pages/admin/bookInsert",{
+        title:"Create A Book",
+        host:process.env.HOST,  
         genre:genre,
         msg:false,
         formdata:false,
@@ -53,7 +63,7 @@ const CreateBook=async (req,res)=>{
     //The function first checks for any validation errors using validationResult(req).
 
         const errors=validationResult(req)
-        const error={}
+        let error=[]
         // If there are validation errors, it retrieves all genres from the database and adds an error message if no file (cover image) is uploaded.
         if(!req.file){
 
@@ -69,13 +79,19 @@ const CreateBook=async (req,res)=>{
                 if(!errors.isEmpty()){
                         const genre= await genreModel.findAll()
 
-                        error={...errors.array()}
+                        // error=[...error , errors.array()]
+
+                        errors.array().map(err=>{
+                            error.push(err)
+                        })
                        
                         
                         }
                         
                       
-                    res.render("pages/bookInsert",{
+                    res.render("pages/admin/bookInsert",{
+        title:"Create A Book",
+
                         host:process.env.HOST,
                         msg:error,
                         formdata:req.body,
@@ -102,11 +118,44 @@ const CreateBook=async (req,res)=>{
                         location:req.body.location
                     })
             
-                    return res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+added&type=success`);
+                    return res.redirect(`${process.env.HOST + admin_route}/dashboard?msg=item+successfully+added&type=success`);
                 }
                 // File information is available in req.file
 }
 
+const updateBook=async (req,res)=>{ 
+    updateBookId=req.params.id?req.params.id:req.body.bookId
+    /**
+     * Inside the function, it uses the await keyword to asynchronously find a book by its primary key (req.params.id) from the bookModel and includes the associated genreModel and inventoryModel.
+
+It then retrieves all genres from the genreModel using the findAll method.
+
+Finally, it renders a view template named "pages/updateBook" and passes the fetched book, root path from the environment variable process.env.ROOT_PATH, the cover image URL from the book, and the fetched genres as data to the template.
+     */
+    let error;
+
+    if(req.errors){
+        error=req.errors
+    }else{
+        error=false
+    }
+    let book= await bookModel.findByPk(updateBookId, {include:[
+        {model:inventoryModel}
+
+]},)
+const genre= await genreModel.findAll()
+    // res.send(book)
+    res.render("pages/admin/updateBook",{
+        title:"Update Book",
+
+        book:book,
+        root_path:process.env.ROOT_PATH,
+        image:book.cover_image_url,
+        msg:error
+
+    })
+
+}
 
 const saveUpdate=async(req,res)=>{
     /**
@@ -117,14 +166,14 @@ const saveUpdate=async(req,res)=>{
 
         // If there are validation errors, it retrieves all genres from the database and adds an error message if no file (cover image) is uploaded.
 
-if(!errors.isEmpty()){
-        const genre= await genreModel.findAll()
+                if(!errors.isEmpty()){
+                        const genre= await genreModel.findAll()
 
-        const error=errors.array()
-        req.errors=error
-        return await updateBook(req,res)
-    
-}else{
+                        const error=errors.array()
+                        req.errors=error
+                        return await updateBook(req,res)
+                    
+                }else{
 
                     
     try{
@@ -135,18 +184,18 @@ if(!errors.isEmpty()){
         const inventory=await inventoryModel.findByPk(req.body.bookId)
 
         if(!book || !inventory){
-           return res.status(404).redirect(`/admin/dashboard?msg=item+not+found&type=danger`);
+           return res.status(404).redirect(`${process.env.HOST + admin_route}/dashboard?msg=item+not+found&type=danger`);
         }
         else{
             //The function updates the fields of the book and inventory records with the data from the request body.
         
             book.set({
-                title :req.body.title,
-                author : req.body.author,
-                language : req.body.language,
-                price :req.body.price,
-                description :req.body.description,
-                publication_date:req.body.date,
+        title :req.body.title,
+        author : req.body.author,
+        language : req.body.language,
+        price :req.body.price,
+        description :req.body.description,
+        publication_date:req.body.date,
             })
 
             inventory.set({
@@ -162,7 +211,7 @@ if(!errors.isEmpty()){
                 // Delete the cover image file
                 fs.unlink(coverImagePath, async (err) => {
                     if (err) {
-                        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+deleting+image&type=danger`);;
+                        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+deleting+image&type=danger`);;
                     }
                 })
         
@@ -180,7 +229,7 @@ if(!errors.isEmpty()){
    
                 //After successful update, the user is redirected to the dashboard with a success message.
 
-       res.redirect(`${process.env.HOST}/admin/dashboard?msg=item+successfully+updated&type=success`);
+       res.redirect(`${process.env.HOST +    admin_route}/dashboard?msg=item+successfully+updated&type=success`);
        
         
         }
@@ -188,7 +237,7 @@ if(!errors.isEmpty()){
 }
     
     catch(e){
-        return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=server+error&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=server+error&type=danger`);
 
 
     }
@@ -196,6 +245,45 @@ if(!errors.isEmpty()){
 
 }
 
+const deleteBook=async (req,res)=>{
+    
+      /**
+ * Deletes a book and its associated cover image from the server and database.
+ * 
+ * This function performs the following steps:
+ * 1. Retrieves the book record from the database by its primary key (ID) provided in the request parameters.
+ * 2. Constructs the path to the cover image file associated with the book.
+ * 3. Attempts to delete the cover image file from the server's file system.
+ * 4. If the image deletion is successful, it deletes the book record from the database.
+ * 5. Redirects the user to the admin dashboard with a success message if the deletion is successful.
+ * 6. If an error occurs at any step, logs the error and redirects the user to the admin dashboard with an error message.
+ * 
+     */
+    let book= await bookModel.findByPk(req.params.id)
+    try{
+
+        
+        const coverImagePath = path.join(process.env.ROOT_PATH, book.cover_image_url);
+        // Delete the cover image file
+
+        if(fs.existsSync(coverImagePath)){
+        fs.unlink(coverImagePath, async (err) => {
+            if (err) {
+                return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+deleting+image&type=danger`);;
+
+            } 
+        })
+    }
+        
+        await book.destroy()
+    return res.redirect(`${process.env.HOST + admin_route}/dashboard?msg=item+successfully+deleted&type=success`);
+        
+    }
+    catch(e){
+    res.redirect(`${process.env.HOST +admin_route}/dashboard?msg=error+when+deleting+record&type=danger`);
+
+    }
+}
 
 const getaddBookWithISBNForm=(req,res)=>{
     /**
@@ -206,11 +294,12 @@ const getaddBookWithISBNForm=(req,res)=>{
  * @return {Promise<void>} A promise that resolves when the template is rendered.
  */
     res.status(200).render("pages/admin/addBookWithISBNForm",{
+        title:"ISBN Book Insert",
+
         msg:false,
     })
 }
 
-const {generateSeoFriendlyTitle} = require('../books/utilities');
 const addBookWithISBN= async(req,res)=>{
     /**
  * Adds a book to the database using its ISBN number.
@@ -237,6 +326,8 @@ const addBookWithISBN= async(req,res)=>{
     if(!errors.isEmpty()){
         const err=errors.array()[0]
         res.render("pages/admin/addBookWithISBNForm",{
+        title:"ISBN Book Insert",
+
             msg:err,
         })
 
@@ -246,8 +337,6 @@ const addBookWithISBN= async(req,res)=>{
         const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`;
         try{
             const response= await axios.get(url)
-
-           // console.log(`${JSON.stringify(response.data, null,2)}`);
 
             const data= response.data[`ISBN:${isbn}`] 
 
@@ -259,31 +348,15 @@ const addBookWithISBN= async(req,res)=>{
                             title:data.title
                         }
                     })
-                    /* ISBN coul return a valid 13 o a valid 10 isbn numbers */
-                    var isbn10_or_13 = isbn;
-                    if (typeof data.identifiers.isbn_13 != "undefined")
-                        isbn10_or_13 = data.identifiers.isbn_13[0];
-                    else if (typeof data.identifiers.isbn_10 != "undefined")
-                        isbn10_or_13 = data.identifiers.isbn_10[0];
-                    
-                        
-                    var cover_image_url = "";
-                    if (typeof data.cover != "undefined" && typeof data.cover.medium != "undefined")
-                        cover_image_url = data.cover.medium;
-                    const seo_friendly_title = generateSeoFriendlyTitle(
-                        bookTitle=data.title, 
-                        authorName=data.authors[0].name,
-                        publicationYear=data.publication_date
-                    );
+
                     if(!tmp){
                         let createdBook=await bookModel.create({
-                        seo_friendly_title:seo_friendly_title,
                         title:data.title,
                         author:data.authors[0].name,
-                        ISBN:isbn10_or_13,
+                        ISBN:data.identifiers.isbn_13[0],
                         description: desc,
                         publication_date:data.publication_date,
-                        cover_image_url:cover_image_url,
+                        cover_image_url:data.cover.medium,
                         price:price
                     })
     
@@ -293,30 +366,32 @@ const addBookWithISBN= async(req,res)=>{
                         location:"warehouse"
                     })
 
-                    return res.status(302).redirect(`${process.env.HOST}/admin/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
+                    return res.status(302).redirect(`${process.env.HOST + admin_route}/dashboard?msg=${createdBook.title}+was+successfully+added&type=success`);
                 }
                 else{
 
                     res.status(500).render("pages/admin/addBookWithISBNForm",{
+        title:"ISBN Book Insert",
+
                         msg:{
                             msg:"a book with this title already exists"
                         },
                     })
                 }
                 } catch (error) {
-                    console.log(`${error.message}`);
-                    return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+creating+book&type=danger`);
+
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+creating+book&type=danger`);
                 }
                 
             }
             else{
 
-                return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn ${isbn}&type=danger`);
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
             }
         }
         catch(e){
-            console.log(`${e.message}`);
-            return res.status(500).redirect(`${process.env.HOST}/admin/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
+
+        return res.status(500).redirect(`${process.env.HOST + admin_route}/dashboard?msg=error+when+fetching+book+Isbn${isbn}&type=danger`);
 
         }
     }
@@ -324,5 +399,5 @@ const addBookWithISBN= async(req,res)=>{
 }
 
 module.exports={
-    GetinsertBook,CreateBook,saveUpdate,addBookWithISBN,getaddBookWithISBNForm
+    deleteBook,GetinsertBook,CreateBook,updateBook,saveUpdate,addBookWithISBN,getaddBookWithISBNForm
 }   
